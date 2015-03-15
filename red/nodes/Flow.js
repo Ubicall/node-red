@@ -160,7 +160,7 @@ function createSubflow(sf,sfn,subflows) {
                     if (!node._originalWires) {
                         node._originalWires = clone(node.wires);
                     }
-                    node.wires[wires[j].port] = node.wires[wires[j].port].concat(sfn.wires[i]);
+                    node.wires[wires[j].port] = (node.wires[wires[j].port]||[]).concat(sfn.wires[i]);
                 }
             }
         }
@@ -253,6 +253,7 @@ function Flow(config) {
     
     this.activeNodes = {};
     this.subflowInstanceNodes = {};
+    this.catchNodeMap = {};
     this.started = false;
 
     this.parseConfig(config);
@@ -272,8 +273,6 @@ Flow.prototype.parseConfig = function(config) {
     this.subflows = {};
     
     this.configNodes = {};
-    
-    this.catchNodeMap = null;
     
     var unknownTypes = {};
     
@@ -352,7 +351,16 @@ Flow.prototype.parseConfig = function(config) {
     this.missingTypes = Object.keys(unknownTypes);    
 }
 
-Flow.prototype.start = function() {
+Flow.prototype.start = function(configDiff) {
+    if (configDiff) {
+        for (var j=0;j<configDiff.rewire.length;j++) {
+            var rewireNode = this.activeNodes[configDiff.rewire[j]];
+            if (rewireNode) {
+                rewireNode.updateWires(this.allNodes[rewireNode.id].wires);
+            }
+        }
+    }
+    
     this.started = true;
     if (this.missingTypes.length > 0) {
         throw new Error("missing types");
@@ -402,8 +410,14 @@ Flow.prototype.start = function() {
     events.emit("nodes-started");
 }
 
-Flow.prototype.stop = function(nodeList) {
-    nodeList = nodeList || Object.keys(this.activeNodes);
+Flow.prototype.stop = function(configDiff) {
+    var nodeList;
+    
+    if (configDiff) {
+        nodeList = configDiff.stop;
+    } else {
+        nodeList = Object.keys(this.activeNodes);
+    }
     var flow = this;
     return when.promise(function(resolve) {
         events.emit("nodes-stopping");
@@ -465,14 +479,13 @@ Flow.prototype.eachNode = function(callback) {
     }
 }
 
-Flow.prototype.applyConfig = function(config,type) {
+Flow.prototype.diffConfig = function(config,type) {
     
     var activeNodesToStop = [];
     var nodesToRewire = [];
     
     if (type && type!="full") {
-        var diff = this.diffFlow(config);
-        //console.log(diff);
+        var diff = diffFlow(this,config);
         //var diff = {
         //    deleted:[]
         //    changed:[]
@@ -481,15 +494,12 @@ Flow.prototype.applyConfig = function(config,type) {
         //}
         
         var nodesToStop = [];
-        var nodesToCreate = [];
         nodesToRewire = diff.wiringChanged;
         
         if (type == "nodes") {
             nodesToStop = diff.deleted.concat(diff.changed);
-            nodesToCreate = diff.changed;
         } else if (type == "flows") {
             nodesToStop = diff.deleted.concat(diff.changed).concat(diff.linked);
-            nodesToCreate = diff.changed.concat(diff.linked);
         }
         
         for (var i=0;i<nodesToStop.length;i++) {
@@ -503,34 +513,20 @@ Flow.prototype.applyConfig = function(config,type) {
     } else {
         activeNodesToStop = Object.keys(this.activeNodes);
     }
-        
-    var flow = this;
-    if (type != "full") {
-        log.info("Stopping modified "+type);
+    
+    return {
+        type: type,
+        stop: activeNodesToStop,
+        rewire: nodesToRewire,
+        config: config
     }
-    return this.stop(activeNodesToStop).then(function() {
-        if (type != "full") {
-            log.info("Stopped modified "+type);
-        }
-        flow.parseConfig(config);
-        for (var i=0;i<nodesToRewire.length;i++) {
-            var node = flow.activeNodes[nodesToRewire[i]];
-            if (node) {
-                node.updateWires(flow.allNodes[node.id].wires);
-            }
-        }
-        if (type != "full") {
-            log.info("Starting modified "+type);
-        }
-        flow.start();
-        if (type != "full") {
-            log.info("Started modified "+type);
-        }
-    })
 }
 
-Flow.prototype.diffFlow = function(config) {
-    var flow = this;
+function diffFlow(flow,config) {
+    
+    //if (!flow.started) {
+    //    throw new Error("Cannot diff an unstarted flow");
+    //}
     var flowNodes = {};
     var changedNodes = {};
     var deletedNodes = {};
@@ -585,14 +581,14 @@ Flow.prototype.diffFlow = function(config) {
         }
     });
     
-    this.config.forEach(function(node) {
+    flow.config.forEach(function(node) {
         if (!flowNodes[node.id] && node.type != "tab") {
             deletedNodes[node.id] = node;
         }
         buildNodeLinks(activeLinks,node,flow.allNodes);
     });
     
-    this.config.forEach(function(node) {
+    flow.config.forEach(function(node) {
         for (var prop in node) {
             if (node.hasOwnProperty(prop) && prop != "z" && prop != "id" && prop != "wires") {
                 // This node has a property that references a changed node

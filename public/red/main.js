@@ -169,7 +169,7 @@ var RED = (function() {
             success: function(nodes) {
                 RED.nodes.import(nodes);
                 RED.view.dirty(false);
-                RED.view.redraw();
+                RED.view.redraw(true);
                 RED.comms.subscribe("status/#",function(topic,msg) {
                     var parts = topic.split("/");
                     var node = RED.nodes.node(parts[1]);
@@ -245,24 +245,6 @@ var RED = (function() {
         RED.view.status(statusEnabled);
     }
 
-    function showHelp() {
-
-        var dialog = $('#node-help');
-
-        //$("#node-help").draggable({
-        //        handle: ".modal-header"
-        //});
-
-        dialog.on('show',function() {
-            RED.keyboard.disable();
-        });
-        dialog.on('hidden',function() {
-            RED.keyboard.enable();
-        });
-
-        dialog.modal();
-    }
-    
     function changeDeploymentType(type) {
         deploymentType = type;
         $("#btn-deploy img").attr("src",deploymentTypes[type].img);
@@ -275,29 +257,29 @@ var RED = (function() {
                 {id:"btn-node-status",label:"Display node status",toggle:true,onselect:toggleStatus, selected: true},
                 null,
                 {id:"btn-import-menu",label:"Import",options:[
-                    {id:"btn-import-clipboard",label:"Clipboard",onselect:RED.view.showImportNodesDialog},
+                    {id:"btn-import-clipboard",label:"Clipboard",onselect:RED.clipboard.import},
                     {id:"btn-import-library",label:"Library",options:[]}
                 ]},
                 {id:"btn-export-menu",label:"Export",disabled:true,options:[
-                    {id:"btn-export-clipboard",label:"Clipboard",disabled:true,onselect:RED.view.showExportNodesDialog},
-                    {id:"btn-export-library",label:"Library",disabled:true,onselect:RED.view.showExportNodesLibraryDialog}
+                    {id:"btn-export-clipboard",label:"Clipboard",disabled:true,onselect:RED.clipboard.export},
+                    {id:"btn-export-library",label:"Library",disabled:true,onselect:RED.library.export}
                 ]},
                 null,
                 {id:"btn-config-nodes",label:"Configuration nodes",onselect:RED.sidebar.config.show},
                 null,
                 {id:"btn-subflow-menu",label:"Subflows", options: [
-                    {id:"btn-create-subflow",label:"Create subflow",onselect:RED.view.createSubflow},
-                    {id:"btn-convert-subflow",label:"Selection to subflow",disabled:true,onselect:RED.view.convertToSubflow},
+                    {id:"btn-create-subflow",label:"Create subflow",onselect:RED.subflow.createSubflow},
+                    {id:"btn-convert-subflow",label:"Selection to subflow",disabled:true,onselect:RED.subflow.convertToSubflow},
                 ]},
                 null,
                 {id:"btn-workspace-menu",label:"Workspaces",options:[
-                    {id:"btn-workspace-add",label:"Add"},
-                    {id:"btn-workspace-edit",label:"Rename"},
-                    {id:"btn-workspace-delete",label:"Delete"},
+                    {id:"btn-workspace-add",label:"Add",onselect:RED.workspaces.add},
+                    {id:"btn-workspace-edit",label:"Rename",onselect:RED.workspaces.edit},
+                    {id:"btn-workspace-delete",label:"Delete",onselect:RED.workspaces.remove},
                     null
                 ]},
                 null,
-                {id:"btn-keyboard-shortcuts",label:"Keyboard Shortcuts",onselect:showHelp},
+                {id:"btn-keyboard-shortcuts",label:"Keyboard Shortcuts",onselect:RED.keyboard.showHelp},
                 {id:"btn-help",label:"Node-RED Website", href:"http://nodered.org/docs"}
             ]
         });
@@ -356,9 +338,12 @@ var RED = (function() {
         RED.library.init();
         RED.palette.init();
         RED.sidebar.init();
+        RED.subflow.init();
+        RED.workspaces.init();
+        RED.clipboard.init();
         RED.view.init();
         
-        RED.keyboard.add(/* ? */ 191,{shift:true},function(){showHelp();d3.event.preventDefault();});
+        RED.keyboard.add(/* ? */ 191,{shift:true},function(){RED.keyboard.showHelp();d3.event.preventDefault();});
         RED.comms.connect();
         loadNodeList();
     }

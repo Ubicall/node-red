@@ -41,17 +41,16 @@ function init(_server,_settings) {
 
     nodeApp = express();
     app = express();
-
-    if (settings.httpAdminRoot !== false) {
-        require("./api").init(app);
-    }
 }
 
 function start() {
-    var defer = when.defer();
-
-    storage.init(settings).then(function() {
-        settings.load(storage).then(function() {
+    return storage.init(settings)
+        .then(settings.load(storage))
+        .then(function() {
+            if (settings.httpAdminRoot !== false) {
+                require("./api").init(app,storage);
+            }
+            
             if (log.metric()) {
                 runtimeMetricInterval = setInterval(function() {
                     reportMetrics();
@@ -63,7 +62,7 @@ function start() {
             }
             log.info("Node.js  version: "+process.version);
             log.info("Loading palette nodes");
-            redNodes.init(settings,storage);
+            redNodes.init(settings,storage,app);
             redNodes.load().then(function() {
                 var i;
                 var nodes = redNodes.getNodeList();
@@ -105,19 +104,12 @@ function start() {
                         redNodes.cleanModuleList();
                     }
                 }
-                defer.resolve();
-
                 redNodes.loadFlows();
             }).otherwise(function(err) {
                 console.log(err);
             });
             comms.start();
-        });
-    }).otherwise(function(err) {
-        defer.reject(err);
     });
-
-    return defer.promise;
 }
 
 
