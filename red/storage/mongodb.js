@@ -23,6 +23,8 @@ var mkdirp = require("mkdirp");
 
 var mongoose = require('mongoose'), Schema = mongoose.Schema;
 
+var log = require("../log");
+
 var promiseDir = nodeFn.lift(mkdirp);
 
 var settings;
@@ -230,15 +232,16 @@ var mongostorage = {
                 log.info("DB URL : " + settings.mongodb.uri);
                 log.info("DB     : " + settings.mongodb.db);
                 //TODO key will be current user id
-                resolve(nodeModel.find({key: '123456789'}).limit(1).exec(function (err, doc) {
+                var query = nodeModel.where({key: '123456789'});
+                query.findOne(function (err, doc) {
                     if (err) {
                         log.info("Creating new flows file");
                         resolve([]);
                     }
-                    docs.forEach(function (doc) {
-                        return JSON.parse(doc["Nodes"]);
-                    })
-                }));
+                    if (doc) {
+                        resolve(JSON.parse(JSON.stringify(doc["Nodes"])));
+                    }
+                });
             });
         },
 
