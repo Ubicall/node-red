@@ -1,11 +1,148 @@
+/**
+ * Copyright 2013, 2014 IBM Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ **/
+
 var fs = require('fs');
+var when = require('when');
+var nodeFn = require('when/node/function');
+var keys = require('when/keys');
+var fspath = require("path");
+var mkdirp = require("mkdirp");
+
 var mongoose = require('mongoose'),Schema = mongoose.Schema;
-var log = require("../log");
 
-
+var promiseDir = nodeFn.lift(mkdirp);
 
 var settings;
+var flowsFile;
+var flowsFullPath;
+var flowsFileBackup;
+var credentialsFile;
+var credentialsFileBackup;
+var oldCredentialsFile;
+var sessionsFile;
+var libDir;
+var libFlowsDir;
+var globalSettingsFile;
+
 var nodeModel;
+
+function listFiles(dir) {
+    var dirs = {};
+    var files = [];
+    var dirCount = 0;
+    return nodeFn.call(fs.readdir, dir).then(function (contents) {
+        contents.sort().forEach(function(fn) {
+            var stats = fs.lstatSync(dir+"/"+fn);
+            if (stats.isDirectory()) {
+                dirCount += 1;
+                dirs[fn] = listFiles(dir+"/"+fn)
+            } else {
+                files.push(fn.split(".")[0]);
+            }
+        })
+        var result = {};
+        if (dirCount > 0) { result.d = keys.all(dirs); }
+        if (files.length > 0) { result.f = when.resolve(files); }
+        return keys.all(result);
+    })
+}
+
+function getFileMeta(root,path) {
+    var fn = fspath.join(root,path);
+    var fd = fs.openSync(fn,"r");
+    var size = fs.fstatSync(fd).size;
+    var meta = {};
+    var read = 0;
+    var length = 10;
+    var remaining = "";
+    var buffer = Buffer(length);
+    while(read < size) {
+        read+=fs.readSync(fd,buffer,0,length);
+        var data = remaining+buffer.toString();
+        var parts = data.split("\n");
+        remaining = parts.splice(-1);
+        for (var i=0;i<parts.length;i+=1) {
+            var match = /^\/\/ (\w+): (.*)/.exec(parts[i]);
+            if (match) {
+                meta[match[1]] = match[2];
+            } else {
+                read = size;
+                break;
+            }
+        }
+    }
+    fs.closeSync(fd);
+    return meta;
+}
+
+function getFileBody(root,path) {
+    var body = "";
+    var fn = fspath.join(root,path);
+    var fd = fs.openSync(fn,"r");
+    var size = fs.fstatSync(fd).size;
+    var scanning = true;
+    var read = 0;
+    var length = 50;
+    var remaining = "";
+    var buffer = Buffer(length);
+    while(read < size) {
+        var thisRead = fs.readSync(fd,buffer,0,length);
+        read += thisRead;
+        if (scanning) {
+            var data = remaining+buffer.slice(0,thisRead).toString();
+            var parts = data.split("\n");
+            remaining = parts.splice(-1)[0];
+            for (var i=0;i<parts.length;i+=1) {
+                if (! /^\/\/ \w+: /.test(parts[i])) {
+                    scanning = false;
+                    body += parts[i]+"\n";
+                }
+            }
+            if (! /^\/\/ \w+: /.test(remaining)) {
+                scanning = false;
+            }
+            if (!scanning) {
+                body += remaining;
+            }
+        } else {
+            body += buffer.slice(0,thisRead).toString();
+        }
+    }
+    fs.closeSync(fd);
+    return body;
+}
+
+/** 
+ * Write content to a file using UTF8 encoding.
+ * This forces a fsync before completing to ensure
+ * the write hits disk.
+ */
+function writeFile(path,content) {
+    return when.promise(function(resolve,reject) {
+        var stream = fs.createWriteStream(path);
+        stream.on('open',function(fd) {
+            stream.end(content,'utf8',function() {
+                fs.fsync(fd,resolve);
+            });
+        });
+        stream.on('error',function(err) {
+            reject(err);
+        });
+    });
+}
 
 var mongostorage = {
     init: function(_settings) {
@@ -67,13 +204,13 @@ var mongostorage = {
         promises.push(promiseDir(libFlowsDir));
         
         // For Mongo
-        mongoose.connect(settings.mongo.uri, settings.mongo.db,
+        mongoose.connect(settings.mongodb.uri, settings.mongodb.db,
         function (err) {
             if (err) {
                 console.log('connection error ', err.message);
                 process.exist(1);
             } else {
-                console.log('connection successful to ' + settings.mongo.uri + '/' + settings.mongo.db);
+                console.log('connection successful to ' + settings.mongodb.uri + '/' + settings.mongodb.db);
             }
         });
         var NodeSchema = new Schema({key:String , Nodes:[Schema.Types.Mixed]});
@@ -85,25 +222,37 @@ var mongostorage = {
     },
 
     getFlows: function() {
-        //TODO find only current user flows
-        nodeModel.find({ key: '123456789' }).limit(1).exec(function (err, docs) {
-        if (err) throw (err);
-        docs.forEach(function(doc){
-            return JSON.parse(doc["Nodes"]);
-            })
+        return when.promise(function(resolve) {
+            log.info("DB URL : "+settings.mongodb.uri);
+            log.info("DB     : "+settings.mongodb.db);
+            //TODO find only current user flows
+            resolve(nodeModel.find({ key: '123456789' }).limit(1).exec(function (err, docs) {
+                if (err) {
+                    log.info("Creating new flows file");
+                    resolve([]);
+                }
+                docs.forEach(function(doc){
+                    return JSON.parse(doc["Nodes"]);
+                }
+            });
         });
     },
 
     saveFlows: function(flows) {
         //TODO key will be current userid
-        var nod = new nodeModel({
-            "key":"123456789"
-            "Nodes": flows
-        });
-        
-        nod.save(function (err) {
-            if (err) throw (err);
-        });
+        return when.promise(function(resolve,reject) {
+                var nod = new nodeModel({
+                    key:"123456789",
+                    Nodes: flows
+                });
+                nod.save(function (err) {
+                 if (err) {
+                        reject(err) ;
+                        return;
+                    }
+                });
+                resolve(nod);
+            });
     },
 
   getCredentials: function() {
