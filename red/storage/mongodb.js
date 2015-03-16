@@ -21,7 +21,7 @@ var keys = require('when/keys');
 var fspath = require("path");
 var mkdirp = require("mkdirp");
 
-var mongoose = require('mongoose'),Schema = mongoose.Schema;
+var mongoose = require('mongoose'), Schema = mongoose.Schema;
 
 var promiseDir = nodeFn.lift(mkdirp);
 
@@ -44,37 +44,41 @@ function listFiles(dir) {
     var files = [];
     var dirCount = 0;
     return nodeFn.call(fs.readdir, dir).then(function (contents) {
-        contents.sort().forEach(function(fn) {
-            var stats = fs.lstatSync(dir+"/"+fn);
+        contents.sort().forEach(function (fn) {
+            var stats = fs.lstatSync(dir + "/" + fn);
             if (stats.isDirectory()) {
                 dirCount += 1;
-                dirs[fn] = listFiles(dir+"/"+fn)
+                dirs[fn] = listFiles(dir + "/" + fn)
             } else {
                 files.push(fn.split(".")[0]);
             }
         })
         var result = {};
-        if (dirCount > 0) { result.d = keys.all(dirs); }
-        if (files.length > 0) { result.f = when.resolve(files); }
+        if (dirCount > 0) {
+            result.d = keys.all(dirs);
+        }
+        if (files.length > 0) {
+            result.f = when.resolve(files);
+        }
         return keys.all(result);
     })
 }
 
-function getFileMeta(root,path) {
-    var fn = fspath.join(root,path);
-    var fd = fs.openSync(fn,"r");
+function getFileMeta(root, path) {
+    var fn = fspath.join(root, path);
+    var fd = fs.openSync(fn, "r");
     var size = fs.fstatSync(fd).size;
     var meta = {};
     var read = 0;
     var length = 10;
     var remaining = "";
     var buffer = Buffer(length);
-    while(read < size) {
-        read+=fs.readSync(fd,buffer,0,length);
-        var data = remaining+buffer.toString();
+    while (read < size) {
+        read += fs.readSync(fd, buffer, 0, length);
+        var data = remaining + buffer.toString();
         var parts = data.split("\n");
         remaining = parts.splice(-1);
-        for (var i=0;i<parts.length;i+=1) {
+        for (var i = 0; i < parts.length; i += 1) {
             var match = /^\/\/ (\w+): (.*)/.exec(parts[i]);
             if (match) {
                 meta[match[1]] = match[2];
@@ -88,319 +92,330 @@ function getFileMeta(root,path) {
     return meta;
 }
 
-function getFileBody(root,path) {
+function getFileBody(root, path) {
     var body = "";
-    var fn = fspath.join(root,path);
-    var fd = fs.openSync(fn,"r");
+    var fn = fspath.join(root, path);
+    var fd = fs.openSync(fn, "r");
     var size = fs.fstatSync(fd).size;
     var scanning = true;
     var read = 0;
     var length = 50;
     var remaining = "";
     var buffer = Buffer(length);
-    while(read < size) {
-        var thisRead = fs.readSync(fd,buffer,0,length);
+    while (read < size) {
+        var thisRead = fs.readSync(fd, buffer, 0, length);
         read += thisRead;
         if (scanning) {
-            var data = remaining+buffer.slice(0,thisRead).toString();
+            var data = remaining + buffer.slice(0, thisRead).toString();
             var parts = data.split("\n");
             remaining = parts.splice(-1)[0];
-            for (var i=0;i<parts.length;i+=1) {
-                if (! /^\/\/ \w+: /.test(parts[i])) {
+            for (var i = 0; i < parts.length; i += 1) {
+                if (!/^\/\/ \w+: /.test(parts[i])) {
                     scanning = false;
-                    body += parts[i]+"\n";
+                    body += parts[i] + "\n";
                 }
             }
-            if (! /^\/\/ \w+: /.test(remaining)) {
+            if (!/^\/\/ \w+: /.test(remaining)) {
                 scanning = false;
             }
             if (!scanning) {
                 body += remaining;
             }
         } else {
-            body += buffer.slice(0,thisRead).toString();
+            body += buffer.slice(0, thisRead).toString();
         }
     }
     fs.closeSync(fd);
     return body;
 }
 
-/** 
+/**
  * Write content to a file using UTF8 encoding.
  * This forces a fsync before completing to ensure
  * the write hits disk.
  */
-function writeFile(path,content) {
-    return when.promise(function(resolve,reject) {
+function writeFile(path, content) {
+    return when.promise(function (resolve, reject) {
         var stream = fs.createWriteStream(path);
-        stream.on('open',function(fd) {
-            stream.end(content,'utf8',function() {
-                fs.fsync(fd,resolve);
+        stream.on('open', function (fd) {
+            stream.end(content, 'utf8', function () {
+                fs.fsync(fd, resolve);
             });
         });
-        stream.on('error',function(err) {
+        stream.on('error', function (err) {
             reject(err);
         });
     });
 }
 
 var mongostorage = {
-    init: function(_settings) {
-        settings = _settings;
-        
-        var promises = [];
-        
-        if (!settings.userDir) {
-            if (fs.existsSync(fspath.join(process.env.NODE_RED_HOME,".config.json"))) {
-                settings.userDir = process.env.NODE_RED_HOME;
-            } else {
-                settings.userDir = fspath.join(process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE || process.env.NODE_RED_HOME,".node-red");
-                promises.push(promiseDir(settings.userDir));
-            }
-        }
-        
-        if (settings.flowFile) {
-            flowsFile = settings.flowFile;
-            
-            if (flowsFile[0] == "/") {
-                // Absolute path
-                flowsFullPath = flowsFile;
-            } else if (flowsFile.substring(0,2) === "./") {
-                // Relative to cwd
-                flowsFullPath = fspath.join(process.cwd(),flowsFile);
-            } else {
-                if (fs.existsSync(fspath.join(process.cwd(),flowsFile))) {
-                    // Found in cwd
-                    flowsFullPath = fspath.join(process.cwd(),flowsFile);
+        init: function (_settings) {
+            settings = _settings;
+
+            var promises = [];
+
+            if (!settings.userDir) {
+                if (fs.existsSync(fspath.join(process.env.NODE_RED_HOME, ".config.json"))) {
+                    settings.userDir = process.env.NODE_RED_HOME;
                 } else {
-                    // Use userDir
-                    flowsFullPath = fspath.join(settings.userDir,flowsFile);
+                    settings.userDir = fspath.join(process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE || process.env.NODE_RED_HOME, ".node-red");
+                    promises.push(promiseDir(settings.userDir));
                 }
             }
-                
-        } else {
-            flowsFile = 'flows_'+require('os').hostname()+'.json';
-            flowsFullPath = fspath.join(settings.userDir,flowsFile);
-        }
-        var ffExt = fspath.extname(flowsFullPath);
-        var ffName = fspath.basename(flowsFullPath);
-        var ffBase = fspath.basename(flowsFullPath,ffExt);
-        var ffDir = fspath.dirname(flowsFullPath);
-        
-        credentialsFile = fspath.join(settings.userDir,ffBase+"_cred"+ffExt);
-        credentialsFileBackup = fspath.join(settings.userDir,"."+ffBase+"_cred"+ffExt+".backup");
 
-        oldCredentialsFile = fspath.join(settings.userDir,"credentials.json");
-        
-        flowsFileBackup = fspath.join(ffDir,"."+ffName+".backup");
+            if (settings.flowFile) {
+                flowsFile = settings.flowFile;
 
-        sessionsFile = fspath.join(settings.userDir,".sessions.json");
+                if (flowsFile[0] == "/") {
+                    // Absolute path
+                    flowsFullPath = flowsFile;
+                } else if (flowsFile.substring(0, 2) === "./") {
+                    // Relative to cwd
+                    flowsFullPath = fspath.join(process.cwd(), flowsFile);
+                } else {
+                    if (fs.existsSync(fspath.join(process.cwd(), flowsFile))) {
+                        // Found in cwd
+                        flowsFullPath = fspath.join(process.cwd(), flowsFile);
+                    } else {
+                        // Use userDir
+                        flowsFullPath = fspath.join(settings.userDir, flowsFile);
+                    }
+                }
 
-        libDir = fspath.join(settings.userDir,"lib");
-        libFlowsDir = fspath.join(libDir,"flows");
-        
-        globalSettingsFile = fspath.join(settings.userDir,".config.json");
-        
-        promises.push(promiseDir(libFlowsDir));
-        
-        // For Mongo
-        mongoose.connect(settings.mongodb.uri, settings.mongodb.db,
-        function (err) {
-            if (err) {
-                console.log('connection error ', err.message);
-                process.exist(1);
             } else {
-                console.log('connection successful to ' + settings.mongodb.uri + '/' + settings.mongodb.db);
+                flowsFile = 'flows_' + require('os').hostname() + '.json';
+                flowsFullPath = fspath.join(settings.userDir, flowsFile);
             }
-        });
-        var NodeSchema = new Schema({key:String , Nodes:[Schema.Types.Mixed]});
-        nodeModel = mongoose.model('Nodes', NodeSchema);
+            var ffExt = fspath.extname(flowsFullPath);
+            var ffName = fspath.basename(flowsFullPath);
+            var ffBase = fspath.basename(flowsFullPath, ffExt);
+            var ffDir = fspath.dirname(flowsFullPath);
 
-        // END For Mongo
+            credentialsFile = fspath.join(settings.userDir, ffBase + "_cred" + ffExt);
+            credentialsFileBackup = fspath.join(settings.userDir, "." + ffBase + "_cred" + ffExt + ".backup");
 
-        return when.all(promises);
-    },
+            oldCredentialsFile = fspath.join(settings.userDir, "credentials.json");
 
-    getFlows: function() {
-        return when.promise(function(resolve) {
-            log.info("DB URL : "+settings.mongodb.uri);
-            log.info("DB     : "+settings.mongodb.db);
-            //TODO find only current user flows
-            resolve(nodeModel.find({ key: '123456789' }).limit(1).exec(function (err, docs) {
-                if (err) {
-                    log.info("Creating new flows file");
-                    resolve([]);
-                }
-                docs.forEach(function(doc){
-                    return JSON.parse(doc["Nodes"]);
-                }
+            flowsFileBackup = fspath.join(ffDir, "." + ffName + ".backup");
+
+            sessionsFile = fspath.join(settings.userDir, ".sessions.json");
+
+            libDir = fspath.join(settings.userDir, "lib");
+            libFlowsDir = fspath.join(libDir, "flows");
+
+            globalSettingsFile = fspath.join(settings.userDir, ".config.json");
+
+            promises.push(promiseDir(libFlowsDir));
+
+            // For Mongo
+            mongoose.connect(settings.mongodb.uri, settings.mongodb.db,
+                function (err) {
+                    if (err) {
+                        console.log('connection error ', err.message);
+                        process.exist(1);
+                    } else {
+                        console.log('connection successful to ' + settings.mongodb.uri + '/' + settings.mongodb.db);
+                    }
+                });
+            var NodeSchema = new Schema({key: String, Nodes: [Schema.Types.Mixed]});
+            nodeModel = mongoose.model('Nodes', NodeSchema);
+
+            // END For Mongo
+
+            return when.all(promises);
+        },
+
+        getFlows: function () {
+            return when.promise(function (resolve) {
+                log.info("DB URL : " + settings.mongodb.uri);
+                log.info("DB     : " + settings.mongodb.db);
+                //TODO key will be current user id
+                resolve(nodeModel.find({key: '123456789'}).limit(1).exec(function (err, doc) {
+                    if (err) {
+                        log.info("Creating new flows file");
+                        resolve([]);
+                    }
+                    docs.forEach(function (doc) {
+                        return JSON.parse(doc["Nodes"]);
+                    })
+                }));
             });
-        });
-    },
+        },
 
-    saveFlows: function(flows) {
-        //TODO key will be current userid
-        return when.promise(function(resolve,reject) {
+        saveFlows: function (flows) {
+            //TODO key will be current user id
+            return when.promise(function (resolve, reject) {
                 var nod = new nodeModel({
-                    key:"123456789",
+                    key: "123456789",
                     Nodes: flows
                 });
                 nod.save(function (err) {
-                 if (err) {
-                        reject(err) ;
+                    if (err) {
+                        reject(err);
                         return;
                     }
                 });
                 resolve(nod);
             });
-    },
+        },
 
-  getCredentials: function() {
-        return when.promise(function(resolve) {
-            fs.exists(credentialsFile, function(exists) {
-                if (exists) {
-                    resolve(nodeFn.call(fs.readFile, credentialsFile, 'utf8').then(function(data) {
-                        return JSON.parse(data)
-                    }));
-                } else {
-                    fs.exists(oldCredentialsFile, function(exists) {
-                        if (exists) {
-                            resolve(nodeFn.call(fs.readFile, oldCredentialsFile, 'utf8').then(function(data) {
-                                return JSON.parse(data)
-                            }));
-                        } else {
-                            resolve({});
-                        }
-                    });
-                }
-            });
-        });
-    },
-
-    saveCredentials: function(credentials) {
-        if (fs.existsSync(credentialsFile)) {
-            fs.renameSync(credentialsFile,credentialsFileBackup);
-        }
-        var credentialData;
-        if (settings.flowFilePretty) {
-            credentialData = JSON.stringify(credentials,null,4);
-        } else {
-            credentialData = JSON.stringify(credentials);
-        }
-        return writeFile(credentialsFile, credentialData);
-    },
-    
-    getSettings: function() {
-        if (fs.existsSync(globalSettingsFile)) {
-            return nodeFn.call(fs.readFile,globalSettingsFile,'utf8').then(function(data) {
-                if (data) {
-                    try {
-                        return JSON.parse(data);
-                    } catch(err) {
-                        log.info("Corrupted config detected - resetting");
-                        return {};
-                    }
-                } else {
-                    return {};
-                }
-            });
-        }
-        return when.resolve({});
-    },
-    saveSettings: function(settings) {
-        return writeFile(globalSettingsFile,JSON.stringify(settings,null,1));
-    },
-    getSessions: function() {
-        if (fs.existsSync(sessionsFile)) {
-            return nodeFn.call(fs.readFile,sessionsFile,'utf8').then(function(data) {
-                if (data) {
-                    try {
-                        return JSON.parse(data);
-                    } catch(err) {
-                        log.info("Corrupted sessions file - resetting");
-                        return {};
-                    }
-                } else {
-                    return {};
-                }
-            });
-        }
-        return when.resolve({});
-    },
-    saveSessions: function(sessions) {
-        return writeFile(sessionsFile,JSON.stringify(sessions));
-    },
-    
-    getAllFlows: function() {
-        return listFiles(libFlowsDir);
-    },
-
-    getFlow: function(fn) {
-        var defer = when.defer();
-        var file = fspath.join(libFlowsDir,fn+".json");
-        fs.exists(file, function(exists) {
-            if (exists) {
-                defer.resolve(nodeFn.call(fs.readFile,file,'utf8'));
-            } else {
-                defer.reject();
-            }
-        });
-        return defer.promise;
-    },
-
-    saveFlow: function(fn,data) {
-        var file = fspath.join(libFlowsDir,fn+".json");
-        return promiseDir(fspath.dirname(file)).then(function () {
-            return writeFile(file,data);
-        });
-    },
-
-    getLibraryEntry: function(type,path) {
-        var root = fspath.join(libDir,type);
-        var rootPath = fspath.join(libDir,type,path);
-        return promiseDir(root).then(function () {
-            return nodeFn.call(fs.lstat, rootPath).then(function(stats) {
-                if (stats.isFile()) {
-                    return getFileBody(root,path);
-                }
-                if (path.substr(-1) == '/') {
-                    path = path.substr(0,path.length-1);
-                }
-                return nodeFn.call(fs.readdir, rootPath).then(function(fns) {
-                    var dirs = [];
-                    var files = [];
-                    fns.sort().filter(function(fn) {
-                        var fullPath = fspath.join(path,fn);
-                        var absoluteFullPath = fspath.join(root,fullPath);
-                        if (fn[0] != ".") {
-                            var stats = fs.lstatSync(absoluteFullPath);
-                            if (stats.isDirectory()) {
-                                dirs.push(fn);
+        getCredentials: function () {
+            return when.promise(function (resolve) {
+                fs.exists(credentialsFile, function (exists) {
+                    if (exists) {
+                        resolve(nodeFn.call(fs.readFile, credentialsFile, 'utf8').then(function (data) {
+                            return JSON.parse(data)
+                        }));
+                    } else {
+                        fs.exists(oldCredentialsFile, function (exists) {
+                            if (exists) {
+                                resolve(nodeFn.call(fs.readFile, oldCredentialsFile, 'utf8').then(function (data) {
+                                    return JSON.parse(data)
+                                }));
                             } else {
-                                var meta = getFileMeta(root,fullPath);
-                                meta.fn = fn;
-                                files.push(meta);
+                                resolve({});
                             }
-                        }
-                    });
-                    return dirs.concat(files);
+                        });
+                    }
                 });
             });
-        });
-    },
-
-    saveLibraryEntry: function(type,path,meta,body) {
-        var fn = fspath.join(libDir, type, path);
-        var headers = "";
-        for (var i in meta) {
-            if (meta.hasOwnProperty(i)) {
-                headers += "// "+i+": "+meta[i]+"\n";
-            }
         }
-        return promiseDir(fspath.dirname(fn)).then(function () {
-            writeFile(fn,headers+body);
-        });
+        ,
+
+        saveCredentials: function (credentials) {
+            if (fs.existsSync(credentialsFile)) {
+                fs.renameSync(credentialsFile, credentialsFileBackup);
+            }
+            var credentialData;
+            if (settings.flowFilePretty) {
+                credentialData = JSON.stringify(credentials, null, 4);
+            } else {
+                credentialData = JSON.stringify(credentials);
+            }
+            return writeFile(credentialsFile, credentialData);
+        }
+        ,
+
+        getSettings: function () {
+            if (fs.existsSync(globalSettingsFile)) {
+                return nodeFn.call(fs.readFile, globalSettingsFile, 'utf8').then(function (data) {
+                    if (data) {
+                        try {
+                            return JSON.parse(data);
+                        } catch (err) {
+                            log.info("Corrupted config detected - resetting");
+                            return {};
+                        }
+                    } else {
+                        return {};
+                    }
+                });
+            }
+            return when.resolve({});
+        }
+        ,
+        saveSettings: function (settings) {
+            return writeFile(globalSettingsFile, JSON.stringify(settings, null, 1));
+        }
+        ,
+        getSessions: function () {
+            if (fs.existsSync(sessionsFile)) {
+                return nodeFn.call(fs.readFile, sessionsFile, 'utf8').then(function (data) {
+                    if (data) {
+                        try {
+                            return JSON.parse(data);
+                        } catch (err) {
+                            log.info("Corrupted sessions file - resetting");
+                            return {};
+                        }
+                    } else {
+                        return {};
+                    }
+                });
+            }
+            return when.resolve({});
+        }
+        ,
+        saveSessions: function (sessions) {
+            return writeFile(sessionsFile, JSON.stringify(sessions));
+        }
+        ,
+
+        getAllFlows: function () {
+            return listFiles(libFlowsDir);
+        }
+        ,
+
+        getFlow: function (fn) {
+            var defer = when.defer();
+            var file = fspath.join(libFlowsDir, fn + ".json");
+            fs.exists(file, function (exists) {
+                if (exists) {
+                    defer.resolve(nodeFn.call(fs.readFile, file, 'utf8'));
+                } else {
+                    defer.reject();
+                }
+            });
+            return defer.promise;
+        }
+        ,
+
+        saveFlow: function (fn, data) {
+            var file = fspath.join(libFlowsDir, fn + ".json");
+            return promiseDir(fspath.dirname(file)).then(function () {
+                return writeFile(file, data);
+            });
+        }
+        ,
+
+        getLibraryEntry: function (type, path) {
+            var root = fspath.join(libDir, type);
+            var rootPath = fspath.join(libDir, type, path);
+            return promiseDir(root).then(function () {
+                return nodeFn.call(fs.lstat, rootPath).then(function (stats) {
+                    if (stats.isFile()) {
+                        return getFileBody(root, path);
+                    }
+                    if (path.substr(-1) == '/') {
+                        path = path.substr(0, path.length - 1);
+                    }
+                    return nodeFn.call(fs.readdir, rootPath).then(function (fns) {
+                        var dirs = [];
+                        var files = [];
+                        fns.sort().filter(function (fn) {
+                            var fullPath = fspath.join(path, fn);
+                            var absoluteFullPath = fspath.join(root, fullPath);
+                            if (fn[0] != ".") {
+                                var stats = fs.lstatSync(absoluteFullPath);
+                                if (stats.isDirectory()) {
+                                    dirs.push(fn);
+                                } else {
+                                    var meta = getFileMeta(root, fullPath);
+                                    meta.fn = fn;
+                                    files.push(meta);
+                                }
+                            }
+                        });
+                        return dirs.concat(files);
+                    });
+                });
+            });
+        }
+        ,
+
+        saveLibraryEntry: function (type, path, meta, body) {
+            var fn = fspath.join(libDir, type, path);
+            var headers = "";
+            for (var i in meta) {
+                if (meta.hasOwnProperty(i)) {
+                    headers += "// " + i + ": " + meta[i] + "\n";
+                }
+            }
+            return promiseDir(fspath.dirname(fn)).then(function () {
+                writeFile(fn, headers + body);
+            });
+        }
     }
-};
+    ;
 
 module.exports = mongostorage;
