@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 IBM Corp.
+ * Copyright 2013, 2015 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,13 @@ RED.nodes = (function() {
     var defaultWorkspace;
     var workspaces = {};
     var subflows = {};
+    
+    var dirty = false;
+    
+    function setDirty(d) {
+        dirty = d;
+        eventHandler.emit("change",{dirty:dirty});
+    }
     
     var registry = (function() {
         var nodeList = [];
@@ -772,7 +779,71 @@ RED.nodes = (function() {
         return [new_nodes,new_links,new_workspaces,new_subflows];
     }
     
+    // TODO: only supports filter.z
+    function filterNodes(filter) {
+        var result = [];
+        
+        for (var n=0;n<nodes.length;n++) {
+            var node = nodes[n];
+            if (filter.z && node.z !== filter.z) {
+                continue;
+            }
+            result.push(node);
+        }
+        return result;
+    }
+    function filterLinks(filter) {
+        var result = [];
+        
+        for (var n=0;n<links.length;n++) {
+            var link = links[n];
+            if (filter.source) {
+                if (filter.source.id && link.source.id !== filter.source.id) {
+                    continue;
+                }
+                if (filter.source.z && link.source.z !== filter.source.z) {
+                    continue;
+                }
+            }
+            if (filter.target) {
+                if (filter.target.id && link.target.id !== filter.target.id) {
+                    continue;
+                }
+                if (filter.target.z && link.target.z !== filter.target.z) {
+                    continue;
+                }
+            }
+            if (filter.sourcePort && link.sourcePort !== filter.sourcePort) {
+                continue;
+            }
+            result.push(link);
+        }
+        return result;
+    }
+    
+    // TODO: DRY
+    var eventHandler = (function() {
+        var handlers = {};
+        
+        return {
+            on: function(evt,func) {
+                handlers[evt] = handlers[evt]||[];
+                handlers[evt].push(func);
+            },
+            emit: function(evt,arg) {
+                if (handlers[evt]) {
+                    for (var i=0;i<handlers[evt].length;i++) {
+                        handlers[evt][i](arg);
+                    }
+                    
+                }
+            }
+        }
+    })();
+    
     return {
+        on: eventHandler.on,
+        
         registry:registry,
         setNodeList: registry.setNodeList,
         
@@ -825,14 +896,24 @@ RED.nodes = (function() {
                 }
             }
         },
+        
         node: getNode,
+        
+        filterNodes: filterNodes,
+        filterLinks: filterLinks,
+        
         import: importNodes,
         refreshValidation: refreshValidation,
         getAllFlowNodes: getAllFlowNodes,
         createExportableNodeSet: createExportableNodeSet,
         createCompleteNodeSet: createCompleteNodeSet,
         id: getID,
-        nodes: nodes, // TODO: exposed for d3 vis
-        links: links  // TODO: exposed for d3 vis
+        dirty: function(d) {
+            if (d == null) {
+                return dirty;
+            } else {
+                setDirty(d);
+            }
+        }
     };
 })();

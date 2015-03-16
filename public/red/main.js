@@ -15,114 +15,6 @@
  **/
 var RED = (function() {
 
-    var deploymentTypes = {
-        "full":{img:"images/deploy-full-o.png"},
-        "nodes":{img:"images/deploy-nodes-o.png"},
-        "flows":{img:"images/deploy-flows-o.png"}
-    }
-    var deploymentType = "full";
-    
-    function save(force) {
-        if (RED.view.dirty()) {
-            //$("#debug-tab-clear").click();  // uncomment this to auto clear debug on deploy
-
-            if (!force) {
-                var invalid = false;
-                var unknownNodes = [];
-                RED.nodes.eachNode(function(node) {
-                    invalid = invalid || !node.valid;
-                    if (node.type === "unknown") {
-                        if (unknownNodes.indexOf(node.name) == -1) {
-                            unknownNodes.push(node.name);
-                        }
-                        invalid = true;
-                    }
-                });
-                if (invalid) {
-                    if (unknownNodes.length > 0) {
-                        $( "#node-dialog-confirm-deploy-config" ).hide();
-                        $( "#node-dialog-confirm-deploy-unknown" ).show();
-                        var list = "<li>"+unknownNodes.join("</li><li>")+"</li>";
-                        $( "#node-dialog-confirm-deploy-unknown-list" ).html(list);
-                    } else {
-                        $( "#node-dialog-confirm-deploy-config" ).show();
-                        $( "#node-dialog-confirm-deploy-unknown" ).hide();
-                    }
-                    $( "#node-dialog-confirm-deploy" ).dialog( "open" );
-                    return;
-                }
-            }
-            var nns = RED.nodes.createCompleteNodeSet();
-
-            $("#btn-icn-deploy").removeClass('fa-download');
-            $("#btn-icn-deploy").addClass('spinner');
-            RED.view.dirty(false);
-
-            $.ajax({
-                url:"flows",
-                type: "POST",
-                data: JSON.stringify(nns),
-                contentType: "application/json; charset=utf-8",
-                headers: {
-                    "Node-RED-Deployment-Type":deploymentType
-                }
-            }).done(function(data,textStatus,xhr) {
-                RED.notify("Successfully deployed","success");
-                RED.nodes.eachNode(function(node) {
-                    if (node.changed) {
-                        node.dirty = true;
-                        node.changed = false;
-                    }
-                    if(node.credentials) {
-                        delete node.credentials;
-                    }
-                });
-                RED.nodes.eachConfig(function (confNode) {
-                    if (confNode.credentials) {
-                        delete confNode.credentials;
-                    }
-                });
-                // Once deployed, cannot undo back to a clean state
-                RED.history.markAllDirty();
-                RED.view.redraw();
-            }).fail(function(xhr,textStatus,err) {
-                RED.view.dirty(true);
-                if (xhr.responseText) {
-                    RED.notify("<strong>Error</strong>: "+xhr.responseText,"error");
-                } else {
-                    RED.notify("<strong>Error</strong>: no response from server","error");
-                }
-            }).always(function() {
-                $("#btn-icn-deploy").removeClass('spinner');
-                $("#btn-icn-deploy").addClass('fa-download');
-            });
-        }
-    }
-
-    $('#btn-deploy').click(function() { save(); });
-
-    $( "#node-dialog-confirm-deploy" ).dialog({
-            title: "Confirm deploy",
-            modal: true,
-            autoOpen: false,
-            width: 530,
-            height: 230,
-            buttons: [
-                {
-                    text: "Confirm deploy",
-                    click: function() {
-                        save(true);
-                        $( this ).dialog( "close" );
-                    }
-                },
-                {
-                    text: "Cancel",
-                    click: function() {
-                        $( this ).dialog( "close" );
-                    }
-                }
-            ]
-    });
 
     function loadSettings() {
         RED.settings.init(loadNodeList);
@@ -168,7 +60,7 @@ var RED = (function() {
             url: 'flows',
             success: function(nodes) {
                 RED.nodes.import(nodes);
-                RED.view.dirty(false);
+                RED.nodes.dirty(false);
                 RED.view.redraw(true);
                 RED.comms.subscribe("status/#",function(topic,msg) {
                     var parts = topic.split("/");
@@ -245,11 +137,6 @@ var RED = (function() {
         RED.view.status(statusEnabled);
     }
 
-    function changeDeploymentType(type) {
-        deploymentType = type;
-        $("#btn-deploy img").attr("src",deploymentTypes[type].img);
-    }
-
     function loadEditor() {
         RED.menu.init({id:"btn-sidemenu",
             options: [
@@ -284,56 +171,7 @@ var RED = (function() {
             ]
         });
         
-        RED.menu.init({id:"btn-deploy-options",
-            options: [
-                {id:"btn-deploy-full",toggle:"deploy-type",icon:"images/deploy-full.png",label:"Full",sublabel:"Deploys everything in the workspace",onselect:function(s) { if(s){changeDeploymentType("full")}}},
-                {id:"btn-deploy-flow",toggle:"deploy-type",icon:"images/deploy-flows.png",label:"Modified Flows",sublabel:"Only deploys flows that contain changed nodes", onselect:function(s) {if(s){changeDeploymentType("flows")}}},
-                {id:"btn-deploy-node",toggle:"deploy-type",icon:"images/deploy-nodes.png",label:"Modified Nodes",sublabel:"Only deploys nodes that have changed",onselect:function(s) { if(s){changeDeploymentType("nodes")}}}
-            ]
-        });
-        
-        if (RED.settings.user) {
-            RED.menu.init({id:"btn-usermenu",
-                options: []
-            });
-            
-            var updateUserMenu = function() {
-                $("#btn-usermenu-submenu li").remove();
-                if (RED.settings.user.anonymous) {
-                    RED.menu.addItem("btn-usermenu",{
-                        id:"btn-login",
-                        label:"Login",
-                        onselect: function() {
-                            RED.user.login({cancelable:true},function() {
-                                RED.settings.load(function() {
-                                    RED.notify("Logged in as "+RED.settings.user.username,"success");
-                                    updateUserMenu();
-                                });
-                            });
-                        }
-                    });
-                } else {
-                    RED.menu.addItem("btn-usermenu",{
-                        id:"btn-username",
-                        label:"<b>"+RED.settings.user.username+"</b>"
-                    });
-                    RED.menu.addItem("btn-usermenu",{
-                        id:"btn-logout",
-                        label:"Logout",
-                        onselect: function() {
-                            RED.user.logout();
-                        }
-                    });
-                }
-                    
-            }
-            updateUserMenu();
-        } else {
-            $("#btn-usermenu").parent().hide();
-        }
-    
-        $("#main-container").show();
-        $(".header-toolbar").show();
+        RED.user.init();
         
         RED.library.init();
         RED.palette.init();
@@ -342,9 +180,14 @@ var RED = (function() {
         RED.workspaces.init();
         RED.clipboard.init();
         RED.view.init();
+        RED.deploy.init();
         
         RED.keyboard.add(/* ? */ 191,{shift:true},function(){RED.keyboard.showHelp();d3.event.preventDefault();});
         RED.comms.connect();
+
+        $("#main-container").show();
+        $(".header-toolbar").show();
+
         loadNodeList();
     }
 

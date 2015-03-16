@@ -114,11 +114,7 @@ RED.editor = (function() {
             }
         }
         if (node.inputs === 0) {
-            RED.nodes.eachLink(function(l) {
-                if (l.target === node) {
-                    removedLinks.push(l);
-                }
-            });
+            removedLinks.concat(RED.nodes.filterLinks({target:node}));
         }
         for (var l=0;l<removedLinks.length;l++) {
             RED.nodes.removeLink(removedLinks[l]);
@@ -142,7 +138,7 @@ RED.editor = (function() {
                         if (editing_node) {
                             var changes = {};
                             var changed = false;
-                            var wasDirty = RED.view.dirty();
+                            var wasDirty = RED.nodes.dirty();
                             var d;
 
                             if (editing_node._def.oneditsave) {
@@ -228,7 +224,7 @@ RED.editor = (function() {
                             if (changed) {
                                 var wasChanged = editing_node.changed;
                                 editing_node.changed = true;
-                                RED.view.dirty(true);
+                                RED.nodes.dirty(true);
                                 RED.history.push({t:'edit',node:editing_node,changes:changes,links:removedLinks,dirty:wasDirty,changed:wasChanged});
                             }
                             editing_node.dirty = true;
@@ -570,7 +566,7 @@ RED.editor = (function() {
                                 validateNode(user);
                             }
                             updateConfigNodeSelect(configProperty,configType,"");
-                            RED.view.dirty(true);
+                            RED.nodes.dirty(true);
                             $( this ).dialog( "close" );
                             RED.view.redraw();
                         }
@@ -662,7 +658,7 @@ RED.editor = (function() {
                         }
                         validateNode(configNode);
 
-                        RED.view.dirty(true);
+                        RED.nodes.dirty(true);
                         $(this).dialog("close");
 
                     }
@@ -729,7 +725,7 @@ RED.editor = (function() {
                         var i;
                         var changes = {};
                         var changed = false;
-                        var wasDirty = RED.view.dirty();
+                        var wasDirty = RED.nodes.dirty();
                         
                         var newName = $("#subflow-input-name").val();
 
@@ -751,7 +747,7 @@ RED.editor = (function() {
                             });
                             var wasChanged = editing_node.changed;
                             editing_node.changed = true;
-                            RED.view.dirty(true);
+                            RED.nodes.dirty(true);
                             var historyEvent = {
                                 t:'edit',
                                 node:editing_node,

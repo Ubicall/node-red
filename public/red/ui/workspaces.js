@@ -34,8 +34,8 @@ RED.workspaces = (function() {
             RED.nodes.addWorkspace(ws);
             workspace_tabs.addTab(ws);
             workspace_tabs.activateTab(tabId);
-            RED.history.push({t:'add',workspaces:[ws],dirty:RED.view.dirty()});
-            RED.view.dirty(true);
+            RED.history.push({t:'add',workspaces:[ws],dirty:RED.nodes.dirty()});
+            RED.nodes.dirty(true);
         }
     }
     function deleteWorkspace(ws,force) {
@@ -44,19 +44,16 @@ RED.workspaces = (function() {
         }
         var nodes = [];
         if (!force) {
-            //TODO: remove direct access to RED.nodes.nodes
-            nodes = RED.nodes.nodes.filter(function(d) {
-                return d.z == ws.id;
-            });
+            nodes = RED.nodes.filterNodes({z:ws.id});
         }
         if (force || nodes.length === 0) {
             removeWorkspace(ws);
             var historyEvent = RED.nodes.removeWorkspace(ws.id);
             historyEvent.t = 'delete';
-            historyEvent.dirty = RED.view.dirty();
+            historyEvent.dirty = RED.nodes.dirty();
             historyEvent.workspaces = [ws];
             RED.history.push(historyEvent);
-            RED.view.dirty(true);
+            RED.nodes.dirty(true);
         } else {
             $( "#node-dialog-delete-workspace" ).dialog('option','workspace',ws);
             $( "#node-dialog-delete-workspace-name" ).text(ws.label);
@@ -143,7 +140,7 @@ RED.workspaces = (function() {
                     var label = $( "#node-input-workspace-name" ).val();
                     if (workspace.label != label) {
                         workspace_tabs.renameTab(workspace.id,label);
-                        RED.view.dirty(true);
+                        RED.nodes.dirty(true);
                         $("#btn-workspace-menu-"+workspace.id.replace(".","-")).text(label);
                         // TODO: update entry in menu
                     }
