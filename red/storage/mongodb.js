@@ -39,7 +39,14 @@ var libDir;
 var libFlowsDir;
 var globalSettingsFile;
 
+// mongo models
+
 var nodeModel;
+var credentialModel;
+var settingModel;
+var sessionModel;
+var flowModel;
+// End mongo models
 
 function listFiles(dir) {
     var dirs = {};
@@ -191,7 +198,7 @@ var mongostorage = {
             var ffExt = fspath.extname(flowsFullPath);
             var ffName = fspath.basename(flowsFullPath);
             var ffBase = fspath.basename(flowsFullPath, ffExt);
-            var ffDir = fspath.dirname(flowsFullPath);
+            var ffDir = fspath.diname(flowsFullPath);
 
             credentialsFile = fspath.join(settings.userDir, ffBase + "_cred" + ffExt);
             credentialsFileBackup = fspath.join(settings.userDir, "." + ffBase + "_cred" + ffExt + ".backup");
@@ -221,6 +228,17 @@ var mongostorage = {
                 });
             var NodeSchema = new Schema({key: String, Nodes: [Schema.Types.Mixed]});
             nodeModel = mongoose.model('Nodes', NodeSchema);
+            var CredentialSchema = new Schema({key: String, Credentials: [Schema.Types.Mixed]});
+            credentialModel = mongoose.model('Credentials', CredentialSchema);
+            var SettingSchema = new Schema({key: String, Settings: [Schema.Types.Mixed]});
+            settingModel = mongoose.model('Settings', SettingSchema);
+
+            var SessionSchema = new Schema({key: String, Sessions: [Schema.Types.Mixed]});
+            sessionModel = mongoose.model('Sessions', SessionSchema);
+
+            var FlowSchema = new Schema({Name: String, Flow: [Schema.Types.Mixed]});
+            flowModel = mongoose.model('Flow', FlowSchema);
+
 
             // END For Mongo
 
@@ -231,7 +249,7 @@ var mongostorage = {
             return when.promise(function (resolve) {
                 log.info("DB URL : " + settings.mongodb.uri);
                 log.info("DB     : " + settings.mongodb.db);
-                //TODO key will be current user id
+                //TODO : key will be current user id
                 var query = nodeModel.where({key: '123456789'});
                 query.findOne(function (err, doc) {
                     if (err) {
@@ -246,7 +264,7 @@ var mongostorage = {
         },
 
         saveFlows: function (flows) {
-            //TODO key will be current user id
+            //TODO : key will be current user id
             return when.promise(function (resolve, reject) {
                 var nod = new nodeModel({
                     key: "123456789",
@@ -264,114 +282,134 @@ var mongostorage = {
 
         getCredentials: function () {
             return when.promise(function (resolve) {
-                fs.exists(credentialsFile, function (exists) {
-                    if (exists) {
-                        resolve(nodeFn.call(fs.readFile, credentialsFile, 'utf8').then(function (data) {
-                            return JSON.parse(data)
-                        }));
-                    } else {
-                        fs.exists(oldCredentialsFile, function (exists) {
-                            if (exists) {
-                                resolve(nodeFn.call(fs.readFile, oldCredentialsFile, 'utf8').then(function (data) {
-                                    return JSON.parse(data)
-                                }));
-                            } else {
-                                resolve({});
-                            }
-                        });
+                var query = credentialModel.where({key: '123456789'});
+                query.findOne(function (err, doc) {
+                    if (err) {
+                        log.info("No Credentials Found");
+                        resolve([]);
+                    }
+                    if (doc) {
+                        resolve(JSON.parse(JSON.stringify(doc["Credentials"])));
+                    }
+                })
+            });
+        },
+
+        saveCredentials: function (credentials) {
+            return when.promise(function (resolve, reject) {
+                var cred = new credentialModel({
+                    key: "123456789",
+                    Credentials: credentials
+                });
+                cred.save(function (err) {
+                    if (err) {
+                        reject(err);
+                        return;
                     }
                 });
+                resolve(cred);
             });
         }
         ,
 
-        saveCredentials: function (credentials) {
-            if (fs.existsSync(credentialsFile)) {
-                fs.renameSync(credentialsFile, credentialsFileBackup);
-            }
-            var credentialData;
-            if (settings.flowFilePretty) {
-                credentialData = JSON.stringify(credentials, null, 4);
-            } else {
-                credentialData = JSON.stringify(credentials);
-            }
-            return writeFile(credentialsFile, credentialData);
-        }
-        ,
-
         getSettings: function () {
-            if (fs.existsSync(globalSettingsFile)) {
-                return nodeFn.call(fs.readFile, globalSettingsFile, 'utf8').then(function (data) {
-                    if (data) {
-                        try {
-                            return JSON.parse(data);
-                        } catch (err) {
-                            log.info("Corrupted config detected - resetting");
-                            return {};
-                        }
-                    } else {
-                        return {};
-                    }
-                });
-            }
-            return when.resolve({});
-        }
-        ,
+            var query = settingModel.where({key: '123456789'});
+            query.findOne(function (err, doc) {
+                if (err) {
+                    log.info("Corrupted config detected - resetting");
+                    return when.resolve({});
+                }
+                if (doc) {
+                    return JSON.parse(JSON.stringify(doc["Credentials"]));
+                }
+            });
+        },
+
         saveSettings: function (settings) {
-            return writeFile(globalSettingsFile, JSON.stringify(settings, null, 1));
-        }
-        ,
-        getSessions: function () {
-            if (fs.existsSync(sessionsFile)) {
-                return nodeFn.call(fs.readFile, sessionsFile, 'utf8').then(function (data) {
-                    if (data) {
-                        try {
-                            return JSON.parse(data);
-                        } catch (err) {
-                            log.info("Corrupted sessions file - resetting");
-                            return {};
-                        }
-                    } else {
-                        return {};
+            return when.promise(function (resolve, reject) {
+                var sett = new settingModel({
+                    key: "123456789",
+                    Settings: settings
+                });
+                sett.save(function (err) {
+                    if (err) {
+                        reject(err);
+                        return;
                     }
                 });
-            }
-            return when.resolve({});
+                resolve(sett);
+            });
+        },
+
+        getSessions: function () {
+            var query = sessionModel.where({key: '123456789'});
+            query.findOne(function (err, doc) {
+                if (err) {
+                    log.info("Corrupted session - resetting");
+                    return when.resolve({});
+                }
+                if (doc) {
+                    return JSON.parse(JSON.stringify(doc["Sessions"]));
+                }
+            });
         }
         ,
         saveSessions: function (sessions) {
-            return writeFile(sessionsFile, JSON.stringify(sessions));
+            return when.promise(function (resolve, reject) {
+                var sess = new settingModel({
+                    key: "123456789",
+                    Sessions: sessions
+                });
+                sess.save(function (err) {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                });
+                resolve(sett);
+            });
         }
         ,
 
         getAllFlows: function () {
+            //TODO : Not Implemented yet
             return listFiles(libFlowsDir);
         }
         ,
 
         getFlow: function (fn) {
             var defer = when.defer();
-            var file = fspath.join(libFlowsDir, fn + ".json");
-            fs.exists(file, function (exists) {
-                if (exists) {
-                    defer.resolve(nodeFn.call(fs.readFile, file, 'utf8'));
-                } else {
+            var query = flowModel.where({Name: fn});
+            query.findOne(function (err, doc) {
+                if (err) {
+                    log.info("No flow with Name : " + fn);
                     defer.reject();
+                }
+                if (doc) {
+                    return defer.resolve(JSON.parse(JSON.stringify(doc["Flow"])));
                 }
             });
             return defer.promise;
-        }
-        ,
+        },
 
         saveFlow: function (fn, data) {
-            var file = fspath.join(libFlowsDir, fn + ".json");
-            return promiseDir(fspath.dirname(file)).then(function () {
-                return writeFile(file, data);
+            return when.promise(function (resolve, reject) {
+                var flw = new flowModel({
+                    Name: fn,
+                    Flow: data
+                });
+                flw.save(function (err) {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                });
+                resolve(flw);
             });
-        }
-        ,
+        },
 
         getLibraryEntry: function (type, path) {
+            //TODO : Not Implemented yet
             var root = fspath.join(libDir, type);
             var rootPath = fspath.join(libDir, type, path);
             return promiseDir(root).then(function () {
@@ -407,6 +445,7 @@ var mongostorage = {
         ,
 
         saveLibraryEntry: function (type, path, meta, body) {
+            //TODO : Not Implemented yet
             var fn = fspath.join(libDir, type, path);
             var headers = "";
             for (var i in meta) {
