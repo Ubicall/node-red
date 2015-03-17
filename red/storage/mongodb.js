@@ -158,301 +158,295 @@ function writeFile(path, content) {
 }
 
 var mongostorage = {
-        init: function (_settings) {
-            settings = _settings;
-            settings.mongodb = settings.mongodb || {};
-            settings.mongodb.uri = settings.mongodb.uri || "localhost"
-            settings.mongodb.db = settings.mongodb.db || "rrrtest"
-            var promises = [];
+    init: function (_settings) {
+        settings = _settings;
+        settings.mongodb = settings.mongodb || {};
+        settings.mongodb.uri = settings.mongodb.uri || "localhost"
+        settings.mongodb.db = settings.mongodb.db || "rrrtest"
+        var promises = [];
 
-            if (!settings.userDir) {
-                if (fs.existsSync(fspath.join(process.env.NODE_RED_HOME, ".config.json"))) {
-                    settings.userDir = process.env.NODE_RED_HOME;
-                } else {
-                    settings.userDir = fspath.join(process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE || process.env.NODE_RED_HOME, ".node-red");
-                    promises.push(promiseDir(settings.userDir));
-                }
+        if (!settings.userDir) {
+            if (fs.existsSync(fspath.join(process.env.NODE_RED_HOME, ".config.json"))) {
+                settings.userDir = process.env.NODE_RED_HOME;
+            } else {
+                settings.userDir = fspath.join(process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE || process.env.NODE_RED_HOME, ".node-red");
+                promises.push(promiseDir(settings.userDir));
             }
+        }
 
-            if (settings.flowFile) {
-                flowsFile = settings.flowFile;
+        if (settings.flowFile) {
+            flowsFile = settings.flowFile;
 
-                if (flowsFile[0] == "/") {
-                    // Absolute path
-                    flowsFullPath = flowsFile;
-                } else if (flowsFile.substring(0, 2) === "./") {
-                    // Relative to cwd
+            if (flowsFile[0] == "/") {
+                // Absolute path
+                flowsFullPath = flowsFile;
+            } else if (flowsFile.substring(0, 2) === "./") {
+                // Relative to cwd
+                flowsFullPath = fspath.join(process.cwd(), flowsFile);
+            } else {
+                if (fs.existsSync(fspath.join(process.cwd(), flowsFile))) {
+                    // Found in cwd
                     flowsFullPath = fspath.join(process.cwd(), flowsFile);
                 } else {
-                    if (fs.existsSync(fspath.join(process.cwd(), flowsFile))) {
-                        // Found in cwd
-                        flowsFullPath = fspath.join(process.cwd(), flowsFile);
-                    } else {
-                        // Use userDir
-                        flowsFullPath = fspath.join(settings.userDir, flowsFile);
-                    }
+                    // Use userDir
+                    flowsFullPath = fspath.join(settings.userDir, flowsFile);
                 }
-
-            } else {
-                flowsFile = 'flows_' + require('os').hostname() + '.json';
-                flowsFullPath = fspath.join(settings.userDir, flowsFile);
             }
-            var ffExt = fspath.extname(flowsFullPath);
-            var ffName = fspath.basename(flowsFullPath);
-            var ffBase = fspath.basename(flowsFullPath, ffExt);
-            var ffDir = fspath.dirname(flowsFullPath);
 
-            credentialsFile = fspath.join(settings.userDir, ffBase + "_cred" + ffExt);
-            credentialsFileBackup = fspath.join(settings.userDir, "." + ffBase + "_cred" + ffExt + ".backup");
+        } else {
+            flowsFile = 'flows_' + require('os').hostname() + '.json';
+            flowsFullPath = fspath.join(settings.userDir, flowsFile);
+        }
+        var ffExt = fspath.extname(flowsFullPath);
+        var ffName = fspath.basename(flowsFullPath);
+        var ffBase = fspath.basename(flowsFullPath, ffExt);
+        var ffDir = fspath.dirname(flowsFullPath);
 
-            oldCredentialsFile = fspath.join(settings.userDir, "credentials.json");
+        credentialsFile = fspath.join(settings.userDir, ffBase + "_cred" + ffExt);
+        credentialsFileBackup = fspath.join(settings.userDir, "." + ffBase + "_cred" + ffExt + ".backup");
 
-            flowsFileBackup = fspath.join(ffDir, "." + ffName + ".backup");
+        oldCredentialsFile = fspath.join(settings.userDir, "credentials.json");
 
-            sessionsFile = fspath.join(settings.userDir, ".sessions.json");
+        flowsFileBackup = fspath.join(ffDir, "." + ffName + ".backup");
 
-            libDir = fspath.join(settings.userDir, "lib");
-            libFlowsDir = fspath.join(libDir, "flows");
+        sessionsFile = fspath.join(settings.userDir, ".sessions.json");
 
-            globalSettingsFile = fspath.join(settings.userDir, ".config.json");
+        libDir = fspath.join(settings.userDir, "lib");
+        libFlowsDir = fspath.join(libDir, "flows");
 
-            promises.push(promiseDir(libFlowsDir));
+        globalSettingsFile = fspath.join(settings.userDir, ".config.json");
 
-            mongoose.connect(settings.mongodb.uri, settings.mongodb.db);
+        promises.push(promiseDir(libFlowsDir));
 
-            var NodeSchema = new Schema({key: String, Nodes: [Schema.Types.Mixed]});
-            nodeModel = mongoose.model('Nodes', NodeSchema);
-            var CredentialSchema = new Schema({key: String, Credentials: [Schema.Types.Mixed]});
-            credentialModel = mongoose.model('Credentials', CredentialSchema);
-            var SettingSchema = new Schema({key: String, Settings: [Schema.Types.Mixed]});
-            settingModel = mongoose.model('Settings', SettingSchema);
+        mongoose.connect(settings.mongodb.uri, settings.mongodb.db);
 
-            var SessionSchema = new Schema({key: String, Sessions: [Schema.Types.Mixed]});
-            sessionModel = mongoose.model('Sessions', SessionSchema);
+        var NodeSchema = new Schema({key: String, Nodes: [Schema.Types.Mixed]});
+        nodeModel = mongoose.model('Nodes', NodeSchema);
+        var CredentialSchema = new Schema({key: String, Credentials: [Schema.Types.Mixed]});
+        credentialModel = mongoose.model('Credentials', CredentialSchema);
+        var SettingSchema = new Schema({key: String, Settings: [Schema.Types.Mixed]});
+        settingModel = mongoose.model('Settings', SettingSchema);
 
-            var FlowSchema = new Schema({Name: String, Flow: [Schema.Types.Mixed]});
-            flowModel = mongoose.model('Flow', FlowSchema);
+        var SessionSchema = new Schema({key: String, Sessions: [Schema.Types.Mixed]});
+        sessionModel = mongoose.model('Sessions', SessionSchema);
+
+        var FlowSchema = new Schema({Name: String, Flow: [Schema.Types.Mixed]});
+        flowModel = mongoose.model('Flow', FlowSchema);
 
 
-            // END For Mongo
+        // END For Mongo
 
-            return when.all(promises);
-        },
+        return when.all(promises);
+    },
 
-        getFlows: function () {
-            return when.promise(function (resolve) {
-                log.info("DB URL : " + settings.mongodb.uri);
-                log.info("DB     : " + settings.mongodb.db);
-                //TODO : key will be current user id
-                var query = nodeModel.where({key: '123456789'});
-                query.findOne(function (err, doc) {
-                    if (err) {
-                        log.info("Creating new flows file");
-                       return resolve([]);
-                    }
-                    if (doc) {
-                        return resolve(JSON.parse(JSON.stringify(doc["Nodes"])));
-                    }
-                    return resolve([]);
-                });
-            });
-        },
-
-        saveFlows: function (flows) {
+    getFlows: function () {
+        return when.promise(function (resolve) {
+            log.info("DB URL : " + settings.mongodb.uri);
+            log.info("DB     : " + settings.mongodb.db);
             //TODO : key will be current user id
-            return when.promise(function (resolve, reject) {
-                var nod = new nodeModel({
-                    key: "123456789",
-                    Nodes: flows
-                });
-                nod.save(function (err) {
-                    if (err) {
-                        return reject(err);
-                    }
-                });
-                return resolve(nod);
-            });
-        },
-
-        getCredentials: function () {
-            return when.promise(function (resolve) {
-                var query = credentialModel.where({key: '123456789'});
-                query.findOne(function (err, doc) {
-                    if (err) {
-                        log.info("No Credentials Found");
-                        return resolve([]);
-                    }
-                    if (doc) {
-                        return resolve(JSON.parse(JSON.stringify(doc["Credentials"])));
-                    }
-                    return resolve([]);
-                })
-            });
-        },
-
-        saveCredentials: function (credentials) {
-            return when.promise(function (resolve, reject) {
-                var cred = new credentialModel({
-                    key: "123456789",
-                    Credentials: credentials
-                });
-                cred.save(function (err) {
-                    if (err) {
-                        return reject(err);
-                    }
-                });
-                return resolve(cred);
-            });
-        }
-        ,
-
-        getSettings: function () {
-            return when.promise(function (resolve) {
-                var query = settingModel.where({key: '123456789'});
-                query.findOne(function (err, doc) {
-                    if (err) {
-                        log.info("Corrupted config detected - resetting");
-                        return resolve([]);
-                    }
-                    if (doc) {
-                        return resolve(JSON.parse(JSON.stringify(doc["Credentials"])));
-                    }
-                    return resolve([]);
-                })
-            });
-        },
-
-        saveSettings: function (settings) {
-            return when.promise(function (resolve, reject) {
-                var sett = new settingModel({
-                    key: "123456789",
-                    Settings: settings
-                });
-                sett.save(function (err) {
-                    if (err) {
-                        return reject(err);
-                    }
-                });
-                return resolve(sett);
-            });
-        },
-
-        getSessions: function () {
-            var query = sessionModel.where({key: '123456789'});
+            var query = nodeModel.where({key: '123456789'});
             query.findOne(function (err, doc) {
                 if (err) {
-                    log.info("Corrupted session - resetting");
-                    return when.resolve({});
+                    log.info("Creating new flows file");
+                    return resolve([]);
                 }
                 if (doc) {
-                    return when.resolve(JSON.parse(JSON.stringify(doc["Sessions"])));
+                    return resolve(JSON.parse(JSON.stringify(doc["Nodes"])));
                 }
+                return resolve([]);
+            });
+        });
+    },
+
+    saveFlows: function (flows) {
+        //TODO : key will be current user id
+        return when.promise(function (resolve, reject) {
+            var nod = new nodeModel({
+                key: "123456789",
+                Nodes: flows
+            });
+            nod.save(function (err) {
+                if (err) {
+                    return reject(err);
+                }
+            });
+            return resolve(nod);
+        });
+    },
+
+    getCredentials: function () {
+        return when.promise(function (resolve) {
+            var query = credentialModel.where({key: '123456789'});
+            query.findOne(function (err, doc) {
+                if (err) {
+                    log.info("No Credentials Found");
+                    return resolve([]);
+                }
+                if (doc) {
+                    return resolve(JSON.parse(JSON.stringify(doc["Credentials"])));
+                }
+                return resolve([]);
+            })
+        });
+    },
+
+    saveCredentials: function (credentials) {
+        return when.promise(function (resolve, reject) {
+            var cred = new credentialModel({
+                key: "123456789",
+                Credentials: credentials
+            });
+            cred.save(function (err) {
+                if (err) {
+                    return reject(err);
+                }
+            });
+            return resolve(cred);
+        });
+    },
+
+    getSettings: function () {
+        return when.promise(function (resolve) {
+            var query = settingModel.where({key: '123456789'});
+            query.findOne(function (err, doc) {
+                if (err) {
+                    log.info("Corrupted config detected - resetting");
+                    return resolve([]);
+                }
+                if (doc) {
+                    return resolve(JSON.parse(JSON.stringify(doc["Credentials"])));
+                }
+                return resolve([]);
+            })
+        });
+    },
+
+    saveSettings: function (settings) {
+        return when.promise(function (resolve, reject) {
+            var sett = new settingModel({
+                key: "123456789",
+                Settings: settings
+            });
+            sett.save(function (err) {
+                if (err) {
+                    return reject(err);
+                }
+            });
+            return resolve(sett);
+        });
+    },
+
+    getSessions: function () {
+        var query = sessionModel.where({key: '123456789'});
+        query.findOne(function (err, doc) {
+            if (err) {
+                log.info("Corrupted session - resetting");
                 return when.resolve({});
-            });
-        }
-        ,
-        saveSessions: function (sessions) {
-            return when.promise(function (resolve, reject) {
-                var sess = new settingModel({
-                    key: "123456789",
-                    Sessions: sessions
-                });
-                sess.save(function (err) {
-                    if (err) {
-                        return reject(err);
-                    }
-                });
-                return resolve(sett);
-            });
-        }
-        ,
-
-        getAllFlows: function () {
-            //TODO : Not Implemented yet
-            return listFiles(libFlowsDir);
-        }
-        ,
-
-        getFlow: function (fn) {
-            var defer = when.defer();
-            var query = flowModel.where({Name: fn});
-            query.findOne(function (err, doc) {
-                if (err) {
-                    log.info("No flow with Name : " + fn);
-                    defer.reject();
-                }
-                if (doc) {
-                    return defer.resolve(JSON.parse(JSON.stringify(doc["Flow"])));
-                }
-            });
-            return defer.promise;
-        },
-
-        saveFlow: function (fn, data) {
-            return when.promise(function (resolve, reject) {
-                var flw = new flowModel({
-                    Name: fn,
-                    Flow: data
-                });
-                flw.save(function (err) {
-                    if (err) {
-                        return reject(err);
-                    }
-                });
-                return resolve(flw);
-            });
-        },
-
-        getLibraryEntry: function (type, path) {
-            //TODO : Not Implemented yet
-            var root = fspath.join(libDir, type);
-            var rootPath = fspath.join(libDir, type, path);
-            return promiseDir(root).then(function () {
-                return nodeFn.call(fs.lstat, rootPath).then(function (stats) {
-                    if (stats.isFile()) {
-                        return getFileBody(root, path);
-                    }
-                    if (path.substr(-1) == '/') {
-                        path = path.substr(0, path.length - 1);
-                    }
-                    return nodeFn.call(fs.readdir, rootPath).then(function (fns) {
-                        var dirs = [];
-                        var files = [];
-                        fns.sort().filter(function (fn) {
-                            var fullPath = fspath.join(path, fn);
-                            var absoluteFullPath = fspath.join(root, fullPath);
-                            if (fn[0] != ".") {
-                                var stats = fs.lstatSync(absoluteFullPath);
-                                if (stats.isDirectory()) {
-                                    dirs.push(fn);
-                                } else {
-                                    var meta = getFileMeta(root, fullPath);
-                                    meta.fn = fn;
-                                    files.push(meta);
-                                }
-                            }
-                        });
-                        return dirs.concat(files);
-                    });
-                });
-            });
-        }
-        ,
-
-        saveLibraryEntry: function (type, path, meta, body) {
-            //TODO : Not Implemented yet
-            var fn = fspath.join(libDir, type, path);
-            var headers = "";
-            for (var i in meta) {
-                if (meta.hasOwnProperty(i)) {
-                    headers += "// " + i + ": " + meta[i] + "\n";
-                }
             }
-            return promiseDir(fspath.dirname(fn)).then(function () {
-                writeFile(fn, headers + body);
+            if (doc) {
+                return when.resolve(JSON.parse(JSON.stringify(doc["Sessions"])));
+            }
+            return when.resolve({});
+        });
+    },
+    saveSessions: function (sessions) {
+        return when.promise(function (resolve, reject) {
+            var sess = new settingModel({
+                key: "123456789",
+                Sessions: sessions
             });
+            sess.save(function (err) {
+                if (err) {
+                    return reject(err);
+                }
+            });
+            return resolve(sett);
+        });
+    },
+
+    getAllFlows: function () {
+        //TODO : Not Implemented yet
+        return listFiles(libFlowsDir);
+    },
+
+    getFlow: function (fn) {
+        var defer = when.defer();
+        var query = flowModel.where({Name: fn});
+        query.findOne(function (err, doc) {
+            if (err) {
+                log.info("No flow with Name : " + fn);
+                defer.reject();
+            }
+            if (doc) {
+                return defer.resolve(JSON.parse(JSON.stringify(doc["Flow"])));
+            }
+        });
+        return defer.promise;
+    },
+
+    saveFlow: function (fn, data) {
+        return when.promise(function (resolve, reject) {
+            var flw = new flowModel({
+                Name: fn,
+                Flow: data
+            });
+            flw.save(function (err) {
+                if (err) {
+                    return reject(err);
+                }
+            });
+            return resolve(flw);
+        });
+    },
+
+    getLibraryEntry: function (type, path) {
+        //TODO : Not Implemented yet
+        var root = fspath.join(libDir, type);
+        var rootPath = fspath.join(libDir, type, path);
+        return promiseDir(root).then(function () {
+            return nodeFn.call(fs.lstat, rootPath).then(function (stats) {
+                if (stats.isFile()) {
+                    return getFileBody(root, path);
+                }
+                if (path.substr(-1) == '/') {
+                    path = path.substr(0, path.length - 1);
+                }
+                return nodeFn.call(fs.readdir, rootPath).then(function (fns) {
+                    var dirs = [];
+                    var files = [];
+                    fns.sort().filter(function (fn) {
+                        var fullPath = fspath.join(path, fn);
+                        var absoluteFullPath = fspath.join(root, fullPath);
+                        if (fn[0] != ".") {
+                            var stats = fs.lstatSync(absoluteFullPath);
+                            if (stats.isDirectory()) {
+                                dirs.push(fn);
+                            } else {
+                                var meta = getFileMeta(root, fullPath);
+                                meta.fn = fn;
+                                files.push(meta);
+                            }
+                        }
+                    });
+                    return dirs.concat(files);
+                });
+            });
+        });
+    },
+
+    saveLibraryEntry: function (type, path, meta, body) {
+        //TODO : Not Implemented yet
+        var fn = fspath.join(libDir, type, path);
+        var headers = "";
+        for (var i in meta) {
+            if (meta.hasOwnProperty(i)) {
+                headers += "// " + i + ": " + meta[i] + "\n";
+            }
         }
+        return promiseDir(fspath.dirname(fn)).then(function () {
+            writeFile(fn, headers + body);
+        });
     }
-    ;
+};
 
 module.exports = mongostorage;
