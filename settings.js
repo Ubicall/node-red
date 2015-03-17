@@ -158,5 +158,13 @@ module.exports = {
             // Whether or not to include metric events in the log output
             metrics: false
         }
-    }
+    },
+
+    // mongo db as persistence backend
+    storageModule: "mongodb"//,
+    //uri and database name for mongodb if not defined (uri : "localhost" and db :"rrrtest")
+    // mongodb: {
+    //    uri: "localhost",
+    //    db: "node-red"
+    //  }
 }
