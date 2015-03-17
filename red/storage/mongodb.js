@@ -160,7 +160,9 @@ function writeFile(path, content) {
 var mongostorage = {
         init: function (_settings) {
             settings = _settings;
-
+            settings.mongodb = settings.mongodb || {};
+            settings.mongodb.uri = settings.mongodb.uri || "localhost"
+            settings.mongodb.db = settings.mongodb.db || "rrrtest"
             var promises = [];
 
             if (!settings.userDir) {
@@ -198,7 +200,7 @@ var mongostorage = {
             var ffExt = fspath.extname(flowsFullPath);
             var ffName = fspath.basename(flowsFullPath);
             var ffBase = fspath.basename(flowsFullPath, ffExt);
-            var ffDir = fspath.diname(flowsFullPath);
+            var ffDir = fspath.dirname(flowsFullPath);
 
             credentialsFile = fspath.join(settings.userDir, ffBase + "_cred" + ffExt);
             credentialsFileBackup = fspath.join(settings.userDir, "." + ffBase + "_cred" + ffExt + ".backup");
@@ -216,16 +218,8 @@ var mongostorage = {
 
             promises.push(promiseDir(libFlowsDir));
 
-            // For Mongo
-            mongoose.connect(settings.mongodb.uri, settings.mongodb.db,
-                function (err) {
-                    if (err) {
-                        console.log('connection error ', err.message);
-                        process.exist(1);
-                    } else {
-                        console.log('connection successful to ' + settings.mongodb.uri + '/' + settings.mongodb.db);
-                    }
-                });
+            mongoose.connect(settings.mongodb.uri, settings.mongodb.db);
+
             var NodeSchema = new Schema({key: String, Nodes: [Schema.Types.Mixed]});
             nodeModel = mongoose.model('Nodes', NodeSchema);
             var CredentialSchema = new Schema({key: String, Credentials: [Schema.Types.Mixed]});
@@ -257,8 +251,11 @@ var mongostorage = {
                         resolve([]);
                     }
                     if (doc) {
-                        resolve(JSON.parse(JSON.stringify(doc["Nodes"])));
+                        resolve(function () {
+                            return JSON.parse(JSON.stringify(doc["Nodes"]));
+                        });
                     }
+                    resolve([]);
                 });
             });
         },
@@ -289,8 +286,11 @@ var mongostorage = {
                         resolve([]);
                     }
                     if (doc) {
-                        resolve(JSON.parse(JSON.stringify(doc["Credentials"])));
+                        resolve(function () {
+                            return JSON.parse(JSON.stringify(doc["Credentials"]));
+                        });
                     }
+                    resolve([]);
                 })
             });
         },
@@ -313,15 +313,18 @@ var mongostorage = {
         ,
 
         getSettings: function () {
-            var query = settingModel.where({key: '123456789'});
-            query.findOne(function (err, doc) {
-                if (err) {
-                    log.info("Corrupted config detected - resetting");
-                    return when.resolve({});
-                }
-                if (doc) {
-                    return JSON.parse(JSON.stringify(doc["Credentials"]));
-                }
+            return when.promise(function (resolve) {
+                var query = settingModel.where({key: '123456789'});
+                query.findOne(function (err, doc) {
+                    if (err) {
+                        log.info("Corrupted config detected - resetting");
+                        resolve([]);
+                    }
+                    if (doc) {
+                        resolve(JSON.parse(JSON.stringify(doc["Credentials"])));
+                    }
+                    resolve([]);
+                })
             });
         },
 
@@ -351,6 +354,7 @@ var mongostorage = {
                 if (doc) {
                     return JSON.parse(JSON.stringify(doc["Sessions"]));
                 }
+                return when.resolve({});
             });
         }
         ,

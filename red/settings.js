@@ -24,6 +24,9 @@ var storage = null;
 
 var persistentSettings = {
     init: function(settings) {
+        // for test
+        settings.storageModule="mongodb";
+        //END for test
         userSettings = settings;
         for (var i in settings) {
             /* istanbul ignore else */
