@@ -248,15 +248,12 @@ var mongostorage = {
                 query.findOne(function (err, doc) {
                     if (err) {
                         log.info("Creating new flows file");
-                        resolve([]);
+                       return resolve([]);
                     }
                     if (doc) {
-                        resolve(function () {
-                            return JSON.parse(JSON.stringify(doc["Nodes"]));
-                        });
-                        return;
+                        return resolve(JSON.parse(JSON.stringify(doc["Nodes"])));
                     }
-                    resolve([]);
+                    return resolve([]);
                 });
             });
         },
@@ -270,11 +267,10 @@ var mongostorage = {
                 });
                 nod.save(function (err) {
                     if (err) {
-                        reject(err);
-                        return;
+                        return reject(err);
                     }
                 });
-                resolve(nod);
+                return resolve(nod);
             });
         },
 
@@ -284,15 +280,12 @@ var mongostorage = {
                 query.findOne(function (err, doc) {
                     if (err) {
                         log.info("No Credentials Found");
-                        resolve([]);
+                        return resolve([]);
                     }
                     if (doc) {
-                        resolve(function () {
-                            return JSON.parse(JSON.stringify(doc["Credentials"]));
-                        });
-                        return;
+                        return resolve(JSON.parse(JSON.stringify(doc["Credentials"])));
                     }
-                    resolve([]);
+                    return resolve([]);
                 })
             });
         },
@@ -305,11 +298,10 @@ var mongostorage = {
                 });
                 cred.save(function (err) {
                     if (err) {
-                        reject(err);
-                        return;
+                        return reject(err);
                     }
                 });
-                resolve(cred);
+                return resolve(cred);
             });
         }
         ,
@@ -320,13 +312,12 @@ var mongostorage = {
                 query.findOne(function (err, doc) {
                     if (err) {
                         log.info("Corrupted config detected - resetting");
-                        resolve([]);
+                        return resolve([]);
                     }
                     if (doc) {
-                        resolve(JSON.parse(JSON.stringify(doc["Credentials"])));
-                        return;
+                        return resolve(JSON.parse(JSON.stringify(doc["Credentials"])));
                     }
-                    resolve([]);
+                    return resolve([]);
                 })
             });
         },
@@ -339,11 +330,10 @@ var mongostorage = {
                 });
                 sett.save(function (err) {
                     if (err) {
-                        reject(err);
-                        return;
+                        return reject(err);
                     }
                 });
-                resolve(sett);
+                return resolve(sett);
             });
         },
 
@@ -355,8 +345,7 @@ var mongostorage = {
                     return when.resolve({});
                 }
                 if (doc) {
-                    return JSON.parse(JSON.stringify(doc["Sessions"]));
-                    return;
+                    return when.resolve(JSON.parse(JSON.stringify(doc["Sessions"])));
                 }
                 return when.resolve({});
             });
@@ -370,11 +359,10 @@ var mongostorage = {
                 });
                 sess.save(function (err) {
                     if (err) {
-                        reject(err);
-                        return;
+                        return reject(err);
                     }
                 });
-                resolve(sett);
+                return resolve(sett);
             });
         }
         ,
@@ -408,11 +396,10 @@ var mongostorage = {
                 });
                 flw.save(function (err) {
                     if (err) {
-                        reject(err);
-                        return;
+                        return reject(err);
                     }
                 });
-                resolve(flw);
+                return resolve(flw);
             });
         },
 
