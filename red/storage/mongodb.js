@@ -311,12 +311,12 @@ var mongostorage = {
             query.findOne(function (err, doc) {
                 if (err) {
                     log.info("Corrupted config detected - resetting");
-                    return resolve([]);
+                    return resolve({});
                 }
                 if (doc) {
-                    return resolve(JSON.parse(JSON.stringify(doc["Credentials"])));
+                    return resolve(doc["Settings"]);
                 }
-                return resolve([]);
+                return resolve({});
             })
         });
     },
@@ -337,16 +337,19 @@ var mongostorage = {
     },
 
     getSessions: function () {
-        var query = sessionModel.where({key: '123456789'});
-        query.findOne(function (err, doc) {
-            if (err) {
-                log.info("Corrupted session - resetting");
-                return when.resolve({});
-            }
-            if (doc) {
-                return when.resolve(JSON.parse(JSON.stringify(doc["Sessions"])));
-            }
-            return when.resolve({});
+        return when.promise(function (resolve) {
+            var query = settingModel.where({key: '123456789'});
+            query.findOne(function (err, doc) {
+                if (err) {
+                    log.info("Corrupted session - resetting");
+                    return resolve({});
+                }
+                if (doc) {
+                    return resolve(doc["Sessions"]);
+                }
+                return resolve({});
+            })
+
         });
     },
     saveSessions: function (sessions) {
@@ -360,7 +363,7 @@ var mongostorage = {
                     return reject(err);
                 }
             });
-            return resolve(sett);
+            return resolve(sess);
         });
     },
 
