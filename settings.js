@@ -94,7 +94,7 @@ module.exports = {
     
     // The following property can be used in place of 'httpAdminAuth' and 'httpNodeAuth',
     // to apply the same authentication to both parts.
-    //httpAuth: {user:"user",pass:"5f4dcc3b5aa765d61d8327deb882cf99"},
+    httpAuth: {user:"user",pass:"5f4dcc3b5aa765d61d8327deb882cf99"},
     
     // The following property can be used to disable the editor. The admin API
     // is not affected by this option. To disable both the editor and the admin
