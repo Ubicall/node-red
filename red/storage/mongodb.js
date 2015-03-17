@@ -254,6 +254,7 @@ var mongostorage = {
                         resolve(function () {
                             return JSON.parse(JSON.stringify(doc["Nodes"]));
                         });
+                        return;
                     }
                     resolve([]);
                 });
@@ -289,6 +290,7 @@ var mongostorage = {
                         resolve(function () {
                             return JSON.parse(JSON.stringify(doc["Credentials"]));
                         });
+                        return;
                     }
                     resolve([]);
                 })
@@ -322,6 +324,7 @@ var mongostorage = {
                     }
                     if (doc) {
                         resolve(JSON.parse(JSON.stringify(doc["Credentials"])));
+                        return;
                     }
                     resolve([]);
                 })
@@ -353,6 +356,7 @@ var mongostorage = {
                 }
                 if (doc) {
                     return JSON.parse(JSON.stringify(doc["Sessions"]));
+                    return;
                 }
                 return when.resolve({});
             });
