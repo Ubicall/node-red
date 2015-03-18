@@ -70,7 +70,8 @@
     "passport-http-bearer": "1.0.1",
     "passport-oauth2-client-password": "0.1.2",
     "oauth2orize": "1.0.1",
-    "mongoose": "~3.8.24"
+    "mongoose": "~3.8.24",
+    "plist": "~1.1.0"
   },
   "devDependencies": {
     "grunt": "0.4.5",

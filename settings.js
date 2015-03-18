@@ -169,10 +169,13 @@ module.exports = {
     },
 
     // mongo db as persistence backend
-    storageModule: "mongodb"//,
+    storageModule: "mongodb",
     //uri and database name for mongodb if not defined (uri : "localhost" and db :"rrrtest")
     // mongodb: {
     //    uri: "localhost",
     //    db: "node-red"
-    //  }
+    //  },
+
+    //enable /plist
+    plist: true//,
 }

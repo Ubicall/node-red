@@ -22,6 +22,7 @@ var passport = require('passport');
 var ui = require("./ui");
 var nodes = require("./nodes");
 var flows = require("./flows");
+var plist = require("./plist");
 var library = require("./library");
 var info = require("./info");
 
@@ -88,7 +89,11 @@ function init(adminApp,storage) {
     
     // Settings
     adminApp.get("/settings",needsPermission("settings.read"),info.settings);
-    
+
+    // Plist
+    if (settings.plist) {
+        adminApp.get("/plist", plist.get);
+    }
     // Error Handler
     adminApp.use(errorHandler);
 }
