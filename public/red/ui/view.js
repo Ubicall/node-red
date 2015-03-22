@@ -333,7 +333,6 @@ RED.view = (function() {
                 if (!m) {
                     nn.inputs = nn._def.inputs || 0;
                     nn.outputs = nn._def.outputs;
-                    nn.changed = true;
                     
                     for (var d in nn._def.defaults) {
                         if (nn._def.defaults.hasOwnProperty(d)) {
@@ -350,6 +349,7 @@ RED.view = (function() {
                     nn.outputs = subflow.out.length;
                 }
                 
+                nn.changed = true;
                 nn.h = Math.max(node_height,(nn.outputs||0) * 15);
                 RED.history.push({t:'add',nodes:[nn.id],dirty:RED.nodes.dirty()});
                 RED.nodes.add(nn);
@@ -815,18 +815,17 @@ RED.view = (function() {
             }
             
             if (activeSubflow) {
-                RED.nodes.eachNode(function(n) {
-                    if (n.type == "subflow:"+activeSubflow.id) {
-                        n.changed = true;
-                        n.inputs = activeSubflow.in.length;
-                        n.outputs = activeSubflow.out.length;
-                        while (n.outputs < n.ports.length) {
-                            n.ports.pop();
-                        }
-                        n.resize = true;
-                        n.dirty = true;
+                RED.nodes.filterNodes({type:"subflow:"+activeSubflow.id}).forEach(function(n) {
+                    n.changed = true;
+                    n.inputs = activeSubflow.in.length;
+                    n.outputs = activeSubflow.out.length;
+                    while (n.outputs < n.ports.length) {
+                        n.ports.pop();
                     }
+                    n.resize = true;
+                    n.dirty = true;
                 });
+                RED.editor.validateNode(activeSubflow);
             }
             
             moving_set = [];
@@ -1032,7 +1031,7 @@ RED.view = (function() {
     }
 
     function nodeButtonClicked(d) {
-        if (!d.changed) {
+        if (!activeSubflow && !d.changed) {
             if (d._def.button.toggle) {
                 d[d._def.button.toggle] = !d[d._def.button.toggle];
                 d.dirty = true;
@@ -1043,8 +1042,10 @@ RED.view = (function() {
             if (d.dirty) {
                 redraw();
             }
-        } else {
+        } else if (d.changed) {
             RED.notify("<strong>Warning</strong>: node has undeployed changes","warning");
+        } else {
+            RED.notify("<strong>Warning</strong>: node actions disabled within subflow","warning");
         }
         d3.event.preventDefault();
     }
@@ -1478,10 +1479,10 @@ RED.view = (function() {
                         thisNode.selectAll(".node_icon_shade_border").attr("d",function(d){ return "M "+(("right" == d._def.align) ?0:30)+" 1 l 0 "+(d.h-2)});
 
                         thisNode.selectAll('.node_button').attr("opacity",function(d) {
-                            return d.changed?0.4:1
+                            return (activeSubflow||d.changed)?0.4:1
                         });
                         thisNode.selectAll('.node_button_button').attr("cursor",function(d) {
-                            return d.changed?"":"pointer";
+                            return (activeSubflow||d.changed)?"":"pointer";
                         });
                         thisNode.selectAll('.node_right_button').attr("transform",function(d){
                                 var x = d.w-6;

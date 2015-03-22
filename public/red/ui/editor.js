@@ -15,7 +15,6 @@
  **/
 RED.editor = (function() {
     var editing_node = null;
-    // TODO: should IMPORT/EXPORT get their own dialogs?
 
     function getCredentialsURL(nodeType, nodeID) {
         var dashedType = nodeType.replace(/\s+/g, '-');
@@ -28,16 +27,63 @@ RED.editor = (function() {
      * @returns {boolean} whether the node is valid. Sets node.dirty if needed
      */
     function validateNode(node) {
-        if (node._def) {
-            var oldValue = node.valid;
+        var oldValue = node.valid;
+        var oldChanged = node.changed;
+        node.valid = true;
+        var subflow;
+        var isValid;
+        var hasChanged;
+        
+        if (node.type.indexOf("subflow:")===0) {
+            subflow = RED.nodes.subflow(node.type.substring(8));
+            isValid = subflow.valid;
+            hasChanged = subflow.changed;
+            if (isValid === undefined) {
+                isValid = validateNode(subflow);
+                hasChanged = subflow.changed;
+            }
+            node.valid = isValid;
+            node.changed = hasChanged;
+        } else if (node._def) {
             node.valid = validateNodeProperties(node, node._def.defaults, node);
             if (node._def._creds) {
                 node.valid = node.valid && validateNodeProperties(node, node._def.credentials, node._def._creds);
             }
-            if (oldValue != node.valid) {
-                node.dirty = true;
+        } else if (node.type == "subflow") {
+            var subflowNodes = RED.nodes.filterNodes({z:node.id});
+            for (var i=0;i<subflowNodes.length;i++) {
+                isValid = subflowNodes[i].valid;
+                hasChanged = subflowNodes[i].changed;
+                if (isValid === undefined) {
+                    isValid = validateNode(subflowNodes[i]);
+                    hasChanged = subflowNodes[i].changed;
+                }
+                node.valid = node.valid && isValid;
+                node.changed = node.changed || hasChanged;
+            }
+            var subflowInstances = RED.nodes.filterNodes({type:"subflow:"+node.id});
+            var modifiedTabs = {};
+            for (i=0;i<subflowInstances.length;i++) {
+                subflowInstances[i].valid = node.valid;
+                subflowInstances[i].changed = node.changed;
+                subflowInstances[i].dirty = true;
+                modifiedTabs[subflowInstances[i].z] = true;
+            }
+            Object.keys(modifiedTabs).forEach(function(id) {
+                var subflow = RED.nodes.subflow(id);
+                if (subflow) {
+                    validateNode(subflow);
+                }
+            });
+        }
+        if (oldValue !== node.valid || oldChanged !== node.changed) {
+            node.dirty = true;
+            subflow = RED.nodes.subflow(node.z);
+            if (subflow) {
+                validateNode(subflow);
             }
         }
+        return node.valid;
     }
     
     /**
@@ -127,6 +173,7 @@ RED.editor = (function() {
     $( "#dialog" ).dialog({
             modal: true,
             autoOpen: false,
+            dialogClass: "ui-dialog-no-close",
             closeOnEscape: false,
             minWidth: 500,
             width: 'auto',
@@ -267,10 +314,11 @@ RED.editor = (function() {
                 }
             },
             open: function(e) {
-                $(this).parent().find(".ui-dialog-titlebar-close").hide();
                 var minWidth = $(this).dialog('option','minWidth');
                 if ($(this).outerWidth() < minWidth) {
                     $(this).dialog('option','width',minWidth);
+                } else {
+                    $(this).dialog('option','width',$(this).outerWidth());
                 }
                 RED.keyboard.disable();
                 if (editing_node) {
@@ -609,6 +657,7 @@ RED.editor = (function() {
     $( "#node-config-dialog" ).dialog({
             modal: true,
             autoOpen: false,
+            dialogClass: "ui-dialog-no-close",
             minWidth: 500,
             width: 'auto',
             closeOnEscape: false,
@@ -657,6 +706,10 @@ RED.editor = (function() {
                             configTypeDef.oneditsave.call(RED.nodes.node(configId));
                         }
                         validateNode(configNode);
+                        for (var i=0;i<configNode.users.length;i++) {
+                            var user = configNode.users[i];
+                            validateNode(user);
+                        }
 
                         RED.nodes.dirty(true);
                         $(this).dialog("close");
@@ -690,7 +743,6 @@ RED.editor = (function() {
             resize: function(e,ui) {
             },
             open: function(e) {
-                $(this).parent().find(".ui-dialog-titlebar-close").hide();
                 var minWidth = $(this).dialog('option','minWidth');
                 if ($(this).outerWidth() < minWidth) {
                     $(this).dialog('option','width',minWidth);
@@ -713,6 +765,7 @@ RED.editor = (function() {
     $( "#subflow-dialog" ).dialog({
         modal: true,
         autoOpen: false,
+        dialogClass: "ui-dialog-no-close",
         closeOnEscape: false,
         minWidth: 500,
         width: 'auto',
@@ -774,7 +827,6 @@ RED.editor = (function() {
             }
         ],
         open: function(e) {
-            $(this).parent().find(".ui-dialog-titlebar-close").hide();
             RED.keyboard.disable();
             var minWidth = $(this).dialog('option','minWidth');
             if ($(this).outerWidth() < minWidth) {
