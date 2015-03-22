@@ -24,12 +24,12 @@ var settings = require("../settings");
 
 module.exports = {
     get: function(req,res) {
-        res.json(redNodes.getFlows());
+        res.json(redNodes.getFlows(req.user));
     },
     post: function(req,res) {
         var flows = req.body;
         var deploymentType = req.get("Node-RED-Deployment-Type")||"full";
-        redNodes.setFlows(flows,deploymentType).then(function() {
+        redNodes.setFlows(flows,deploymentType,req.user).then(function() {
             res.send(204);
         }).otherwise(function(err) {
             log.warn("Error saving flows : "+err.message);

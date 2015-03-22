@@ -51,10 +51,10 @@ var storageModuleInterface = {
             return storageModule.init(settings);
         },
         getFlows: function() {
-            return storageModule.getFlows();
+            return storageModule.getFlows(owner);
         },
-        saveFlows: function(flows) {
-            return storageModule.saveFlows(flows);
+        saveFlows: function(flows,owner) {
+            return storageModule.saveFlows(flows,owner);
         },
         getCredentials: function() {
             return storageModule.getCredentials();

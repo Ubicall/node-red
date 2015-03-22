@@ -45,7 +45,7 @@ var flowNodes = module.exports = {
     init: function(_storage) {
         storage = _storage;
     },
-    
+
     /**
      * Load the current activeConfig from storage and start it running
      * @return a promise for the loading of the config
@@ -61,7 +61,7 @@ var flowNodes = module.exports = {
             console.log(err.stack);
         });
     },
-    
+
     /**
      * Get a node
      * @param i the node id
@@ -70,33 +70,41 @@ var flowNodes = module.exports = {
     get: function(i) {
         return activeFlow.getNode(i);
     },
-    
+
     eachNode: function(cb) {
         activeFlow.eachNode(cb);
     },
-    
+
     /**
      * @return the active configuration
      */
-    getFlows: function() {
-        return activeFlow.getFlow();
+    getFlows: function(user) {
+        var username;
+        if(user){
+            username=user.username;
+        }
+        return activeFlow.getFlow(username);
     },
-    
+
     /**
      * Sets the current active config.
      * @param config the configuration to enable
      * @param type the type of deployment to do: full (default), nodes, flows
      * @return a promise for the starting of the new flow
      */
-    setFlows: function (config,type) {
-        
+    setFlows: function (config,type,user) {
+        var username;
+        if(user){
+            username=user.username;
+        }
+
         type = type||"full";
-        
+
         var credentialsChanged = false;
-        
+
         var credentialSavePromise = null;
-        
-        
+
+
         // Clone config and extract credentials prior to saving
         // Original config needs to retain credentials so that flow.applyConfig
         // knows which nodes have had changes.
@@ -107,22 +115,22 @@ var flowNodes = module.exports = {
                 credentialsChanged = true;
             }
         });
-        
+
         if (credentialsChanged) {
             credentialSavePromise = credentials.save();
         } else {
             credentialSavePromise = when.resolve();
         }
-        
+
         if (type=="full") {
             return credentialSavePromise
-                .then(function() { return storage.saveFlows(cleanConfig);})
+                .then(function() { return storage.saveFlows(cleanConfig,username);})
                 .then(function() { return flowNodes.stopFlows(); })
                 .then(function() { activeFlow = new Flow(config); flowNodes.startFlows();});
         } else {
             return credentialSavePromise
-                .then(function() { return storage.saveFlows(cleanConfig);})
-                .then(function() { 
+                .then(function() { return storage.saveFlows(cleanConfig,username);})
+                .then(function() {
                     var configDiff = activeFlow.diffConfig(config,type);
                     return flowNodes.stopFlows(configDiff).then(function() {
                         activeFlow.parseConfig(config);

@@ -220,7 +220,13 @@ var mongostorage = {
 
         mongoose.connect(settings.mongodb.uri, settings.mongodb.db);
 
-        var NodeSchema = new Schema({key: String, Nodes: [Schema.Types.Mixed]});
+        var NodeSchema = new Schema({
+            key: String,
+            version: {type: Number, min: 1},
+            created: {type: Date, default: Date.now},
+            Nodes: [Schema.Types.Mixed]
+        });
+
         nodeModel = mongoose.model('Nodes', NodeSchema);
         var CredentialSchema = new Schema({key: String, Credentials: [Schema.Types.Mixed]});
         credentialModel = mongoose.model('Credentials', CredentialSchema);
@@ -239,12 +245,11 @@ var mongostorage = {
         return when.all(promises);
     },
 
-    getFlows: function () {
+    getFlows: function (owner) {
         return when.promise(function (resolve) {
             log.info("DB URL : " + settings.mongodb.uri);
             log.info("DB     : " + settings.mongodb.db);
-            //TODO : key will be current user id
-            var query = nodeModel.where({key: '123456789'});
+            var query = nodeModel.where({key: owner});
             query.findOne(function (err, doc) {
                 if (err) {
                     log.info("Creating new flows file");
@@ -258,11 +263,15 @@ var mongostorage = {
         });
     },
 
-    saveFlows: function (flows) {
-        //TODO : key will be current user id
+    saveFlows: function (flows, owner) {
         return when.promise(function (resolve, reject) {
+            nodeModel.remove(
+                {$or: [{'key': 123456789}, {'key': owner}]}, function (err) {
+                    if (err) return reject(err);
+                });
             var nod = new nodeModel({
-                key: "123456789",
+                key: owner,
+                version:1,
                 Nodes: flows
             });
             nod.save(function (err) {
@@ -270,6 +279,7 @@ var mongostorage = {
                     return reject(err);
                 }
             });
+            log.info("saving " + nod);
             return resolve(nod);
         });
     },
