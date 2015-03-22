@@ -92,7 +92,7 @@ function init(adminApp,storage) {
 
     // Plist
     if (settings.plist) {
-        adminApp.get("/plist", plist.get);
+        adminApp.get("/plist",needsPermission("plist.read"), plist.get);
     }
     // Error Handler
     adminApp.use(errorHandler);

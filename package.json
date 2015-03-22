@@ -59,7 +59,8 @@
     "passport-oauth2-client-password":"0.1.2",
     "oauth2orize":"1.0.1",
     "mongoose": "~3.8.24",
-    "plist": "~1.1.0"
+    "plist": "~1.1.0",
+    "morgan":"~1.5.0"
   },
   "optionalDependencies": {
     "bcrypt":"0.8.1"
