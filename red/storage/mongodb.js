@@ -21,7 +21,7 @@ var keys = require('when/keys');
 var fspath = require("path");
 var mkdirp = require("mkdirp");
 
-var mongoose = require('mongoose'), Schema = mongoose.Schema;
+var mongos = require('../mongos');
 
 var log = require("../log");
 
@@ -159,9 +159,12 @@ function writeFile(path, content) {
 var mongostorage = {
     init: function (_settings) {
         settings = _settings;
-        settings.mongodb = settings.mongodb || {};
-        settings.mongodb.uri = settings.mongodb.uri || "localhost"
-        settings.mongodb.db = settings.mongodb.db || "rrrtest"
+        if (!settings.mongodb) {
+            settings.mongodb = settings.mongodb || {};
+            settings.mongodb.uri = settings.mongodb.uri || "localhost"
+            settings.mongodb.db = settings.mongodb.db || "rrrtest"
+        }
+
         var promises = [];
 
         if (!settings.userDir) {
@@ -217,33 +220,18 @@ var mongostorage = {
 
         promises.push(promiseDir(libFlowsDir));
 
-        mongoose.connect(settings.mongodb.uri, settings.mongodb.db);
-
-        var NodeSchema = new Schema({
-            key: String,
-            version:Number,
-            created: {type: Date, default: Date.now},
-            Nodes: [Schema.Types.Mixed]
-        });
-
-        nodeModel = mongoose.model('Nodes', NodeSchema);
-        var CredentialSchema = new Schema({key: String, Credentials: [Schema.Types.Mixed]});
-        credentialModel = mongoose.model('Credentials', CredentialSchema);
-        var SettingSchema = new Schema({key: String, Settings: [Schema.Types.Mixed]});
-        settingModel = mongoose.model('Settings', SettingSchema);
-
-        var SessionSchema = new Schema({key: String, Sessions: [Schema.Types.Mixed]});
-        sessionModel = mongoose.model('Sessions', SessionSchema);
-
-        // END For Mongo
+        // init mongos.js
+        mongos.init(_settings);
+        nodeModel=mongos.nodeModel;
+        credentialModel=mongos.credentialModel;
+        sessionModel=mongos.sessionModel;
+        settingModel=mongos.settingModel;
 
         return when.all(promises);
     },
 
     getFlows: function (owner) {
         return when.promise(function (resolve) {
-            log.info("DB URL : " + settings.mongodb.uri);
-            log.info("DB     : " + settings.mongodb.db);
             var query = nodeModel.where({key: owner});
             query.findOne(function (err, doc) {
                 if (err) {
@@ -262,13 +250,13 @@ var mongostorage = {
         return when.promise(function (resolve, reject) {
             var nod = new nodeModel({
                 key: owner,
-                version:Date.now(),
+                version: Date.now(),
                 Nodes: flows
             });
             nod.save(function (err) {
                 if (err) {
                     return reject(err);
-                }else{
+                } else {
                     log.info("saving " + nod);
                     return resolve(nod);
                 }
@@ -301,7 +289,7 @@ var mongostorage = {
             cred.save(function (err) {
                 if (err) {
                     return reject(err);
-                }else{
+                } else {
                     return resolve(cred);
                 }
             });
@@ -333,7 +321,7 @@ var mongostorage = {
             sett.save(function (err) {
                 if (err) {
                     return reject(err);
-                }else{
+                } else {
                     return resolve(sett);
                 }
             });
@@ -365,7 +353,7 @@ var mongostorage = {
             sess.save(function (err) {
                 if (err) {
                     return reject(err);
-                }else{
+                } else {
                     return resolve(sess);
                 }
             });
@@ -376,7 +364,7 @@ var mongostorage = {
         return require(module.filename).getFlows(owner);
     },
 
-    getFlow: function (fn,owner) {
+    getFlow: function (fn, owner) {
         return require(module.filename).getFlows(owner);
     },
 
