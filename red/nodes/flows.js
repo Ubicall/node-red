@@ -50,9 +50,13 @@ var flowNodes = module.exports = {
      * Load the current activeConfig from storage and start it running
      * @return a promise for the loading of the config
      */
-    load: function() {
-        return storage.getFlows().then(function(flows) {
-            return credentials.load().then(function() {
+    load: function(user) {
+        var username;
+        if(user){
+            username=user.username;
+        }
+        return storage.getFlows(username).then(function(flows) {
+            return credentials.load(username).then(function() {
                 activeFlow = new Flow(flows);
                 flowNodes.startFlows();
             });

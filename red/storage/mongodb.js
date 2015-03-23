@@ -45,7 +45,6 @@ var nodeModel;
 var credentialModel;
 var settingModel;
 var sessionModel;
-var flowModel;
 // End mongo models
 
 function listFiles(dir) {
@@ -222,7 +221,7 @@ var mongostorage = {
 
         var NodeSchema = new Schema({
             key: String,
-            version: {type: Number, min: 1},
+            version:Number,
             created: {type: Date, default: Date.now},
             Nodes: [Schema.Types.Mixed]
         });
@@ -235,10 +234,6 @@ var mongostorage = {
 
         var SessionSchema = new Schema({key: String, Sessions: [Schema.Types.Mixed]});
         sessionModel = mongoose.model('Sessions', SessionSchema);
-
-        var FlowSchema = new Schema({Name: String, Flow: [Schema.Types.Mixed]});
-        flowModel = mongoose.model('Flow', FlowSchema);
-
 
         // END For Mongo
 
@@ -265,22 +260,19 @@ var mongostorage = {
 
     saveFlows: function (flows, owner) {
         return when.promise(function (resolve, reject) {
-            nodeModel.remove(
-                {$or: [{'key': 123456789}, {'key': owner}]}, function (err) {
-                    if (err) return reject(err);
-                });
             var nod = new nodeModel({
                 key: owner,
-                version:1,
+                version:Date.now(),
                 Nodes: flows
             });
             nod.save(function (err) {
                 if (err) {
                     return reject(err);
+                }else{
+                    log.info("saving " + nod);
+                    return resolve(nod);
                 }
             });
-            log.info("saving " + nod);
-            return resolve(nod);
         });
     },
 
@@ -309,9 +301,10 @@ var mongostorage = {
             cred.save(function (err) {
                 if (err) {
                     return reject(err);
+                }else{
+                    return resolve(cred);
                 }
             });
-            return resolve(cred);
         });
     },
 
@@ -340,9 +333,10 @@ var mongostorage = {
             sett.save(function (err) {
                 if (err) {
                     return reject(err);
+                }else{
+                    return resolve(sett);
                 }
             });
-            return resolve(sett);
         });
     },
 
@@ -371,45 +365,23 @@ var mongostorage = {
             sess.save(function (err) {
                 if (err) {
                     return reject(err);
+                }else{
+                    return resolve(sess);
                 }
             });
-            return resolve(sess);
         });
     },
 
-    getAllFlows: function () {
-        //TODO : Not Implemented yet
-        return listFiles(libFlowsDir);
+    getAllFlows: function (owner) {
+        return require(module.filename).getFlows(owner);
     },
 
-    getFlow: function (fn) {
-        var defer = when.defer();
-        var query = flowModel.where({Name: fn});
-        query.findOne(function (err, doc) {
-            if (err) {
-                log.info("No flow with Name : " + fn);
-                defer.reject();
-            }
-            if (doc) {
-                return defer.resolve(JSON.parse(JSON.stringify(doc["Flow"])));
-            }
-        });
-        return defer.promise;
+    getFlow: function (fn,owner) {
+        return require(module.filename).getFlows(owner);
     },
 
     saveFlow: function (fn, data) {
-        return when.promise(function (resolve, reject) {
-            var flw = new flowModel({
-                Name: fn,
-                Flow: data
-            });
-            flw.save(function (err) {
-                if (err) {
-                    return reject(err);
-                }
-            });
-            return resolve(flw);
-        });
+        return require(module.filename).saveFlows(owner);
     },
 
     getLibraryEntry: function (type, path) {

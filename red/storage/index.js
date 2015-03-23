@@ -50,7 +50,7 @@ var storageModuleInterface = {
             }
             return storageModule.init(settings);
         },
-        getFlows: function() {
+        getFlows: function(owner) {
             return storageModule.getFlows(owner);
         },
         saveFlows: function(flows,owner) {

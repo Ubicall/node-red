@@ -21,10 +21,14 @@ var path = require("path");
 var log = require("../log");
 var redNodes = require("../nodes");
 var settings = require("../settings");
+var when = require('when')
 
 module.exports = {
     get: function(req,res) {
-        res.json(redNodes.getFlows(req.user));
+        redNodes.loadFlows(req.user).then(function(){
+            res.json(redNodes.getFlows(req.user));
+        });
+
     },
     post: function(req,res) {
         var flows = req.body;
