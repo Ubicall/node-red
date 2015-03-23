@@ -53,8 +53,8 @@ var storageModuleInterface = {
         getFlows: function(owner) {
             return storageModule.getFlows(owner);
         },
-        saveFlows: function(flows,owner) {
-            return storageModule.saveFlows(flows,owner);
+        saveFlows: function(flows,owner,deploy) {
+            return storageModule.saveFlows(flows,owner,deploy);
         },
         getCredentials: function() {
             return storageModule.getCredentials();

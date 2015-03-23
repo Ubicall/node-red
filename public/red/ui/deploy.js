@@ -17,18 +17,23 @@
 RED.deploy = (function() {
         
     var deploymentTypes = {
+        "save":{img:"images/deploy-full-o.png"},
         "full":{img:"images/deploy-full-o.png"},
         "nodes":{img:"images/deploy-nodes-o.png"},
         "flows":{img:"images/deploy-flows-o.png"}
     }
     
     var deploymentType = "full";
+    var deploy=false;
     
     function changeDeploymentType(type) {
         deploymentType = type;
         $("#btn-deploy img").attr("src",deploymentTypes[type].img);
     }
-    
+    function saveWorkPlaceOnly(type) {
+        deploy = false;
+        $("#btn-deploy img").attr("src",deploymentTypes[type].img);
+    }
     function init() {
         
         var deployButton = $('<li><span class="deploy-button-group button-group">'+
@@ -36,7 +41,7 @@ RED.deploy = (function() {
           '<a id="btn-deploy-options"  data-toggle="dropdown"  class="" href="#"><i class="fa fa-caret-down"></i></a>'+
           '</span></li>').prependTo(".header-toolbar");
         
-        $('#btn-deploy').click(function() { save(); });
+        $('#btn-deploy').click(function() { save(undefined,true); });
         
         $( "#node-dialog-confirm-deploy" ).dialog({
                 title: "Confirm deploy",
@@ -63,6 +68,7 @@ RED.deploy = (function() {
 
         RED.menu.init({id:"btn-deploy-options",
             options: [
+                {id:"btn-save-full",toggle:"deploy-type",icon:"images/deploy-full.png",label:"Save",sublabel:"Save ONLY everything in the workspace",onselect:function(s) { if(s){saveWorkPlaceOnly("save")}}},
                 {id:"btn-deploy-full",toggle:"deploy-type",icon:"images/deploy-full.png",label:"Full",sublabel:"Deploys everything in the workspace",onselect:function(s) { if(s){changeDeploymentType("full")}}},
                 {id:"btn-deploy-flow",toggle:"deploy-type",icon:"images/deploy-flows.png",label:"Modified Flows",sublabel:"Only deploys flows that contain changed nodes", onselect:function(s) {if(s){changeDeploymentType("flows")}}},
                 {id:"btn-deploy-node",toggle:"deploy-type",icon:"images/deploy-nodes.png",label:"Modified Nodes",sublabel:"Only deploys nodes that have changed",onselect:function(s) { if(s){changeDeploymentType("nodes")}}}
@@ -82,7 +88,7 @@ RED.deploy = (function() {
         });
     }
 
-    function save(force) {
+    function save(force,deploy) {
         if (RED.nodes.dirty()) {
             //$("#debug-tab-clear").click();  // uncomment this to auto clear debug on deploy
 
@@ -124,7 +130,8 @@ RED.deploy = (function() {
                 data: JSON.stringify(nns),
                 contentType: "application/json; charset=utf-8",
                 headers: {
-                    "Node-RED-Deployment-Type":deploymentType
+                    "Node-RED-Deployment-Type":deploymentType,
+                    "deploy":deploy
                 }
             }).done(function(data,textStatus,xhr) {
                 RED.notify("Successfully deployed","success");

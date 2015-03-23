@@ -95,7 +95,7 @@ var flowNodes = module.exports = {
      * @param type the type of deployment to do: full (default), nodes, flows
      * @return a promise for the starting of the new flow
      */
-    setFlows: function (config,type,user) {
+    setFlows: function (config,type,user,deploy) {
         var username;
         if(user){
             username=user.username;
@@ -126,12 +126,12 @@ var flowNodes = module.exports = {
         }
         if (type=="full") {
             return credentialSavePromise
-                .then(function() { return storage.saveFlows(cleanConfig,username);})
+                .then(function() { return storage.saveFlows(cleanConfig,username,deploy);})
                 .then(function() { return flowNodes.stopFlows(); })
                 .then(function() { activeFlow = new Flow(config); flowNodes.startFlows();});
         } else {
             return credentialSavePromise
-                .then(function() { return storage.saveFlows(cleanConfig,username);})
+                .then(function() { return storage.saveFlows(cleanConfig,username,deploy);})
                 .then(function() {
                     var configDiff = activeFlow.diffConfig(config,type);
                     return flowNodes.stopFlows(configDiff).then(function() {
