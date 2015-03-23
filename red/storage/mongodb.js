@@ -159,12 +159,6 @@ function writeFile(path, content) {
 var mongostorage = {
     init: function (_settings) {
         settings = _settings;
-        if (!settings.mongodb) {
-            settings.mongodb = settings.mongodb || {};
-            settings.mongodb.uri = settings.mongodb.uri || "localhost"
-            settings.mongodb.db = settings.mongodb.db || "rrrtest"
-        }
-
         var promises = [];
 
         if (!settings.userDir) {
@@ -222,24 +216,27 @@ var mongostorage = {
 
         // init mongos.js
         mongos.init(_settings);
-        nodeModel=mongos.nodeModel;
-        credentialModel=mongos.credentialModel;
-        sessionModel=mongos.sessionModel;
-        settingModel=mongos.settingModel;
+        nodeModel = mongos.nodeModel;
+        credentialModel = mongos.credentialModel;
+        sessionModel = mongos.sessionModel;
+        settingModel = mongos.settingModel;
 
         return when.all(promises);
     },
 
     getFlows: function (owner) {
         return when.promise(function (resolve) {
-            var query = nodeModel.where({key: owner});
-            query.findOne(function (err, doc) {
+            nodeModel.find({key: owner}).limit(1).sort('-version').exec(function (err, doc) {
                 if (err) {
                     log.info("Creating new flows file");
                     return resolve([]);
                 }
                 if (doc) {
-                    return resolve(JSON.parse(JSON.stringify(doc["Nodes"])));
+                    try {
+                        return resolve(JSON.parse(JSON.stringify(doc["Nodes"])));
+                    } catch (ex) {
+                        return resolve([]);
+                    }
                 }
                 return resolve([]);
             });
@@ -257,7 +254,7 @@ var mongostorage = {
                 if (err) {
                     return reject(err);
                 } else {
-                    log.info("saving " + nod);
+                    log.info("saving flows version " + nod.version + " for " + owner);
                     return resolve(nod);
                 }
             });
@@ -273,7 +270,11 @@ var mongostorage = {
                     return resolve([]);
                 }
                 if (doc) {
-                    return resolve(JSON.parse(JSON.stringify(doc["Credentials"])));
+                    try {
+                        return resolve(JSON.parse(JSON.stringify(doc["Credentials"])));
+                    } catch (ex) {
+                        return resolve([]);
+                    }
                 }
                 return resolve([]);
             })

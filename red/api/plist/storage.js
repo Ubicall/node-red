@@ -13,17 +13,25 @@ mongoStorage = {
         mongos.init(_settings);
         nodeModel = mongos.nodeModel;
     },
-
-    getFlowWithVersion: function (owner, ver) {
+    getFlow: function (owner, ver) {
         return when.promise(function (resolve) {
-            var query = nodeModel.where({key: owner, version: ver});
+            var query;
+            if (!ver || ver == 'latest') {
+                query = nodeModel.where({key: owner}).sort('-version');
+            } else {
+                query = nodeModel.where({key: owner, version: ver});
+            }
             query.findOne(function (err, doc) {
                 if (err) {
                     log.info("Creating new flows file");
                     return resolve([]);
                 }
                 if (doc) {
-                    return resolve(JSON.parse(JSON.stringify(doc["Nodes"])));
+                    try {
+                        return resolve(JSON.parse(JSON.stringify(doc["Nodes"])));
+                    } catch (ex) {
+                        return resolve([]);
+                    }
                 }
                 return resolve([]);
             });

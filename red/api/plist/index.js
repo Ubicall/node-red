@@ -8,7 +8,7 @@ module.exports = {
         plistStorage.init(_settings);
     },
     get: function (req, res) {
-        plistStorage.getFlowWithVersion(req.params.username, req.params.version).then(function (resolve) {
+        plistStorage.getFlow(req.params.username, req.params.version).then(function (resolve) {
             res.set('Content-Type', 'text/xml');
             res.send(plist.build(resolve));
         });
