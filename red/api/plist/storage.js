@@ -17,9 +17,9 @@ mongoStorage = {
         return when.promise(function (resolve) {
             var query;
             if (!ver || ver == 'latest') {
-                query = nodeModel.where({key: owner}).sort('-version');
+                query = nodeModel.where({key: owner, deploy: {$gt: 0}}).sort('-version');
             } else {
-                query = nodeModel.where({key: owner, version: ver});
+                query = nodeModel.where({key: owner, deploy: {$gt: 0}, version: ver});
             }
             query.findOne(function (err, doc) {
                 if (err) {

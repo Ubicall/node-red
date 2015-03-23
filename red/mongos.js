@@ -7,6 +7,7 @@ var settings;
 var NodeSchema = new Schema({
     key: String,
     version: Number,
+    deploy: {type: Number, default: -1},
     created: {type: Date, default: Date.now},
     Nodes: [Schema.Types.Mixed]
 });
@@ -22,7 +23,7 @@ var mongos = {
             settings.mongodb.uri = settings.mongodb.uri || "localhost"
             settings.mongodb.db = settings.mongodb.db || "rrrtest"
         }
-        log.info("mongoose.connection.readyState : " + mongoose.connection.readyState);
+        log.info("mongo db connection is : " + mongoose.connection.readyState == 0 ? ' closed ' : ' open');
         if (mongoose.connection.readyState == 0) {
             mongoose.connect(settings.mongodb.uri, settings.mongodb.db);
             log.info("DB URL : " + settings.mongodb.uri);
