@@ -30,18 +30,20 @@ RED.deploy = (function() {
         deploymentType = type;
         $("#btn-deploy img").attr("src",deploymentTypes[type].img);
     }
-    function saveWorkPlaceOnly(type) {
-        deploy = false;
-        $("#btn-deploy img").attr("src",deploymentTypes[type].img);
-    }
+
     function init() {
-        
+
+        var saveButton = $('<li><span class="deploy-button-group button-group">'+
+        '<a id="btn-save" class="action-deploy" href="#"><img id="btn-icn-deploy" ' +
+        'src="images/deploy-full-o.png"> <span>Save</span></a></span></li>').prependTo(".header-toolbar");
+
         var deployButton = $('<li><span class="deploy-button-group button-group">'+
           '<a id="btn-deploy" class="action-deploy disabled" href="#"><img id="btn-icn-deploy" src="images/deploy-full-o.png"> <span>Deploy</span></a>'+
           '<a id="btn-deploy-options"  data-toggle="dropdown"  class="" href="#"><i class="fa fa-caret-down"></i></a>'+
           '</span></li>').prependTo(".header-toolbar");
-        
-        $('#btn-deploy').click(function() { save(undefined,true); });
+
+        $('#btn-deploy').click(function() { save(undefined,"deploy"); });
+        $('#btn-save').click(function() { save(undefined,"save"); });
         
         $( "#node-dialog-confirm-deploy" ).dialog({
                 title: "Confirm deploy",
@@ -68,7 +70,6 @@ RED.deploy = (function() {
 
         RED.menu.init({id:"btn-deploy-options",
             options: [
-                {id:"btn-save-full",toggle:"deploy-type",icon:"images/deploy-full.png",label:"Save",sublabel:"Save ONLY everything in the workspace",onselect:function(s) { if(s){saveWorkPlaceOnly("save")}}},
                 {id:"btn-deploy-full",toggle:"deploy-type",icon:"images/deploy-full.png",label:"Full",sublabel:"Deploys everything in the workspace",onselect:function(s) { if(s){changeDeploymentType("full")}}},
                 {id:"btn-deploy-flow",toggle:"deploy-type",icon:"images/deploy-flows.png",label:"Modified Flows",sublabel:"Only deploys flows that contain changed nodes", onselect:function(s) {if(s){changeDeploymentType("flows")}}},
                 {id:"btn-deploy-node",toggle:"deploy-type",icon:"images/deploy-nodes.png",label:"Modified Nodes",sublabel:"Only deploys nodes that have changed",onselect:function(s) { if(s){changeDeploymentType("nodes")}}}
@@ -78,12 +79,14 @@ RED.deploy = (function() {
         RED.nodes.on('change',function(state) {
             if (state.dirty) {
                 window.onbeforeunload = function() {
-                    return "You have undeployed changes.\n\nLeaving this page will lose these changes.";
+                    return "You have undeployed or unsaved changes.\n\nLeaving this page will lose these changes.";
                 }
                 $("#btn-deploy").removeClass("disabled");
+                $("#btn-save").removeClass("disabled");
             } else {
                 window.onbeforeunload = null;
                 $("#btn-deploy").addClass("disabled");
+                $("#btn-save").addClass("disabled");
             }
         });
     }
@@ -131,7 +134,7 @@ RED.deploy = (function() {
                 contentType: "application/json; charset=utf-8",
                 headers: {
                     "Node-RED-Deployment-Type":deploymentType,
-                    "deploy":deploy
+                    "Node-RED-Deploy-Save":deploy
                 }
             }).done(function(data,textStatus,xhr) {
                 RED.notify("Successfully deployed","success");

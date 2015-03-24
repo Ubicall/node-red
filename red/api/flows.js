@@ -33,7 +33,7 @@ module.exports = {
     post: function(req,res) {
         var flows = req.body;
         var deploymentType = req.get("Node-RED-Deployment-Type")||"full";
-        var deploy = req.get("deploy")||false;
+        var deploy = req.get("Node-RED-Deploy-Save")==="deploy"?true:false;
         redNodes.setFlows(flows,deploymentType,req.user,deploy).then(function() {
             res.send(204);
         }).otherwise(function(err) {
