@@ -24,7 +24,7 @@ RED.nodes = (function() {
     var subflows = {};
     
     var dirty = false;
-    
+
     function setDirty(d) {
         dirty = d;
         eventHandler.emit("change",{dirty:dirty});

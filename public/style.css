@@ -120,65 +120,65 @@ span.logo img {
     border-color: #323232;
 }
 
-#btn-deploy {
+#btn-deploy, #btn-save {
     background: #8C101C; /*#d24741;*/
     color: #eee !important;
 }
-#btn-deploy + a {
+#btn-deploy + a ,#btn-save + a {
     background: #8C101C; /*#BA403B;*/
     color: #eee;
 }
-#btn-deploy + a:hover {
+#btn-deploy + a:hover ,#btn-save + a:hover {
     background: #6E0A1E; /*#AD3C38;*/
     color: #eee;
 }
-#btn-deploy + a:active {
+#btn-deploy + a:active ,#btn-save + a:active {
     background: #4C0A17; /*#aa1f19;*/
     color: #ccc;
 }
-span.deploy-button-group.open > #btn-deploy + a {
+span.deploy-button-group.open > #btn-deploy + a,span.save-button-group.open > #btn-save + a {
     background: #121212 !important;
 }
 
-#btn-deploy:not(.disabled):hover {
+#btn-deploy:not(.disabled):hover ,#btn-save:not(.disabled):hover {
     background: #6E0A1E; /*#ca3f39;*/
 }
 
 
-#btn-deploy:not(.disabled):active {
+#btn-deploy:not(.disabled):active ,#btn-save:not(.disabled):active {
     background: #4C0A17 /*#aa1f19*/ !important;
 }
-#btn-deploy:not(.disabled):active {
+#btn-deploy:not(.disabled):active ,#btn-save:not(.disabled):active{
     color: #ccc !important;
 }
 
-#btn-deploy.disabled {
+#btn-deploy.disabled ,#btn-save.disabled {
     cursor: default;
     background: #444;
     color: #999 !important;
 }
 
-#btn-deploy.disabled + a {
+#btn-deploy.disabled + a ,#btn-save.disabled + a  {
     background: #444;
     color: #ddd;
 }
-#btn-deploy.disabled + a:hover {
+#btn-deploy.disabled + a:hover ,#btn-save.disabled + a:hover {
     background: #555;
     color: #ddd;
 }
-#btn-deploy.disabled + a:active {
+#btn-deploy.disabled + a:active ,#btn-save.disabled + a:active {
     background: #444;
     color: #ddd;
 }
-span.deploy-button-group.open > #btn-deploy.disabled + a {
+span.deploy-button-group.open > #btn-deploy.disabled + a ,span.save-button-group.open > #btn-save.disabled + a {
     background: #121212 !important;
 }
 
 
-#btn-deploy img {
+#btn-deploy img,#btn-save img {
     margin-right: 8px;
 }
-#btn-deploy.disabled img {
+#btn-deploy.disabled img ,#btn-save.disabled img {
     opacity: 0.3;
 }
 

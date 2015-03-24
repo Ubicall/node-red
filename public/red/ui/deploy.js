@@ -34,7 +34,7 @@ RED.deploy = (function() {
     function init() {
 
         var saveButton = $('<li><span class="deploy-button-group button-group">'+
-        '<a id="btn-save" class="action-deploy" href="#"><img id="btn-icn-deploy" ' +
+        '<a id="btn-save" class="action-deploy disabled" href="#"><img id="btn-icn-save" ' +
         'src="images/deploy-full-o.png"> <span>Save</span></a></span></li>').prependTo(".header-toolbar");
 
         var deployButton = $('<li><span class="deploy-button-group button-group">'+
@@ -42,8 +42,8 @@ RED.deploy = (function() {
           '<a id="btn-deploy-options"  data-toggle="dropdown"  class="" href="#"><i class="fa fa-caret-down"></i></a>'+
           '</span></li>').prependTo(".header-toolbar");
 
-        $('#btn-deploy').click(function() { save(undefined,"deploy"); });
-        $('#btn-save').click(function() { save(undefined,"save"); });
+        $('#btn-deploy').click(function() { deploy = true ;save(undefined,true); });
+        $('#btn-save').click(function() {  deploy = false ;save(undefined,false); });
         
         $( "#node-dialog-confirm-deploy" ).dialog({
                 title: "Confirm deploy",
@@ -85,8 +85,11 @@ RED.deploy = (function() {
                 $("#btn-save").removeClass("disabled");
             } else {
                 window.onbeforeunload = null;
-                $("#btn-deploy").addClass("disabled");
-                $("#btn-save").addClass("disabled");
+                if(deploy){
+                    $("#btn-deploy").addClass("disabled");
+                }else{
+                    $("#btn-save").addClass("disabled");
+                }
             }
         });
     }
@@ -123,8 +126,14 @@ RED.deploy = (function() {
             }
             var nns = RED.nodes.createCompleteNodeSet();
 
-            $("#btn-icn-deploy").removeClass('fa-download');
-            $("#btn-icn-deploy").addClass('spinner');
+            if(deploy){
+                $("#btn-icn-deploy").removeClass('fa-download');
+                $("#btn-icn-deploy").addClass('spinner');
+            }
+
+            $("#btn-icn-save").removeClass('fa-download');
+            $("#btn-icn-save").addClass('spinner');
+
             RED.nodes.dirty(false);
 
             $.ajax({
@@ -134,10 +143,14 @@ RED.deploy = (function() {
                 contentType: "application/json; charset=utf-8",
                 headers: {
                     "Node-RED-Deployment-Type":deploymentType,
-                    "Node-RED-Deploy-Save":deploy
+                    "Node-RED-Deploy-Save":deploy?"deploy":"save"
                 }
             }).done(function(data,textStatus,xhr) {
-                RED.notify("Successfully deployed","success");
+                if(deploy){
+                    RED.notify("Successfully deployed","success");
+                }else{
+                    RED.notify("Successfully saved","success");
+                }
                 RED.nodes.eachNode(function(node) {
                     if (node.changed) {
                         node.dirty = true;
@@ -163,8 +176,13 @@ RED.deploy = (function() {
                     RED.notify("<strong>Error</strong>: no response from server","error");
                 }
             }).always(function() {
-                $("#btn-icn-deploy").removeClass('spinner');
-                $("#btn-icn-deploy").addClass('fa-download');
+                if(deploy){
+                    $("#btn-icn-deploy").removeClass('fa-download');
+                    $("#btn-icn-deploy").addClass('spinner');
+                }
+
+                $("#btn-icn-save").removeClass('fa-download');
+                $("#btn-icn-save").addClass('spinner');
             });
         }
     }
