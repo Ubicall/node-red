@@ -10,6 +10,8 @@ module.exports = {
     get: function (req, res) {
         plistStorage.getFlow(req.params.username, req.params.version).then(function (resolve) {
             res.set('Content-Type', 'text/xml');
+            console.log("JSON  : \n"+JSON.stringify(resolve,null,4));
+            console.log("PLIST : \n"+plist.build(resolve));
             res.send(plist.build(resolve));
         });
     }
