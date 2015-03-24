@@ -95,7 +95,7 @@ RED.deploy = (function() {
     }
 
     function save(force,deploy) {
-        if (RED.nodes.dirty()) {
+        if (RED.nodes.dirty() || true) {
             //$("#debug-tab-clear").click();  // uncomment this to auto clear debug on deploy
 
             if (!force) {
