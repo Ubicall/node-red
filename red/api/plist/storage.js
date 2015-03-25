@@ -29,12 +29,10 @@ mongoStorage = {
                     return resolve([]);
                 }
                 if (doc) {
-                    try {
-                        //convert from db style to intermediate style before forwarding to plist
-                        return resolve(plistUtil.extractFlow(doc));
-                    } catch (ex) {
-                        return resolve([]);
-                    }
+                    //convert from db style to intermediate style before forwarding to plist
+                    plistUtil.extractFlow(doc).then(function (res) {
+                        return resolve(res);
+                    })
                 }
                 return resolve([]);
             });
