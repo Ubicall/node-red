@@ -8,7 +8,8 @@ var plistMapper = {
     "t": {name: "ChoiceText", type: "String"},
     "wi": {name: "ScreenName", type: "String"},
     "wt": {name: "ChoiceType", type: "String"},
-    "screen_name": {name: "ScreenTitle", type: "String"}
+    "screen_name": {name: "ScreenTitle", type: "String"},
+    "screen_content": {name: "ContentText", type: "String"}
 };
 var mockFlow = {
     "key": "e6053eb8d35e02ae40beeeacef203c1a",
@@ -108,22 +109,6 @@ var flow = {
         }
     ]
 };
-function extractChoices(that) {
-    console.log(that.choices);
-    return that.choices.map(mapElement);
-    return [
-        {
-            "ChoiceText": "about",
-            "ScreenName": "80a096cb.7f5f68",
-            "ChoiceType": "Info"
-        },
-        {
-            "ChoiceText": "claim",
-            "ScreenName": "4798753f.b8678c",
-            "ChoiceType": "Info"
-        }
-    ];
-}
 
 function mapElement(that) {
     var rObj = {};
@@ -131,6 +116,9 @@ function mapElement(that) {
         if (that.hasOwnProperty(k) && plistMapper.hasOwnProperty(k)) {
             if (plistMapper[k].name == 'choices') {
                 rObj[plistMapper[k].name] = that.choices.map(mapElement);
+                rObj[plistMapper[k].name].forEach(function (choice, index) {
+                    choice.ScreenName = that.wires[index][0];
+                });
             } else {
                 rObj[plistMapper[k].name] = k == 'type' ? plistMapper[that[k]].name : that[k];
             }
@@ -155,18 +143,19 @@ function extractFlow(flow) {
         return (node.hasOwnProperty('type') && node.type == 'start');
     })[0].wire[0][0];
     var initial = _flow.Nodes.filter(function (node) {
-        return (start && node.hasOwnProperty('id') && node.id == startId);
+        return (startId && node.hasOwnProperty('id') && node.id == startId);
     })[0];//get first one , id attribute doesn't duplicate
     var rest_of_flow = _flow.Nodes.filter(function (node) {
         return (node.type != 'start' && node.type != 'tab');
     });
     __flow.Initial = plistMapper[initial.type].name;
     __flow.MainScreen = [initial].map(mapElement)[0];
+    rest_of_flow.forEach(function (node) {
+        __flow[node.id] = mapElement(node);
+    });
 
-    return mockFlow;
+    return __flow;
 }
 module.exports = {
     extractFlow: extractFlow
 }
-
-extractFlow(flow);
