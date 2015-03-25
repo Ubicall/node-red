@@ -34,7 +34,6 @@ mongoStorage = {
                         return resolve(res);
                     })
                 }
-                return resolve([]);
             });
         });
     }

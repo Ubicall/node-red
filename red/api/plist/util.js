@@ -13,37 +13,6 @@ var plistMapper = {
     "screen_name": {name: "ScreenTitle", type: "String"},
     "screen_content": {name: "ContentText", type: "String"}
 };
-var mockFlow = {
-    "key": "e6053eb8d35e02ae40beeeacef203c1a",
-    "Version": 1427206427425,
-    "Initial": "Choice",
-    "MainScreen": {
-        "ScreenType": "Choice",
-        "ScreenTitle": "ubicall",
-        "choices": [
-            {
-                "ChoiceText": "about",
-                "ScreenName": "80a096cb.7f5f68",
-                "ChoiceType": "Info"
-            },
-            {
-                "ChoiceText": "claim",
-                "ScreenName": "4798753f.b8678c",
-                "ChoiceType": "Info"
-            }
-        ]
-    },
-    "80a096cb.7f5f68": {
-        "ScreenType": "Info",
-        "ScreenTitle": "about",
-        "ContentText": "ubicall , ivr"
-    },
-    "4798753f.b8678c": {
-        "ScreenType": "Info",
-        "ScreenTitle": "claim",
-        "ContentText": "i need to raise a claim"
-    }
-};
 
 function mapElement(that) {
     var rObj = {};
@@ -61,9 +30,10 @@ function mapElement(that) {
     }
     return rObj;
 }
+
 module.exports = {
     extractFlow: function (flow) {
-        when.promise(function (resolve) {
+        return when.promise(function (resolve) {
             try {
                 //remove unnecessary parts from mongo db object
                 var _flow = JSON.parse(JSON.stringify(flow, function (key, value) {
@@ -77,7 +47,7 @@ module.exports = {
                 var startId = _flow.Nodes.filter(function (node) {
                     // TODO : if it has no start point through exception
                     return (node.hasOwnProperty('type') && node.type == 'start');
-                })[0].wire[0][0];
+                })[0].wires[0][0];
                 var initial = _flow.Nodes.filter(function (node) {
                     return (startId && node.hasOwnProperty('id') && node.id == startId);
                 })[0];//get first one , id attribute doesn't duplicate
