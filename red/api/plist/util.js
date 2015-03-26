@@ -1,7 +1,7 @@
 // convert mongo db object style to middle style used by plist.js
 var when = require('when');
 
-
+var g_flow;
 var plistMapper = {
     "choicesscreen": {name: "Choice", type: "String"},
     "InfoScreen": {name: "Info", type: "String"},
@@ -14,6 +14,12 @@ var plistMapper = {
     "screen_content": {name: "ContentText", type: "String"}
 };
 
+function getNodeWithId(_id) {//get first one , id attribute doesn't duplicate
+    return g_flow.Nodes.filter(function (node) {
+        return (_id && node.hasOwnProperty('id') && node.id == _id);
+    })[0];
+}
+
 function mapElement(that) {
     var rObj = {};
     for (var k in that) {
@@ -22,6 +28,7 @@ function mapElement(that) {
                 rObj[plistMapper[k].name] = that.choices.map(mapElement);
                 rObj[plistMapper[k].name].forEach(function (choice, index) {
                     choice.ScreenName = that.wires[index][0];
+                    choice.ChoiceType = plistMapper[getNodeWithId(choice.ScreenName).type].name;
                 });
             } else {
                 rObj[plistMapper[k].name] = k == 'type' ? plistMapper[that[k]].name : that[k];
@@ -41,6 +48,7 @@ module.exports = {
                 }));
 
                 var __flow = {};
+                g_flow = _flow;
                 __flow.key = _flow.key;
                 __flow.Version = _flow.version;
 
@@ -48,9 +56,7 @@ module.exports = {
                     // TODO : if it has no start point through exception
                     return (node.hasOwnProperty('type') && node.type == 'start');
                 })[0].wires[0][0];
-                var initial = _flow.Nodes.filter(function (node) {
-                    return (startId && node.hasOwnProperty('id') && node.id == startId);
-                })[0];//get first one , id attribute doesn't duplicate
+                var initial = getNodeWithId(startId);
                 var rest_of_flow = _flow.Nodes.filter(function (node) {
                     return (node.type != 'start' && node.type != 'tab');
                 });
