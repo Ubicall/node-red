@@ -11,7 +11,9 @@ var plistMapper = {
     "wi": {name: "ScreenName", type: "String"},
     "wt": {name: "ChoiceType", type: "String"},
     "screen_name": {name: "ScreenTitle", type: "String"},
-    "screen_content": {name: "ContentText", type: "String"}
+    "screen_content": {name: "ContentText", type: "String"},
+    "url": {name: "URL", type: "String"},
+    "url_title": {name: "ChoiceText", type: "String"}
 };
 
 function getNodeWithId(_id) {//get first one , id attribute doesn't duplicate
@@ -27,8 +29,15 @@ function mapElement(that) {
             if (plistMapper[k].name == 'choices') {
                 rObj[plistMapper[k].name] = that.choices.map(mapElement);
                 rObj[plistMapper[k].name].forEach(function (choice, index) {
-                    choice.ScreenName = that.wires[index][0];
-                    choice.ChoiceType = plistMapper[getNodeWithId(that.wires[index][0]).type].name;
+                    var Node = getNodeWithId(that.wires[index][0]);
+                    choice.ChoiceType = plistMapper[Node.type].name;
+                    if (Node.type == 'url') {
+                        choice.url = Node.url;
+                        choice.ChoiceText = Node.url_title;
+                        delete choice.ScreenName;
+                    } else {
+                        choice.ScreenName = that.wires[index][0];
+                    }
                 });
             } else {
                 rObj[plistMapper[k].name] = k == 'type' ? plistMapper[that[k]].name : that[k];
