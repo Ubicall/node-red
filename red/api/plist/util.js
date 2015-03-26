@@ -28,7 +28,7 @@ function mapElement(that) {
                 rObj[plistMapper[k].name] = that.choices.map(mapElement);
                 rObj[plistMapper[k].name].forEach(function (choice, index) {
                     choice.ScreenName = that.wires[index][0];
-                    choice.ChoiceType = plistMapper[getNodeWithId(choice.ScreenName).type].name;
+                    choice.ChoiceType = plistMapper[getNodeWithId(that.wires[index][0]).type].name;
                 });
             } else {
                 rObj[plistMapper[k].name] = k == 'type' ? plistMapper[that[k]].name : that[k];
