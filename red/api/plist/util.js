@@ -13,7 +13,10 @@ var plistMapper = {
     "screen_name": {name: "ScreenTitle", type: "String"},
     "screen_content": {name: "ContentText", type: "String"},
     "url": {name: "URL", type: "String"},
-    "url_title": {name: "ChoiceText", type: "String"}
+    "url_title": {name: "ChoiceText", type: "String"},
+    "call": {name: "Call", type: "String"},
+    "title": {name: "ChoiceText", type: "String"},
+    "queue": {name: "QueueDestination", type: "String"}
 };
 
 function getNodeWithId(_id) {//get first one , id attribute doesn't duplicate
@@ -34,6 +37,10 @@ function mapElement(that) {
                     if (Node.type == 'url') {
                         choice.url = Node.url;
                         choice.ChoiceText = Node.url_title;
+                        delete choice.ScreenName;
+                    } else if (Node.type == 'call') {
+                        choice.ChoiceText = Node.title;
+                        choice.QueueDestination=Node.queue.id;
                         delete choice.ScreenName;
                     } else {
                         choice.ScreenName = that.wires[index][0];
