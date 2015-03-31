@@ -2,6 +2,11 @@
 
 http://nodered.org
 
+__what i try to do in this fork : __
+    add mongo db as storage engine for [flows - user -sessions ]
+    create group which has some flow and each group has user may have specific permission to change / deploy aflow
+    [create customized component for ivr](https://github.com/waleedsamy/node-red-contrib-ivr).
+
 [![Build Status](https://travis-ci.org/node-red/node-red.png)](https://travis-ci.org/node-red/node-red) [![Coverage Status](https://coveralls.io/repos/node-red/node-red/badge.png?branch=master)](https://coveralls.io/r/node-red/node-red?branch=master)
 
 
