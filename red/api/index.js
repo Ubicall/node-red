@@ -32,9 +32,8 @@ var needsPermission = auth.needsPermission;
 var settings = require("../settings");
 
 var errorHandler = function(err,req,res,next) {
-    //TODO: standardize json response
     console.log(err.stack);
-    res.send(400,err.toString());
+    res.json(400,{message:err.toString()});
 };
 
 function init(adminApp,storage) {
@@ -52,6 +51,8 @@ function init(adminApp,storage) {
 
     adminApp.use(express.json());
     adminApp.use(express.urlencoded());
+
+    adminApp.get("/auth/login",auth.login);
     
     if (settings.adminAuth) {
         //TODO: all passport references ought to be in ./auth
@@ -62,7 +63,6 @@ function init(adminApp,storage) {
             auth.getToken,
             auth.errorHandler
         );
-        adminApp.get("/auth/login",auth.login);
         adminApp.post("/auth/revoke",auth.revoke);
     }
 

@@ -39,7 +39,7 @@ module.exports = {
         }).otherwise(function(err) {
             log.warn("Error saving flows : "+err.message);
             log.warn(err.stack);
-            res.send(500,err.message);
+            res.json(500,{message:err.message});
         });
     }
 }

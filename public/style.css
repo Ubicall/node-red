@@ -391,13 +391,13 @@ span.deploy-button-group.open > #btn-deploy.disabled + a ,span.save-button-group
     clear: both;
 }
 .palette_label {
-    margin: 4px 0 4px 30px;
+    margin: 4px 0 4px 28px;
     line-height: 20px;
-    text-align: center;
     overflow: hidden;
+    text-align: center;
 }
 .palette_label_right {
-    margin: 4px 30px 4px 0;
+    margin: 4px 28px 4px 0;
 }
 
 .palette_node {
@@ -1071,7 +1071,7 @@ ul.red-ui-tabs li {
     margin: 0 5px 0 0;
     height: 23px;
     line-height: 17px;
-    max-width: 150px;
+    max-width: 200px;
     width: 14%;
     overflow: hidden;
     white-space: nowrap;
