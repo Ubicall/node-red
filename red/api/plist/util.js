@@ -25,6 +25,13 @@ function getNodeWithId(_id) {//get first one , id attribute doesn't duplicate
     })[0];
 }
 
+function isNodeValid(Node) {
+    if (Node && Node.hasOwnProperty('type')) {
+        return true;
+    }
+    return false;
+}
+
 function mapElement(that) {
     var rObj = {};
     for (var k in that) {
