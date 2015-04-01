@@ -161,17 +161,18 @@ module.exports = {
 
     adminAuth: {
         type: "credentials",
-        users:require('./red/api/auth/users_db').get ,
-        authenticate:require('./red/api/auth/users_db').authenticate
+        users: require('./red/api/auth/users_db').get,
+        authenticate: require('./red/api/auth/users_db').authenticate,
+        create: require('./red/api/auth/users_db').create
     },
 
     // mongo db as persistence backend
     storageModule: "mongodb",
     //uri and database name for mongodb if not defined (uri : "localhost" and db :"rrrtest")
-     mongodb: {
+    mongodb: {
         uri: "localhost",
         db: "rrrtest"
-      },
+    },
 
     //enable /plist
     plist: true

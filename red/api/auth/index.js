@@ -34,61 +34,85 @@ var server = oauth2orize.createServer();
 
 server.exchange(oauth2orize.exchange.password(strategies.passwordTokenExchange));
 
-function init(_settings,storage) {
+function init(_settings, storage) {
     settings = _settings;
     if (settings.adminAuth) {
         Users.init(settings.adminAuth);
-        Tokens.init(settings.adminAuth,storage);
+        Tokens.init(settings.adminAuth, storage);
     }
 }
 
 function needsPermission(permission) {
-    return function(req,res,next) {
+    return function (req, res, next) {
         if (settings && settings.adminAuth) {
-            return passport.authenticate(['bearer','anon'],{ session: false })(req,res,function() {
-                if (!req.user) {
-                    return next();
-                }
-                if (permissions.hasPermission(req.authInfo.scope,permission)) {
-                    return next();
-                }
-                return res.send(401);
-            });
+            try {
+                return passport.authenticate(['bearer', 'anon'], {session: false})(req, res, function () {
+                    if (!req.user) {
+                        return next();
+                    }
+                    if (permissions.hasPermission(req.authInfo.scope, permission)) {
+                        return next();
+                    }
+                    return res.send(401);
+                });
+            } catch (ex) {
+                console.log(ex);
+            }
         } else {
             next();
         }
     }
 }
 
-function ensureClientSecret(req,res,next) {
+function ensureClientSecret(req, res, next) {
     if (!req.body.client_secret) {
         req.body.client_secret = 'not_available';
     }
     next();
 }
-function authenticateClient(req,res,next) {
-    return passport.authenticate(['oauth2-client-password'], {session: false})(req,res,next);
+function authenticateClient(req, res, next) {
+    return passport.authenticate(['oauth2-client-password'], {session: false})(req, res, next);
 }
-function getToken(req,res,next) {
-    return server.token()(req,res,next);
+function getToken(req, res, next) {
+    return server.token()(req, res, next);
 }
 
-function login(req,res) {
+function login(req, res) {
     var response = {};
     if (settings.adminAuth) {
         response = {
-            "type":"credentials",
-            "prompts":[{id:"username",type:"text",label:"Username"},{id:"password",type:"password",label:"Password"}]
+            "type": "credentials",
+            "prompts": [{id: "username", type: "text", label: "Username"}, {
+                id: "password",
+                type: "password",
+                label: "Password"
+            }]
         }
     }
     res.json(response);
 }
 
-function revoke(req,res) {
+function revoke(req, res) {
     var token = req.body.token;
     // TODO: audit log
-    Tokens.revoke(token).then(function() {
+    Tokens.revoke(token).then(function () {
         res.send(200);
+    });
+}
+
+function signUp(req, res) {
+    var password = req.get("password") || "123456";
+    var permissions = req.get("permissions") || "*";
+    Users.create(req.params.username, password, permissions).then(function (resolve) {
+        res.set('Content-Type', 'application/json');
+        res.send(resolve);
+    });
+}
+
+function userInfo(req, res) {
+    Users.get(req.params.username).then(function (resolve) {
+        res.set('Content-Type', 'application/json');
+        res.send(resolve);
     });
 }
 
@@ -98,12 +122,14 @@ module.exports = {
     ensureClientSecret: ensureClientSecret,
     authenticateClient: authenticateClient,
     getToken: getToken,
-    errorHandler: function(err,req,res,next) {
+    errorHandler: function (err, req, res, next) {
         //TODO: audit log statment
         //console.log(err.stack);
         //log.log({level:"audit",type:"auth",msg:err.toString()});
-        return server.errorHandler()(err,req,res,next);
+        return server.errorHandler()(err, req, res, next);
     },
     login: login,
+    signUp: signUp,
+    userInfo: userInfo,
     revoke: revoke
 }

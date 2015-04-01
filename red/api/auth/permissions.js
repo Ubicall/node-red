@@ -19,33 +19,33 @@ var util = require('util');
 var readRE = /^((.+)\.)?read$/
 var writeRE = /^((.+)\.)?write$/
 
-function hasPermission(userScope,permission) {
+function hasPermission(userScope, permission) {
     var i;
     if (util.isArray(userScope)) {
         if (userScope.length === 0) {
             return false;
         }
-        for (i=0;i<userScope.length;i++) {
-            if (!hasPermission(userScope[i],permission)) {
+        for (i = 0; i < userScope.length; i++) {
+            if (!hasPermission(userScope[i], permission)) {
                 return false;
             }
         }
         return true;
     }
-    
+
     if (userScope == "*") {
         return true;
     }
-    
+
     if (util.isArray(permission)) {
-        for (i=0;i<permission.length;i++) {
-            if (!hasPermission(userScope,permission[i])) {
+        for (i = 0; i < permission.length; i++) {
+            if (!hasPermission(userScope, permission[i])) {
                 return false;
             }
         }
         return true;
     }
-    
+
     if (userScope == "read") {
         return readRE.test(permission);
     } else {
@@ -53,6 +53,27 @@ function hasPermission(userScope,permission) {
     }
 }
 
+function isValidPermission(permission) {
+    var perRE = /^((.+)\.)?read$|^((.+)\.)?write$/;
+
+    if (util.isArray(permission)) {
+        if (permission.length === 0) {
+            return false;
+        }
+        for (i = 0; i < permission.length; i++) {
+            if (!perRE.test(permission[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+    if (permission == "*") {
+        return true;
+    }
+
+
+}
 module.exports = {
     hasPermission: hasPermission,
+    isValidPermission: isValidPermission
 }

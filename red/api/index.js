@@ -27,33 +27,34 @@ var library = require("./library");
 var info = require("./info");
 
 var auth = require("./auth");
+var users = require("./auth/users");
 var needsPermission = auth.needsPermission;
 
 var settings = require("../settings");
 
-var errorHandler = function(err,req,res,next) {
+var errorHandler = function (err, req, res, next) {
     console.log(err.stack);
-    res.json(400,{message:err.toString()});
+    res.json(400, {message: err.toString()});
 };
 
-function init(adminApp,storage) {
-    
-    auth.init(settings,storage);
-    
+function init(adminApp, storage) {
+
+    auth.init(settings, storage);
+
     // Editor
     if (!settings.disableEditor) {
         var editorApp = express();
-        editorApp.get("/",ui.ensureSlash);
-        editorApp.get("/icons/:icon",ui.icon);
-        editorApp.use("/",ui.editor);
+        editorApp.get("/", ui.ensureSlash);
+        editorApp.get("/icons/:icon", ui.icon);
+        editorApp.use("/", ui.editor);
         adminApp.use(editorApp);
     }
 
     adminApp.use(express.json());
     adminApp.use(express.urlencoded());
 
-    adminApp.get("/auth/login",auth.login);
-    
+    adminApp.get("/auth/login", auth.login);
+
     if (settings.adminAuth) {
         //TODO: all passport references ought to be in ./auth
         adminApp.use(passport.initialize());
@@ -63,39 +64,44 @@ function init(adminApp,storage) {
             auth.getToken,
             auth.errorHandler
         );
-        adminApp.post("/auth/revoke",auth.revoke);
+        adminApp.post("/auth/revoke", auth.revoke);
     }
 
     // Flows
-    adminApp.get("/flows",needsPermission("flows.read"),flows.get);
-    adminApp.post("/flows",needsPermission("flows.write"),flows.post);
-    
-    // Nodes
-    adminApp.get("/nodes",needsPermission("nodes.read"),nodes.getAll);
-    adminApp.post("/nodes",needsPermission("nodes.write"),nodes.post);
+    adminApp.get("/flows", needsPermission("flows.read"), flows.get);
+    adminApp.post("/flows", needsPermission("flows.write"), flows.post);
 
-    adminApp.get("/nodes/:mod",needsPermission("nodes.read"),nodes.getModule);
-    adminApp.put("/nodes/:mod",needsPermission("nodes.write"),nodes.putModule);
-    adminApp.delete("/nodes/:mod",needsPermission("nodes.write"),nodes.delete);
-    
-    adminApp.get("/nodes/:mod/:set",needsPermission("nodes.read"),nodes.getSet);
-    adminApp.put("/nodes/:mod/:set",needsPermission("nodes.write"),nodes.putSet);
+    // Nodes
+    adminApp.get("/nodes", needsPermission("nodes.read"), nodes.getAll);
+    adminApp.post("/nodes", needsPermission("nodes.write"), nodes.post);
+
+    adminApp.get("/nodes/:mod", needsPermission("nodes.read"), nodes.getModule);
+    adminApp.put("/nodes/:mod", needsPermission("nodes.write"), nodes.putModule);
+    adminApp.delete("/nodes/:mod", needsPermission("nodes.write"), nodes.delete);
+
+    adminApp.get("/nodes/:mod/:set", needsPermission("nodes.read"), nodes.getSet);
+    adminApp.put("/nodes/:mod/:set", needsPermission("nodes.write"), nodes.putSet);
 
     // Library
     library.init(adminApp);
-    adminApp.post(new RegExp("/library/flows\/(.*)"),needsPermission("library.write"),library.post);
-    adminApp.get("/library/flows",needsPermission("library.read"),library.getAll);
-    adminApp.get(new RegExp("/library/flows\/(.*)"),needsPermission("library.read"),library.get);
-    
+    adminApp.post(new RegExp("/library/flows\/(.*)"), needsPermission("library.write"), library.post);
+    adminApp.get("/library/flows", needsPermission("library.read"), library.getAll);
+    adminApp.get(new RegExp("/library/flows\/(.*)"), needsPermission("library.read"), library.get);
+
     // Settings
-    adminApp.get("/settings",needsPermission("settings.read"),info.settings);
+    adminApp.get("/settings", needsPermission("settings.read"), info.settings);
 
     // Plist
     if (settings.plist) {
         plist.init(settings);
-        adminApp.get("/plist/:username/:version",/*needsPermission("plist.read"),*/ plist.get);
-        adminApp.get("/plist/:username",/*needsPermission("plist.read"),*/ plist.get);
+        adminApp.get("/plist/:username/:version", needsPermission("plist.read"), plist.get);
+        adminApp.get("/plist/:username", needsPermission("plist.read"), plist.get);
     }
+
+    //admin user can create Users
+    adminApp.get("/user/:username", needsPermission("users.read"), auth.userInfo);
+    adminApp.post("/user/:username", needsPermission("users.write"), auth.signUp);
+
     // Error Handler
     adminApp.use(errorHandler);
 }

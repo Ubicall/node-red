@@ -57,7 +57,7 @@ function create(username, password, permissions) {
         var Us = new UserModal({
             username: username,
             password: red_util.generateHash(password),
-            permissions: util.isArray(permissions) ? permissions : [permissions]
+            permissions: permissions
         });
         Us.save(function (err) {
             if (err) {

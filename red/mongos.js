@@ -9,7 +9,7 @@ try {
 catch (e) {
     bcrypt = require('bcryptjs');
 }
-
+var permissions = require('./api/auth/permissions');
 
 var settings;
 
@@ -26,18 +26,18 @@ var SessionSchema = new Schema({Sessions: Schema.Types.Mixed});
 var UserSchema = mongoose.Schema({
     username: {type: String, unique: true, required: true},
     password: {type: String, required: true},
-    permissions: {
-        type: [String],
-        validate: /^\*$|^((.+)\.)?read$|^((.+)\.)?write$/
-    }
+    permissions: Schema.Types.Mixed
 });
 
 
-//schemas method
+//schemas method & validators
 UserSchema.methods.generateHash = function (password) {
     return red_util.generateHash(password);
 };
 
+
+UserSchema.path('permissions').validate(permissions.isValidPermission,
+    'permission may be * , ["xyz.read", "xyz.write")');
 //END schemas method
 
 var mongos = {
