@@ -15,6 +15,13 @@
  **/
 
 var clone = require("clone");
+var bcrypt;
+try {
+    bcrypt = require('bcrypt');
+}
+catch (e) {
+    bcrypt = require('bcryptjs');
+}
 
 function ensureString(o) {
     if (Buffer.isBuffer(o)) {

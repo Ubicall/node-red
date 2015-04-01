@@ -1,6 +1,7 @@
 var when = require("when");
 var util = require("util");
 var red_util = require("../../util");
+var log = require("../../log");
 var bcrypt;
 try {
     bcrypt = require('bcrypt');
@@ -15,8 +16,8 @@ function get(username) {
         var query = UserModal.where({username: username});
         query.findOne(function (err, doc) {
             if (err) {
-                log.info("No User Found // create user with name " + username + " and password 123456");
-                return create(username, "123456", "*");
+                log.info("error occurred when trying to find User");
+                return resolve(null);
             }
             if (doc) {
                 try {
@@ -25,7 +26,10 @@ function get(username) {
                     return resolve(null);
                 }
             }
-            return resolve(null);
+            log.info("No User Found // create user with name " + username + " and password 123456");
+            create(username, "123456", "*").then(function (user) {
+                return resolve(user);
+            });
         });
     });
 }
@@ -39,7 +43,7 @@ function authenticate(username, password) {
                 });
             });
         }
-        return resolve(null);
+        return when.resolve(null);
     });
 }
 
