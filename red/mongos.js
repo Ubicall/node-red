@@ -1,6 +1,15 @@
 var mongoose = require('mongoose'), Schema = mongoose.Schema;
 
 var log = require("./log");
+var red_util = require("./util");
+var bcrypt;
+try {
+    bcrypt = require('bcrypt');
+}
+catch (e) {
+    bcrypt = require('bcryptjs');
+}
+
 
 var settings;
 
@@ -14,6 +23,22 @@ var NodeSchema = new Schema({
 var CredentialSchema = new Schema({key: String, Credentials: [Schema.Types.Mixed]});
 var SettingSchema = new Schema({key: String, Settings: [Schema.Types.Mixed]});
 var SessionSchema = new Schema({Sessions: Schema.Types.Mixed});
+var UserSchema = mongoose.Schema({
+    username: {type: String, unique: true, required: true},
+    password: {type: String, required: true},
+    permissions: {
+        type: [String],
+        validate: /^\*$|^((.+)\.)?read$|^((.+)\.)?write$/
+    }
+});
+
+
+//schemas method
+UserSchema.methods.generateHash = function (password) {
+    return red_util.generateHash(password);
+};
+
+//END schemas method
 
 var mongos = {
     init: function (_settings) {
@@ -33,7 +58,8 @@ var mongos = {
     nodeModel: mongoose.model('Nodes', NodeSchema),
     credentialModel: mongoose.model('Credentials', CredentialSchema),
     settingModel: mongoose.model('Settings', SettingSchema),
-    sessionModel: mongoose.model('Sessions', SessionSchema)
+    sessionModel: mongoose.model('Sessions', SessionSchema),
+    userModel: mongoose.model('User', UserSchema)
 };
 
 module.exports = mongos;

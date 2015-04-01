@@ -226,7 +226,7 @@ var mongostorage = {
 
     getFlows: function (owner) {
         return when.promise(function (resolve) {
-            query = nodeModel.where({key: owner, deploy: {$gte: 0}}).sort('-version');
+           var query = nodeModel.where({key: owner, deploy: {$gte: 0}}).sort('-version');
             query.findOne(function (err, doc) {
                 if (err) {
                     log.info("Creating new flows file");

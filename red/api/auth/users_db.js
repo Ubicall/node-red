@@ -1,5 +1,6 @@
 var when = require("when");
 var util = require("util");
+var red_util = require("../../util");
 var bcrypt;
 try {
     bcrypt = require('bcrypt');
@@ -7,21 +8,26 @@ try {
 catch (e) {
     bcrypt = require('bcryptjs');
 }
+var UserModal = require('../../mongos').userModel;
+
 function get(username) {
-    // Mock DB
-    var users = {
-        "e6053eb8d35e02ae40beeeacef203c1a": {
-            username: "e6053eb8d35e02ae40beeeacef203c1a",
-            password: "$2a$08$dX60/QGxzCCKj6x5U/kiwu290uRD.COcG014IWNPH2HoCuYmyHxUa",
-            permissions: "*"
-        },
-        "admin": {
-            username: "admin",
-            password: "$2a$08$dX60/QGxzCCKj6x5U/kiwu290uRD.COcG014IWNPH2HoCuYmyHxUa",
-            permissions: "*"
-        }
-    };
-    return when.resolve(users[username]);
+    return when.promise(function (resolve) {
+        var query = UserModal.where({username: username});
+        query.findOne(function (err, doc) {
+            if (err) {
+                log.info("No User Found // create user with name " + username + " and password 123456");
+                return create(username, "123456", "*");
+            }
+            if (doc) {
+                try {
+                    return resolve(JSON.parse(JSON.stringify(doc)));
+                } catch (ex) {
+                    return resolve(null);
+                }
+            }
+            return resolve(null);
+        });
+    });
 }
 
 function authenticate(username, password) {
@@ -37,8 +43,26 @@ function authenticate(username, password) {
     });
 }
 
+function create(username, password, permissions) {
+    return when.promise(function (resolve, reject) {
+        var Us = new UserModal({
+            username: username,
+            password: red_util.generateHash(password),
+            permissions: util.isArray(permissions) ? permissions : [permissions]
+        });
+        Us.save(function (err) {
+            if (err) {
+                return reject(err);
+            } else {
+                log.info("create user : " + username);
+                return resolve(Us);
+            }
+        });
+    });
+}
 
 module.exports = {
     get: get,
-    authenticate: authenticate
+    authenticate: authenticate,
+    create: create
 };

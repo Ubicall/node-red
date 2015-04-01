@@ -24,7 +24,7 @@ function ensureString(o) {
     } else if (typeof o === "string") {
         return o;
     }
-    return ""+o;
+    return "" + o;
 }
 
 function ensureBuffer(o) {
@@ -33,7 +33,7 @@ function ensureBuffer(o) {
     } else if (typeof o === "object") {
         o = JSON.stringify(o);
     } else if (typeof o !== "string") {
-        o = ""+o;
+        o = "" + o;
     }
     return new Buffer(o);
 }
@@ -57,7 +57,7 @@ function cloneMessage(msg) {
     return m;
 }
 
-function compareObjects(obj1,obj2) {
+function compareObjects(obj1, obj2) {
     if (obj1 === obj2) {
         return true;
     }
@@ -76,8 +76,8 @@ function compareObjects(obj1,obj2) {
         if (obj1.length != obj2.length) {
             return false;
         }
-        for (var i=0;i<obj1.length;i++) {
-            if (!compareObjects(obj1[i],obj2[i])) {
+        for (var i = 0; i < obj1.length; i++) {
+            if (!compareObjects(obj1[i], obj2[i])) {
                 return false;
             }
         }
@@ -91,7 +91,7 @@ function compareObjects(obj1,obj2) {
     for (var k in obj1) {
         /* istanbul ignore else */
         if (obj1.hasOwnProperty(k)) {
-            if (!compareObjects(obj1[k],obj2[k])) {
+            if (!compareObjects(obj1[k], obj2[k])) {
                 return false;
             }
         }
@@ -99,9 +99,14 @@ function compareObjects(obj1,obj2) {
     return true;
 }
 
+function generateHash(password) {
+    return bcrypt.hashSync(password, bcrypt.genSaltSync(8));
+}
+
 module.exports = {
     ensureString: ensureString,
     ensureBuffer: ensureBuffer,
     cloneMessage: cloneMessage,
-    compareObjects: compareObjects
+    compareObjects: compareObjects,
+    generateHash: generateHash
 };
