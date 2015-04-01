@@ -333,8 +333,7 @@ var mongostorage = {
 
     getSessions: function () {
         return when.promise(function (resolve) {
-            var query = settingModel.where({key: '123456789'});
-            query.findOne(function (err, doc) {
+            sessionModel.find({}, function (err, doc) {
                 if (err) {
                     log.info("Corrupted session - resetting");
                     return resolve({});
@@ -343,22 +342,26 @@ var mongostorage = {
                     return resolve(doc["Sessions"]);
                 }
                 return resolve({});
-            })
-
+            });
         });
     },
     saveSessions: function (sessions) {
         return when.promise(function (resolve, reject) {
-            var sess = new settingModel({
-                key: "123456789",
-                Sessions: sessions
-            });
-            sess.save(function (err) {
+            //TODO : why rewrite all session every time ??
+            sessionModel.remove({}, function (err) {
                 if (err) {
                     return reject(err);
-                } else {
-                    return resolve(sess);
                 }
+                var _sessions = new sessionModel({
+                    Sessions: sessions
+                });
+                _sessions.save(function (err) {
+                    if (err) {
+                        return reject(err);
+                    } else {
+                        return resolve(sessions);
+                    }
+                });
             });
         });
     },

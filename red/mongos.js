@@ -13,7 +13,7 @@ var NodeSchema = new Schema({
 });
 var CredentialSchema = new Schema({key: String, Credentials: [Schema.Types.Mixed]});
 var SettingSchema = new Schema({key: String, Settings: [Schema.Types.Mixed]});
-var SessionSchema = new Schema({key: String, Sessions: [Schema.Types.Mixed]});
+var SessionSchema = new Schema({Sessions: Schema.Types.Mixed});
 
 var mongos = {
     init: function (_settings) {

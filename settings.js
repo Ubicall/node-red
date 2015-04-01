@@ -161,18 +161,8 @@ module.exports = {
 
     adminAuth: {
         type: "credentials",
-        users: [
-            {
-            username: "e6053eb8d35e02ae40beeeacef203c1a",
-            password: "$2a$08$dX60/QGxzCCKj6x5U/kiwu290uRD.COcG014IWNPH2HoCuYmyHxUa",
-            permissions: "*"
-            },
-            {
-                username: "admin",
-                password: "$2a$08$dX60/QGxzCCKj6x5U/kiwu290uRD.COcG014IWNPH2HoCuYmyHxUa",
-                permissions: "*"
-            }
-        ]
+        users:require('./red/api/auth/users_db').get ,
+        authenticate:require('./red/api/auth/users_db').authenticate
     },
 
     // mongo db as persistence backend
