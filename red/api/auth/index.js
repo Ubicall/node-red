@@ -116,6 +116,10 @@ function userInfo(req, res) {
     });
 }
 
+function myInfo(req, res) {
+    res.set('Content-Type', 'application/json');
+    res.send(req.user);
+}
 module.exports = {
     init: init,
     needsPermission: needsPermission,

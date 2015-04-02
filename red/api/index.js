@@ -37,6 +37,16 @@ var errorHandler = function (err, req, res, next) {
     res.json(400, {message: err.toString()});
 };
 
+var _permissions = [
+    "flows.write", "flows.read",
+    "nodes.write", "nodes.read",
+    "library.write", "library.read",
+    "settings.write", "settings.read",
+    "plist.write", "plist.read",
+    "me.write", "me.read",
+    "user.write", "user.read"
+];
+
 function init(adminApp, storage) {
 
     auth.init(settings, storage);
@@ -98,9 +108,10 @@ function init(adminApp, storage) {
         adminApp.get("/plist/:username", needsPermission("plist.read"), plist.get);
     }
 
+    adminApp.get("/me", needsPermission("me.read"), auth.userInfo);
     //admin user can create Users
-    adminApp.get("/user/:username", needsPermission("users.read"), auth.userInfo);
-    adminApp.post("/user/:username", needsPermission("users.write"), auth.signUp);
+    adminApp.get("/user/:username", needsPermission("user.read"), auth.userInfo);
+    adminApp.post("/user/:username", needsPermission("user.write"), auth.signUp);
 
     // Error Handler
     adminApp.use(errorHandler);
