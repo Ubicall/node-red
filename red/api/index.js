@@ -108,7 +108,7 @@ function init(adminApp, storage) {
         adminApp.get("/plist/:username", needsPermission("plist.read"), plist.get);
     }
 
-    adminApp.get("/me", needsPermission("me.read"), auth.userInfo);
+    adminApp.get("/me", needsPermission("me.read"), auth.me);
     //admin user can create Users
     adminApp.get("/user/:username", needsPermission("user.read"), auth.userInfo);
     adminApp.post("/user/:username", needsPermission("user.write"), auth.signUp);

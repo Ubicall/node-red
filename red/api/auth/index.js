@@ -135,5 +135,6 @@ module.exports = {
     login: login,
     signUp: signUp,
     userInfo: userInfo,
+    me:myInfo,
     revoke: revoke
 }
