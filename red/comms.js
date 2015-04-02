@@ -44,9 +44,9 @@ function start() {
         Users.default().then(function(anonymousUser) {
             var webSocketKeepAliveTime = settings.webSocketKeepAliveTime || 15000;
             var path = settings.httpAdminRoot || "/";
-            path = (path.slice(0,1) != "/" ? "/":"") + path + (path.slice(-1) == "/" ? "":"/")+"comms";;
+            path = (path.slice(0,1) != "/" ? "/":"") + path + (path.slice(-1) == "/" ? "":"/") + "comms";
+            wsServer = new ws.Server({server:server,path:path});
 
-            console.log("Web Socket Path : "+path);
             wsServer.on('connection',function(ws) {
                 var pendingAuth = (settings.adminAuth != null);
                 if (!pendingAuth) {
