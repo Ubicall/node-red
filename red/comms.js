@@ -44,13 +44,7 @@ function start() {
         Users.default().then(function(anonymousUser) {
             var webSocketKeepAliveTime = settings.webSocketKeepAliveTime || 15000;
             var path = settings.httpAdminRoot || "/";
-            path = (path.slice(0,1) != "/" ? "/":"") + path + (path.slice(-1) == "/" ? "":"/");
-            if(process.env.NODE_ENV=="production"){
-                path+= "design/comms";
-            }else{
-                path+= "comms";
-            }
-            wsServer = new ws.Server({server:server,path:path});
+            path = (path.slice(0,1) != "/" ? "/":"") + path + (path.slice(-1) == "/" ? "":"/")+"comms";;
 
             console.log("Web Socket Path : "+path);
             wsServer.on('connection',function(ws) {
