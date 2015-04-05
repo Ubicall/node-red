@@ -59,10 +59,19 @@ function create(username, password, permisssions) {
     });
 }
 
+//update in memory User
+function update(username, password, permisssions) {
+    users[username] = null;
+    passwords[username] = null;
+    return create(username,password,permisssions);
+}
+
+
 var api = {
     get: get,
     authenticate: authenticate,
     create: create,
+    update:update,
     default: getDefaultUser
 }
 
@@ -119,6 +128,15 @@ function init(config) {
     } else {
         api.create = create;
     }
+    if (config.update) {
+        if (typeof config.update === "function") {
+            api.update = config.update;
+        } else {
+            api.update = update;
+        }
+    } else {
+        api.update = create;
+    }
 }
 
 module.exports = {
@@ -134,5 +152,8 @@ module.exports = {
     },
     create: function (username, password, permissions) {
         return api.create(username, password, permissions);
+    },
+    update: function () {
+        return return api.update(username, password, permissions);
     }
 };

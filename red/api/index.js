@@ -31,6 +31,7 @@ var users = require("./auth/users");
 var needsPermission = auth.needsPermission;
 
 var settings = require("../settings");
+var common=require('../upload/common')
 
 var errorHandler = function (err, req, res, next) {
     console.log(err.stack);
@@ -44,7 +45,8 @@ var _permissions = [
     "settings.write", "settings.read",
     "plist.write", "plist.read",
     "me.write", "me.read",
-    "user.write", "user.read"
+    "user.write", "user.read",
+    "resource.write"
 ];
 
 function init(adminApp, storage) {
@@ -112,6 +114,10 @@ function init(adminApp, storage) {
     //admin user can create Users
     adminApp.get("/user/:username", needsPermission("user.read"), auth.userInfo);
     adminApp.post("/user/:username", needsPermission("user.write"), auth.signUp);
+    adminApp.put("/user/:username", needsPermission("user.write"), auth.updateUser);
+
+    //upload images
+    adminApp.post('/upload',needsPermission("resource.write") ,common.uploadImage);
 
     // Error Handler
     adminApp.use(errorHandler);

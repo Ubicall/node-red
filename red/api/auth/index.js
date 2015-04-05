@@ -109,6 +109,22 @@ function signUp(req, res) {
     });
 }
 
+function updateUser(req, res) {
+    var password = req.get("password");
+    if (password) {
+        var permissions = req.get("permissions") || "*";
+        Users.update(req.params.username, password, permissions).then(function (resolve) {
+            res.set('Content-Type', 'application/json');
+            res.send(resolve);
+        });
+    } else {
+        res.set('Content-Type', 'application/json');
+        res.send({status: "fail"});
+    }
+
+}
+
+
 function userInfo(req, res) {
     Users.get(req.params.username).then(function (resolve) {
         res.set('Content-Type', 'application/json');
@@ -135,6 +151,7 @@ module.exports = {
     login: login,
     signUp: signUp,
     userInfo: userInfo,
-    me:myInfo,
+    updateUser: updateUser,
+    me: myInfo,
     revoke: revoke
 }

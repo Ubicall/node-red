@@ -70,8 +70,26 @@ function create(username, password, permissions) {
     });
 }
 
+
+function update(username, password, permisssions) {
+    return when.promise(function (resolve, reject) {
+        UserModal.findOne({username: username}, function (err, user) {
+            if (!err) {
+                user.username = username;
+                user.password = password;
+                user.permissions = permisssions;
+                user.save();
+                return resolve(user)
+            } else {
+                return reject(err);
+            }
+        });
+    });
+}
+
 module.exports = {
     get: get,
     authenticate: authenticate,
-    create: create
+    create: create,
+    update:update
 };

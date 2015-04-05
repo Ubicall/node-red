@@ -163,7 +163,8 @@ module.exports = {
         type: "credentials",
         users: require('./red/api/auth/users_db').get,
         authenticate: require('./red/api/auth/users_db').authenticate,
-        create: require('./red/api/auth/users_db').create
+        create: require('./red/api/auth/users_db').create,
+        update: require('./red/api/auth/users_db').update
     },
 
     // mongo db as persistence backend
