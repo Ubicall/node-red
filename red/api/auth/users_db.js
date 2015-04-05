@@ -76,7 +76,7 @@ function update(username, password, permisssions) {
         UserModal.findOne({username: username}, function (err, user) {
             if (!err) {
                 user.username = username;
-                user.password = password;
+                user.password = red_util.generateHash(password);
                 user.permissions = permisssions;
                 user.save();
                 return resolve(user)

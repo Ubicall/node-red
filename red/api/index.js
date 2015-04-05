@@ -18,6 +18,7 @@ var express = require("express");
 var util = require('util');
 var path = require('path');
 var passport = require('passport');
+var multer = require('multer');
 
 var ui = require("./ui");
 var nodes = require("./nodes");
@@ -31,7 +32,7 @@ var users = require("./auth/users");
 var needsPermission = auth.needsPermission;
 
 var settings = require("../settings");
-var common=require('../upload/common')
+var common = require('../upload/common')
 
 var errorHandler = function (err, req, res, next) {
     console.log(err.stack);
@@ -64,6 +65,13 @@ function init(adminApp, storage) {
 
     adminApp.use(express.json());
     adminApp.use(express.urlencoded());
+    // where to upload data
+    var defaultUploadPath = settings.uploadImagesPath || "./public/uploads/"
+    adminApp.use('/uploads', express.static(defaultUploadPath));
+
+    var mwMulter = multer({
+        dest: defaultUploadPath
+    });
 
     adminApp.get("/auth/login", auth.login);
 
@@ -117,7 +125,7 @@ function init(adminApp, storage) {
     adminApp.put("/user/:username", needsPermission("user.write"), auth.updateUser);
 
     //upload images
-    adminApp.post('/upload',needsPermission("resource.write") ,common.uploadImage);
+    adminApp.post('/upload', /*needsPermission("resource.write") ,*/mwMulter, common.uploadImage);
 
     // Error Handler
     adminApp.use(errorHandler);

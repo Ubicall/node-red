@@ -153,7 +153,7 @@ module.exports = {
     create: function (username, password, permissions) {
         return api.create(username, password, permissions);
     },
-    update: function () {
-        return return api.update(username, password, permissions);
+    update: function (username, password, permissions) {
+        return api.update(username, password, permissions);
     }
 };

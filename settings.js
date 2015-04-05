@@ -174,6 +174,8 @@ module.exports = {
         uri: "localhost",
         db: "rrrtest"
     },
+    // where to upload data (used to upload images to /uploads/
+   // uploadImagesPath:"/uploads/",
 
     //enable /plist
     plist: true

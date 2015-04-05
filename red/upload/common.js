@@ -1,19 +1,15 @@
 var util = require('util');
 
-exports.uploadImage = function(req, res, next){
-    console.log('file info: ',req.files.image);
-
-    //split the url into an array and then get the last chunk and render it out in the send req.
-    var pathArray = req.files.image.path.split( '/' );
-
-    res.send(util.format(' Task Complete \n uploaded %s (%d Kb) to %s as %s'
-        , req.files.image.name
-        , req.files.image.size / 1024 | 0
-        , req.files.image.path
-        , req.body.title
-        , req.files.image
-        , '<img src="uploads/' + pathArray[(pathArray.length - 1)] + '">'
-    ));
-
-
-};
+exports.uploadImage = function (req, res) {
+    var file = req.files['file_data'];
+    console.log('file info: ', {name: file.name, path: file.path});
+    res.set('Content-Type', 'application/json');
+    //allowed return : initialPreview ,initialPreviewConfig ,error
+    res.send({
+        initialPreview: ['<img src=uploads/' + file.name + ' class="file-preview-image" alt=test title=test>'],
+        initialPreviewConfig: [{
+            'caption': file.originalname, 'width': '120px', 'url': 'uploads/' + file.name, 'key': file.originalname
+        }],
+        append: true
+    });
+}
