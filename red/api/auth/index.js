@@ -119,7 +119,7 @@ function updateUser(req, res) {
         });
     } else {
         res.set('Content-Type', 'application/json');
-        res.send({status: "fail"});
+        res.send({status: "fail",message:"may don't provide new password"});
     }
 
 }
