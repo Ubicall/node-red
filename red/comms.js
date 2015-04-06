@@ -159,7 +159,10 @@ function publishTo(ws,topic,data) {
     try {
         ws.send(msg);
     } catch(err) {
-        log.warn("comms send error : "+err.toString());
+        // remove current connection , it disconnected
+        activeConnections.splice(activeConnections.indexOf(ws), 1)
+        log.warn("comms send error : "+err.toString()+" remove client "+ws.host );
+
     }
 }
 
