@@ -160,6 +160,8 @@ function publishTo(ws,topic,data) {
         ws.send(msg);
     } catch(err) {
         // remove current connection , it disconnected
+        // issue appear after deploy current web socket underneath apache 2.2.15 with 3rd module ws_tunnel
+        // https://gist.github.com/waleedsamy/fbd4b9c04ac4f34ab9b0
         removeActiveConnection(ws);
         log.warn("comms send error : "+err.toString());
     }
