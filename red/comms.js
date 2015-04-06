@@ -160,8 +160,8 @@ function publishTo(ws,topic,data) {
         ws.send(msg);
     } catch(err) {
         // remove current connection , it disconnected
-        activeConnections.splice(activeConnections.indexOf(ws), 1)
-        log.warn("comms send error : "+err.toString()+" remove client "+ws.host );
+        log.warn("comms send error : "+err.toString()+" remove client "+ws );
+        ws.emit('close');
 
     }
 }
