@@ -160,9 +160,8 @@ function publishTo(ws,topic,data) {
         ws.send(msg);
     } catch(err) {
         // remove current connection , it disconnected
-        log.warn("comms send error : "+err.toString()+" remove client "+ws );
-        ws.emit('close');
-
+        removeActiveConnection(ws);
+        log.warn("comms send error : "+err.toString());
     }
 }
 
@@ -176,19 +175,17 @@ function handleRemoteSubscription(ws,topic) {
 }
 
 function removeActiveConnection(ws) {
-    for (var i=0;i<activeConnections.length;i++) {
-        if (activeConnections[i] === ws) {
-            activeConnections.splice(i,1);
-            break;
-        }
+    // for loop vs index of performance : https://jsperf.com/js-for-loop-vs-array-indexof/8
+    var indx = activeConnections.indexOf(ws)
+    if(indx > -1){
+       activeConnections.splice(indx, 1);
     }
 }
 function removePendingConnection(ws) {
-    for (var i=0;i<pendingConnections.length;i++) {
-        if (pendingConnections[i] === ws) {
-            pendingConnections.splice(i,1);
-            break;
-        }
+    // for loop vs index of performance : https://jsperf.com/js-for-loop-vs-array-indexof/8
+    var indx = pendingConnections.indexOf(ws)
+    if(indx > -1){
+        pendingConnections.splice(indx, 1);
     }
 }
 
