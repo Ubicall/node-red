@@ -4,6 +4,7 @@ var when = require('when');
 var g_flow;
 var plistMapper = {
     "choicesscreen": {name: "Choice", type: "String"},
+    "gridscreen": {name: "Grid", type: "String"},
     "InfoScreen": {name: "Info", type: "String"},
     "type": {name: "ScreenType", type: "String"},
     "choices": {name: "choices", type: "Array"},
@@ -13,6 +14,7 @@ var plistMapper = {
     "screen_name": {name: "ScreenTitle", type: "String"},
     "screen_content": {name: "ContentText", type: "String"},
     "url": {name: "URL", type: "String"},
+    "grid_url": {name: "UrlImage", type: "String"},
     "url_title": {name: "ChoiceText", type: "String"},
     "call": {name: "Call", type: "String"},
     "title": {name: "ChoiceText", type: "String"},

@@ -114,8 +114,8 @@ function init(adminApp, storage) {
     // Plist
     if (settings.plist) {
         plist.init(settings);
-        adminApp.get("/plist/:username/:version", needsPermission("plist.read"), plist.get);
-        adminApp.get("/plist/:username", needsPermission("plist.read"), plist.get);
+        adminApp.get("/plist/:username/:version"/*, needsPermission("plist.read")*/, plist.get);
+        adminApp.get("/plist/:username"/*, needsPermission("plist.read")*/, plist.get);
     }
 
     adminApp.get("/me", needsPermission("me.read"), auth.me);

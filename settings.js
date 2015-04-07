@@ -175,7 +175,7 @@ module.exports = {
         db: "rrrtest"
     },
     // where to upload data (used to upload images to /uploads/
-   // uploadImagesPath:"/uploads/",
+    uploadImagesPath:"/var/www/uploads/icons/",
 
     //enable /plist
     plist: true
