@@ -71,11 +71,10 @@ RED.settings = (function () {
             var accessToken = accessTokenMatch[1];
             RED.settings.set("auth-tokens",{access_token: accessToken});
             window.location.search = "";
+        }else {  //search for access token in cookies
+            RED.settings.set("auth-tokens", {access_token: $.cookie("access_token")});
+            $.removeCookie('access_token', {domain: "ubicall.com", path: "/"});
         }
-        //search for access token in cookies
-        RED.settings.set("auth-tokens", {access_token: $.cookie("access_token")});
-        $.removeCookie('access_token',{domain:"ubicall.com",path:"/"});
-
         $.ajaxSetup({
             beforeSend: function(jqXHR,settings) {
                 // Only attach auth header for requests to relative paths
