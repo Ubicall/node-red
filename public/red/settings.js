@@ -66,14 +66,23 @@ RED.settings = (function () {
     };
 
     var init = function (done) {
+        if(hasLocalStorage()){
+            for(var a in localStorage){
+                console.log("local storage as " + a + " : " + localStorage[a]);
+            }
+        }
         var accessTokenMatch = /[?&]access_token=(.*?)(?:$|&)/.exec(window.location.search);
-        if (accessTokenMatch) {
+        if (accessTokenMatch) {//catch access_token if it in url or not
+            console.log("get from url");
             var accessToken = accessTokenMatch[1];
             RED.settings.set("auth-tokens",{access_token: accessToken});
             window.location.search = "";
-        }else if($.cookie("access_token")){  //search for access token in cookies
-            RED.settings.set("auth-tokens", {access_token: $.cookie("access_token")});
-           // $.removeCookie('access_token', {domain: "ubicall.com", path: "/"});
+        }else if(RED.settings.get("auth-tokens")){//otherwise check if local storage contain access_token or not
+            console.log("get from local storage");
+        }else if($.cookie("ac_ubi")){  //otherwise check if cookie contain access_token or not
+            console.log("get from cookie");
+            RED.settings.set("auth-tokens", {access_token: $.cookie("ac_ubi")});
+            // $.removeCookie('ac_ubi', {domain: "ubicall.com", path: "/"});
         }
         $.ajaxSetup({
             beforeSend: function(jqXHR,settings) {
