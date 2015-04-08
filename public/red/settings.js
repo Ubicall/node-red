@@ -74,8 +74,7 @@ RED.settings = (function () {
         }
         //search for access token in cookies
         RED.settings.set("auth-tokens", {access_token: $.cookie("access_token")});
-        $.removeCookie('access_token', { path: '/' });
-
+        $.removeCookie('access_token',{domain:"ubicall.com",path:"/"});
 
         $.ajaxSetup({
             beforeSend: function(jqXHR,settings) {
