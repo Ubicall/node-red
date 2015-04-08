@@ -63,6 +63,7 @@ module.exports = {
         });
     },
     get: function(token) {
+        console.log("get token "+ token);
         if (sessions[token]) {
             if (sessions[token].expires < Date.now()) {
                 return expireSessions().then(function() { return null });
@@ -92,6 +93,7 @@ module.exports = {
     },
     revoke: function(token) {
         delete sessions[token];
+        console.log("**revoke token "+ token);
         return storage.saveSessions(sessions);
     }
 }
