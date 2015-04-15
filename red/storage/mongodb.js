@@ -22,6 +22,7 @@ var fspath = require("path");
 var mkdirp = require("mkdirp");
 
 var mongos = require('../mongos');
+var plistUtil = require('../api/plist/util');
 
 var log = require("../log");
 
@@ -226,7 +227,7 @@ var mongostorage = {
 
     getFlows: function (owner) {
         return when.promise(function (resolve) {
-           var query = nodeModel.where({key: owner, deploy: {$gte: 0}}).sort('-version');
+            var query = nodeModel.where({key: owner, deploy: {$gte: 0}}).sort('-version');
             query.findOne(function (err, doc) {
                 if (err) {
                     log.info("Creating new flows file");
@@ -257,7 +258,19 @@ var mongostorage = {
                     return reject(err);
                 } else {
                     log.info("saving flows version " + nod.version + " for " + owner);
-                    return resolve(nod);
+                    if (deploy) {
+                        return plistUtil.deployFlowOnline(owner, nod.version).then(function (result) {
+                            if (result) {
+                                return resolve(nod);
+                            } else {
+                                nodeModel.remove({version: nod.version}, function () {
+                                    return reject(new Error("not deployed on mobile yet"));
+                                });
+                            }
+                        });
+                    } else {
+                        return resolve(nod);
+                    }
                 }
             });
         });

@@ -1,5 +1,10 @@
 // convert mongo db object style to middle style used by plist.js
 var when = require('when');
+var request = require('request');
+
+var server_url = "http://ubicall.com/design/plist/";
+var ws_server_url = "http://ws.ubicall.com/webservice/check_ivr_version.php?url"
+//var ws_server_url = "http://10.0.0.161/webservice/check_ivr_version.php?url=";
 
 var g_flow;
 var plistMapper = {
@@ -14,12 +19,12 @@ var plistMapper = {
     "wt": {name: "ChoiceType", type: "String"},
     "form_screen_name": {name: "ScreenTitle", type: "String"},
     "form_screen_title": {name: "FormTitle", type: "String"},
-    "form_screen_items":{name:"FormFields",type:"Array"},
-    "fieldLabel":{name:"FieldLabel",type:"String"},
-    "fieldType":{name:"FieldType",type:"String"},
-    "isMandatory":{name:"isMandatory",type:"String"},
-    "keyboard":{name:"Keyboard",type:"String"},
-    "placeholder":{name:"Placeholder",type:"String"},
+    "form_screen_items": {name: "FormFields", type: "Array"},
+    "fieldLabel": {name: "FieldLabel", type: "String"},
+    "fieldType": {name: "FieldType", type: "String"},
+    "isMandatory": {name: "isMandatory", type: "String"},
+    "keyboard": {name: "Keyboard", type: "String"},
+    "placeholder": {name: "Placeholder", type: "String"},
     "screen_name": {name: "ScreenTitle", type: "String"},
     "screen_content": {name: "ContentText", type: "String"},
     "url": {name: "URL", type: "String"},
@@ -58,15 +63,15 @@ function mapElement(that) {
                         delete choice.ScreenName;
                     } else if (Node.type == 'call') {
                         choice.ChoiceText = Node.title;
-                        choice.QueueDestination=Node.queue.id;
+                        choice.QueueDestination = Node.queue.id;
                         delete choice.ScreenName;
                     } else {
                         choice.ScreenName = that.wires[index][0];
                     }
                 });
-            } else if (plistMapper[k].name == 'FormFields'){
+            } else if (plistMapper[k].name == 'FormFields') {
                 rObj[plistMapper[k].name] = that.form_screen_items.map(mapElement);
-            }else {
+            } else {
                 rObj[plistMapper[k].name] = k == 'type' ? plistMapper[that[k]].name : that[k];
             }
         }
@@ -105,6 +110,18 @@ module.exports = {
                 resolve([]);
             }
             resolve(__flow);
+        });
+    },
+    deployFlowOnline: function (licence, version) {
+        return when.promise(function (resolve) {
+            request(ws_server_url + server_url + licence + "/" + version,
+                function (error, response, body) {
+                    if (!error && response.statusCode == 200) {
+                       return resolve(body);
+                    } else {
+                        return resolve(null);
+                    }
+                })
         });
     }
 }
