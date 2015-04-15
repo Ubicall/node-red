@@ -6,11 +6,20 @@ var plistMapper = {
     "choicesscreen": {name: "Choice", type: "String"},
     "gridscreen": {name: "Grid", type: "String"},
     "InfoScreen": {name: "Info", type: "String"},
+    "formscreen": {name: "Form", type: "String"},
     "type": {name: "ScreenType", type: "String"},
     "choices": {name: "choices", type: "Array"},
     "t": {name: "ChoiceText", type: "String"},
     "wi": {name: "ScreenName", type: "String"},
     "wt": {name: "ChoiceType", type: "String"},
+    "form_screen_name": {name: "ScreenTitle", type: "String"},
+    "form_screen_title": {name: "FormTitle", type: "String"},
+    "form_screen_items":{name:"FormFields",type:"Array"},
+    "fieldLabel":{name:"FieldLabel",type:"String"},
+    "fieldType":{name:"FieldType",type:"String"},
+    "isMandatory":{name:"isMandatory",type:"String"},
+    "keyboard":{name:"Keyboard",type:"String"},
+    "placeholder":{name:"Placeholder",type:"String"},
     "screen_name": {name: "ScreenTitle", type: "String"},
     "screen_content": {name: "ContentText", type: "String"},
     "url": {name: "URL", type: "String"},
@@ -55,7 +64,9 @@ function mapElement(that) {
                         choice.ScreenName = that.wires[index][0];
                     }
                 });
-            } else {
+            } else if (plistMapper[k].name == 'FormFields'){
+                rObj[plistMapper[k].name] = that.form_screen_items.map(mapElement);
+            }else {
                 rObj[plistMapper[k].name] = k == 'type' ? plistMapper[that[k]].name : that[k];
             }
         }
