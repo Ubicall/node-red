@@ -28,8 +28,8 @@ function get(username) {
             }
 
             //TODO : REMOVE THIS
-            log.info("No User Found // create user with name " + username + " and password 123456");
-            create(username, "123456", "*").then(function (user) {
+            log.info("No User Found // create user with name " + username + " and password "+ username);
+            create(username, username, "*").then(function (user) {
                 return resolve(user);
             });
             //TODO :END REMOVE THIS
