@@ -259,8 +259,6 @@ var mongostorage = {
                 } else {
                     log.info("saving flows version " + nod.version + " for " + owner);
                     if (deploy) {
-                        // TODO : REMOVE IT
-                        return resolve(nod);
                         return plistUtil.deployFlowOnline(owner, nod.version).then(function (result) {
                             if (result) {
                                 return resolve(nod);

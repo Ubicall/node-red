@@ -3,7 +3,7 @@ var when = require('when');
 var request = require('request');
 
 var server_url = "http://ubicall.com/design/plist/";
-var ws_server_url = "http://ws.ubicall.com/webservice/check_ivr_version.php?url"
+var ws_server_url = "http://ws.ubicall.com/webservice/check_ivr_version.php?url="
 //var ws_server_url = "http://10.0.0.161/webservice/check_ivr_version.php?url=";
 
 var g_flow;
@@ -114,6 +114,7 @@ module.exports = {
     },
     deployFlowOnline: function (licence, version) {
         return when.promise(function (resolve) {
+            console.log("deploy URL " + ws_server_url + server_url + licence + "/" + version);
             request(ws_server_url + server_url + licence + "/" + version,
                 function (error, response, body) {
                     if (!error && response.statusCode == 200) {
