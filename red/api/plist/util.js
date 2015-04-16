@@ -25,6 +25,7 @@ var plistMapper = {
     "isMandatory": {name: "isMandatory", type: "String"},
     "keyboard": {name: "Keyboard", type: "String"},
     "placeholder": {name: "Placeholder", type: "String"},
+    "Values":{name:"Values",type:"String"},
     "screen_name": {name: "ScreenTitle", type: "String"},
     "screen_content": {name: "ContentText", type: "String"},
     "url": {name: "URL", type: "String"},
