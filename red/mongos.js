@@ -48,8 +48,8 @@ var mongos = {
             settings.mongodb.uri = settings.mongodb.uri || "localhost"
             settings.mongodb.db = settings.mongodb.db || "rrrtest"
         }
-        log.info("mongo db connection is : " + mongoose.connection.readyState == 0 ? ' closed ' : ' open');
-        if (mongoose.connection.readyState == 0) {
+        log.info("mongo db connection is : " + mongoose.connection.readyState === 0 ? ' closed ' : ' open');
+        if (mongoose.connection.readyState === 0) {
             mongoose.connect(settings.mongodb.uri, settings.mongodb.db);
             log.info("DB URL : " + settings.mongodb.uri);
             log.info("DB     : " + settings.mongodb.db);

@@ -83,13 +83,13 @@ function mapElement(that) {
 module.exports = {
     extractFlow: function (flow) {
         return when.promise(function (resolve) {
+            var __flow = {};
             try {
                 //remove unnecessary parts from mongo db object
                 var _flow = JSON.parse(JSON.stringify(flow, function (key, value) {
                     return key !== '_id' && key !== '__v' && key !== 'created' && key !== 'deploy' ? value : undefined;
                 }));
 
-                var __flow = {};
                 g_flow = _flow;
                 __flow.key = _flow.key;
                 __flow.Version = _flow.version;
