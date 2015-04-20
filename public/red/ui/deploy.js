@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
- 
+
 RED.deploy = (function() {
-        
+
     var deploymentTypes = {
         "save":{img:"images/deploy-full-o.png"},
         "full":{img:"images/deploy-full-o.png"},
         "nodes":{img:"images/deploy-nodes-o.png"},
         "flows":{img:"images/deploy-flows-o.png"}
     }
-    
+
     var deploymentType = "full";
     var deploy=false;
-    
+
     function changeDeploymentType(type) {
         deploymentType = type;
         $("#btn-deploy img").attr("src",deploymentTypes[type].img);
@@ -44,7 +44,7 @@ RED.deploy = (function() {
 
         $('#btn-deploy').click(function() { deploy = true ;save(undefined,true); });
         $('#btn-save').click(function() {  deploy = false ;save(true,false); });
-        
+
         $( "#node-dialog-confirm-deploy" ).dialog({
                 title: "Confirm save",
                 modal: true,
@@ -110,11 +110,17 @@ RED.deploy = (function() {
                             inValidNodes.push(node.name);
                         }
                         invalid = true;
+                    }else if(!node.valid){
+                        inValidNodes.push(node.type + " id " + node.id);
                     }
                 });
-                var logical_validate = RED.nodes.validateNodes(nns);
-                invalid = ! logical_validate.valid;
-                inValidNodes = inValidNodes.concat(logical_validate.Nodes);
+
+                if(! invalid){
+                    var logical_validate = RED.nodes.validateNodes(nns);
+                    invalid = ! logical_validate.valid;
+                    inValidNodes = inValidNodes.concat(logical_validate.Nodes);
+                }
+
                 if (invalid) {
                     if (inValidNodes.length > 0 ) {
                         $( "#node-dialog-confirm-deploy-config" ).hide();
