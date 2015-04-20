@@ -98,25 +98,30 @@ RED.deploy = (function() {
         if (RED.nodes.dirty() || true) {
             //$("#debug-tab-clear").click();  // uncomment this to auto clear debug on deploy
 
-            if (!force) {
+            var nns = RED.nodes.createCompleteNodeSet();
+
+            if (!force || deploy) { // must validate before deploy
                 var invalid = false;
-                var unknownNodes = [];
+                var inValidNodes = [];
                 RED.nodes.eachNode(function(node) {
                     invalid = invalid || !node.valid;
                     if (node.type === "unknown") {
-                        if (unknownNodes.indexOf(node.name) == -1) {
-                            unknownNodes.push(node.name);
+                        if (inValidNodes.indexOf(node.name) == -1) {
+                            inValidNodes.push(node.name);
                         }
                         invalid = true;
                     }
                 });
+                var logical_validate = RED.nodes.validateNodes(nns);
+                invalid = ! logical_validate.valid;
+                inValidNodes = inValidNodes.concat(logical_validate.Nodes);
                 if (invalid) {
-                    if (unknownNodes.length > 0) {
+                    if (inValidNodes.length > 0 ) {
                         $( "#node-dialog-confirm-deploy-config" ).hide();
                         $( "#node-dialog-confirm-deploy-unknown" ).show();
-                        var list = "<li>"+unknownNodes.join("</li><li>")+"</li>";
+                        var list = "<li>"+inValidNodes.join("</li><li>")+"</li>";
                         $( "#node-dialog-confirm-deploy-unknown-list" ).html(list);
-                    } else {
+                    }else {
                         $( "#node-dialog-confirm-deploy-config" ).show();
                         $( "#node-dialog-confirm-deploy-unknown" ).hide();
                     }
@@ -124,7 +129,6 @@ RED.deploy = (function() {
                     return;
                 }
             }
-            var nns = RED.nodes.createCompleteNodeSet();
 
             if(deploy){
                 $("#btn-icn-deploy").removeClass('fa-download');
@@ -186,7 +190,6 @@ RED.deploy = (function() {
             });
         }
     }
-
     return {
         init: init
     }
