@@ -43,19 +43,19 @@ RED.deploy = (function() {
           '</span></li>').prependTo(".header-toolbar");
 
         $('#btn-deploy').click(function() { deploy = true ;save(undefined,true); });
-        $('#btn-save').click(function() {  deploy = false ;save(undefined,false); });
+        $('#btn-save').click(function() {  deploy = false ;save(true,false); });
         
         $( "#node-dialog-confirm-deploy" ).dialog({
-                title: "Confirm deploy",
+                title: "Confirm save",
                 modal: true,
                 autoOpen: false,
                 width: 530,
                 height: 230,
                 buttons: [
                     {
-                        text: "Confirm deploy",
+                        text: "Confirm save",
                         click: function() {
-                            save(true);
+                            save(true,false);
                             $( this ).dialog( "close" );
                         }
                     },
@@ -184,9 +184,6 @@ RED.deploy = (function() {
                     $("#btn-icn-deploy").removeClass('fa-download');
                     $("#btn-icn-deploy").addClass('spinner');
                 }
-
-                $("#btn-icn-save").removeClass('fa-download');
-                $("#btn-icn-save").addClass('spinner');
             });
         }
     }

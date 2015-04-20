@@ -803,7 +803,7 @@ RED.nodes = (function() {
         var invalidNodesInfo = [];
         invalidNodes.forEach(function (no) {
             invalidNodesInfo.push(no.type + " id " + no.id);
-        })
+        });
         return invalidNodes.length == 0 ? {valid: true} : {
             valid: false, Nodes: invalidNodesInfo
         };
