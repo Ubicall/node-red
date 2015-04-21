@@ -60,10 +60,8 @@ function mapElement(that) {
                     choice.ChoiceType = plistMapper[Node.type].name;
                     if (Node.type == 'url') {
                         choice.url = Node.url;
-                        choice.ChoiceText = Node.url_title;
                         delete choice.ScreenName;
                     } else if (Node.type == 'call') {
-                        choice.ChoiceText = Node.title;
                         choice.QueueDestination = Node.queue.id;
                         delete choice.ScreenName;
                     } else {
