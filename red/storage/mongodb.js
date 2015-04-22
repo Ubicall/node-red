@@ -16,189 +16,34 @@
 
 var fs = require('fs');
 var when = require('when');
-var nodeFn = require('when/node/function');
 var keys = require('when/keys');
-var fspath = require("path");
-var mkdirp = require("mkdirp");
 
 var mongos = require('../mongos');
 var plistUtil = require('../api/plist/util');
 
 var log = require("../log");
 
-var promiseDir = nodeFn.lift(mkdirp);
-
 var settings;
-var flowsFile;
-var flowsFullPath;
-var flowsFileBackup;
-var credentialsFile;
-var credentialsFileBackup;
-var oldCredentialsFile;
-var sessionsFile;
-var libDir;
-var libFlowsDir;
-var globalSettingsFile;
 
 // mongo models
-
 var nodeModel;
 var credentialModel;
 var settingModel;
 var sessionModel;
+var libraryModel;
 // End mongo models
 
-
-function getFileMeta(root, path) {
-    var fn = fspath.join(root, path);
-    var fd = fs.openSync(fn, "r");
-    var size = fs.fstatSync(fd).size;
-    var meta = {};
-    var read = 0;
-    var length = 10;
-    var remaining = "";
-    var buffer = Buffer(length);
-    while (read < size) {
-        read += fs.readSync(fd, buffer, 0, length);
-        var data = remaining + buffer.toString();
-        var parts = data.split("\n");
-        remaining = parts.splice(-1);
-        for (var i = 0; i < parts.length; i += 1) {
-            var match = /^\/\/ (\w+): (.*)/.exec(parts[i]);
-            if (match) {
-                meta[match[1]] = match[2];
-            } else {
-                read = size;
-                break;
-            }
-        }
-    }
-    fs.closeSync(fd);
-    return meta;
-}
-
-function getFileBody(root, path) {
-    var body = "";
-    var fn = fspath.join(root, path);
-    var fd = fs.openSync(fn, "r");
-    var size = fs.fstatSync(fd).size;
-    var scanning = true;
-    var read = 0;
-    var length = 50;
-    var remaining = "";
-    var buffer = Buffer(length);
-    while (read < size) {
-        var thisRead = fs.readSync(fd, buffer, 0, length);
-        read += thisRead;
-        if (scanning) {
-            var data = remaining + buffer.slice(0, thisRead).toString();
-            var parts = data.split("\n");
-            remaining = parts.splice(-1)[0];
-            for (var i = 0; i < parts.length; i += 1) {
-                if (!/^\/\/ \w+: /.test(parts[i])) {
-                    scanning = false;
-                    body += parts[i] + "\n";
-                }
-            }
-            if (!/^\/\/ \w+: /.test(remaining)) {
-                scanning = false;
-            }
-            if (!scanning) {
-                body += remaining;
-            }
-        } else {
-            body += buffer.slice(0, thisRead).toString();
-        }
-    }
-    fs.closeSync(fd);
-    return body;
-}
-
-/**
- * Write content to a file using UTF8 encoding.
- * This forces a fsync before completing to ensure
- * the write hits disk.
- */
-function writeFile(path, content) {
-    return when.promise(function (resolve, reject) {
-        var stream = fs.createWriteStream(path);
-        stream.on('open', function (fd) {
-            stream.end(content, 'utf8', function () {
-                fs.fsync(fd, resolve);
-            });
-        });
-        stream.on('error', function (err) {
-            reject(err);
-        });
-    });
-}
 
 var mongostorage = {
     init: function (_settings) {
         settings = _settings;
-        var promises = [];
-
-        if (!settings.userDir) {
-            if (fs.existsSync(fspath.join(process.env.NODE_RED_HOME, ".config.json"))) {
-                settings.userDir = process.env.NODE_RED_HOME;
-            } else {
-                settings.userDir = fspath.join(process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE || process.env.NODE_RED_HOME, ".node-red");
-                promises.push(promiseDir(settings.userDir));
-            }
-        }
-
-        if (settings.flowFile) {
-            flowsFile = settings.flowFile;
-
-            if (flowsFile[0] == "/") {
-                // Absolute path
-                flowsFullPath = flowsFile;
-            } else if (flowsFile.substring(0, 2) === "./") {
-                // Relative to cwd
-                flowsFullPath = fspath.join(process.cwd(), flowsFile);
-            } else {
-                if (fs.existsSync(fspath.join(process.cwd(), flowsFile))) {
-                    // Found in cwd
-                    flowsFullPath = fspath.join(process.cwd(), flowsFile);
-                } else {
-                    // Use userDir
-                    flowsFullPath = fspath.join(settings.userDir, flowsFile);
-                }
-            }
-
-        } else {
-            flowsFile = 'flows_' + require('os').hostname() + '.json';
-            flowsFullPath = fspath.join(settings.userDir, flowsFile);
-        }
-        var ffExt = fspath.extname(flowsFullPath);
-        var ffName = fspath.basename(flowsFullPath);
-        var ffBase = fspath.basename(flowsFullPath, ffExt);
-        var ffDir = fspath.dirname(flowsFullPath);
-
-        credentialsFile = fspath.join(settings.userDir, ffBase + "_cred" + ffExt);
-        credentialsFileBackup = fspath.join(settings.userDir, "." + ffBase + "_cred" + ffExt + ".backup");
-
-        oldCredentialsFile = fspath.join(settings.userDir, "credentials.json");
-
-        flowsFileBackup = fspath.join(ffDir, "." + ffName + ".backup");
-
-        sessionsFile = fspath.join(settings.userDir, ".sessions.json");
-
-        libDir = fspath.join(settings.userDir, "lib");
-        libFlowsDir = fspath.join(libDir, "flows");
-
-        globalSettingsFile = fspath.join(settings.userDir, ".config.json");
-
-        promises.push(promiseDir(libFlowsDir));
-
         // init mongos.js
         mongos.init(_settings);
         nodeModel = mongos.nodeModel;
         credentialModel = mongos.credentialModel;
         sessionModel = mongos.sessionModel;
         settingModel = mongos.settingModel;
-
-        return when.all(promises);
+        libraryModel = mongos.libraryModel;
     },
 
     getFlows: function (owner) {
@@ -290,7 +135,7 @@ var mongostorage = {
 
     getSettings: function () {
         return when.promise(function (resolve) {
-            var query = settingModel.where({key: '123456789'});
+            var query = settingModel.sort('-version');
             query.findOne(function (err, doc) {
                 if (err) {
                     log.info("Corrupted config detected - resetting");
@@ -307,14 +152,14 @@ var mongostorage = {
     saveSettings: function (settings) {
         return when.promise(function (resolve, reject) {
             var sett = new settingModel({
-                key: "123456789",
+                version: Date.now(),
                 Settings: settings
             });
             sett.save(function (err) {
                 if (err) {
                     return reject(err);
                 } else {
-                    return resolve(sett);
+                    return resolve(settings);
                 }
             });
         });
@@ -368,51 +213,44 @@ var mongostorage = {
     },
 
     getLibraryEntry: function (type, path) {
-        //TODO : Not Implemented yet
-        var root = fspath.join(libDir, type);
-        var rootPath = fspath.join(libDir, type, path);
-        return promiseDir(root).then(function () {
-            return nodeFn.call(fs.lstat, rootPath).then(function (stats) {
-                if (stats.isFile()) {
-                    return getFileBody(root, path);
+        return when.promise(function (resolve) {
+            var query = libraryModel.where({type: type, path: path});
+            var libraries = [];
+            query.find(function (err, docs) {
+                if (err) {
+                    log.info("Corrupted config detected - resetting");
+                    return resolve();
                 }
-                if (path.substr(-1) == '/') {
-                    path = path.substr(0, path.length - 1);
-                }
-                return nodeFn.call(fs.readdir, rootPath).then(function (fns) {
-                    var dirs = [];
-                    var files = [];
-                    fns.sort().filter(function (fn) {
-                        var fullPath = fspath.join(path, fn);
-                        var absoluteFullPath = fspath.join(root, fullPath);
-                        if (fn[0] != ".") {
-                            var stats = fs.lstatSync(absoluteFullPath);
-                            if (stats.isDirectory()) {
-                                dirs.push(fn);
-                            } else {
-                                var meta = getFileMeta(root, fullPath);
-                                meta.fn = fn;
-                                files.push(meta);
-                            }
-                        }
-                    });
-                    return dirs.concat(files);
+                docs.forEach(function (doc) {
+                    if (doc) {
+                        libraries.push(doc["Library"]);
+                    }
                 });
-            });
+                return resolve(libraries);
+            })
         });
     },
 
     saveLibraryEntry: function (type, path, meta, body) {
-        //TODO : Not Implemented yet
-        var fn = fspath.join(libDir, type, path);
-        var headers = "";
-        for (var i in meta) {
-            if (meta.hasOwnProperty(i)) {
-                headers += "// " + i + ": " + meta[i] + "\n";
+        return when.promise(function (resolve, reject) {
+            var headers = "";
+            for (var i in meta) {
+                if (meta.hasOwnProperty(i)) {
+                    headers += "// " + i + ": " + meta[i] + "\n";
+                }
             }
-        }
-        return promiseDir(fspath.dirname(fn)).then(function () {
-            writeFile(fn, headers + body);
+            var lib = new libraryModel({
+                type: type,
+                path: path,
+                Library: headers + body
+            });
+            lib.save(function (err) {
+                if (err) {
+                    return reject(err);
+                } else {
+                    return resolve(body);
+                }
+            });
         });
     }
 };

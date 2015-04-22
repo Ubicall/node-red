@@ -21,12 +21,17 @@ var NodeSchema = new Schema({
     Nodes: [Schema.Types.Mixed]
 });
 var CredentialSchema = new Schema({version: Number, Credentials: [Schema.Types.Mixed]});
-var SettingSchema = new Schema({key: String, Settings: [Schema.Types.Mixed]});
+var SettingSchema = new Schema({version: Number, Settings: [Schema.Types.Mixed]});
 var SessionSchema = new Schema({Sessions: Schema.Types.Mixed});
 var UserSchema = mongoose.Schema({
     username: {type: String, unique: true, required: true},
     password: {type: String, required: true},
     permissions: Schema.Types.Mixed
+});
+var LibrarySchema = mongoose.Schema({
+    type: {type: String, unique: true, required: true},
+    path: {type: String, required: true},
+    Library: Schema.Types.Mixed
 });
 
 
@@ -59,7 +64,8 @@ var mongos = {
     credentialModel: mongoose.model('Credentials', CredentialSchema),
     settingModel: mongoose.model('Settings', SettingSchema),
     sessionModel: mongoose.model('Sessions', SessionSchema),
-    userModel: mongoose.model('User', UserSchema)
+    userModel: mongoose.model('User', UserSchema),
+    libraryModel:mongoose.model('Library', LibrarySchema)
 };
 
 module.exports = mongos;
