@@ -20,7 +20,7 @@ var NodeSchema = new Schema({
     created: {type: Date, default: Date.now},
     Nodes: [Schema.Types.Mixed]
 });
-var CredentialSchema = new Schema({key: String, Credentials: [Schema.Types.Mixed]});
+var CredentialSchema = new Schema({version: Number, Credentials: [Schema.Types.Mixed]});
 var SettingSchema = new Schema({key: String, Settings: [Schema.Types.Mixed]});
 var SessionSchema = new Schema({Sessions: Schema.Types.Mixed});
 var UserSchema = mongoose.Schema({

@@ -48,30 +48,6 @@ var settingModel;
 var sessionModel;
 // End mongo models
 
-function listFiles(dir) {
-    var dirs = {};
-    var files = [];
-    var dirCount = 0;
-    return nodeFn.call(fs.readdir, dir).then(function (contents) {
-        contents.sort().forEach(function (fn) {
-            var stats = fs.lstatSync(dir + "/" + fn);
-            if (stats.isDirectory()) {
-                dirCount += 1;
-                dirs[fn] = listFiles(dir + "/" + fn)
-            } else {
-                files.push(fn.split(".")[0]);
-            }
-        })
-        var result = {};
-        if (dirCount > 0) {
-            result.d = keys.all(dirs);
-        }
-        if (files.length > 0) {
-            result.f = when.resolve(files);
-        }
-        return keys.all(result);
-    })
-}
 
 function getFileMeta(root, path) {
     var fn = fspath.join(root, path);
@@ -278,20 +254,20 @@ var mongostorage = {
 
     getCredentials: function () {
         return when.promise(function (resolve) {
-            var query = credentialModel.where({key: '123456789'});
+            var query = credentialModel.sort('-version');
             query.findOne(function (err, doc) {
                 if (err) {
                     log.info("No Credentials Found");
-                    return resolve([]);
+                    return resolve({});
                 }
                 if (doc) {
                     try {
                         return resolve(JSON.parse(JSON.stringify(doc["Credentials"])));
                     } catch (ex) {
-                        return resolve([]);
+                        return resolve({});
                     }
                 }
-                return resolve([]);
+                return resolve({});
             })
         });
     },
@@ -299,14 +275,14 @@ var mongostorage = {
     saveCredentials: function (credentials) {
         return when.promise(function (resolve, reject) {
             var cred = new credentialModel({
-                key: "123456789",
+                version: Date.now(),
                 Credentials: credentials
             });
             cred.save(function (err) {
                 if (err) {
                     return reject(err);
                 } else {
-                    return resolve(cred);
+                    return resolve(credentials);
                 }
             });
         });
