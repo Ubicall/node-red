@@ -36,14 +36,17 @@ var libraryModel;
 
 var mongostorage = {
     init: function (_settings) {
-        settings = _settings;
-        // init mongos.js
-        mongos.init(_settings);
-        nodeModel = mongos.nodeModel;
-        credentialModel = mongos.credentialModel;
-        sessionModel = mongos.sessionModel;
-        settingModel = mongos.settingModel;
-        libraryModel = mongos.libraryModel;
+        return when.promise(function(resolve){
+            settings = _settings;
+            // init mongos.js
+            mongos.init(_settings);
+            nodeModel = mongos.nodeModel;
+            credentialModel = mongos.credentialModel;
+            sessionModel = mongos.sessionModel;
+            settingModel = mongos.settingModel;
+            libraryModel = mongos.libraryModel;
+            return resolve({});
+        });
     },
 
     getFlows: function (owner) {
@@ -99,7 +102,7 @@ var mongostorage = {
 
     getCredentials: function () {
         return when.promise(function (resolve) {
-            var query = credentialModel.sort('-version');
+            var query = credentialModel.where({}).sort('-version');
             query.findOne(function (err, doc) {
                 if (err) {
                     log.info("No Credentials Found");
@@ -135,7 +138,7 @@ var mongostorage = {
 
     getSettings: function () {
         return when.promise(function (resolve) {
-            var query = settingModel.sort('-version');
+            var query = settingModel.where({}).sort('-version');
             query.findOne(function (err, doc) {
                 if (err) {
                     log.info("Corrupted config detected - resetting");
