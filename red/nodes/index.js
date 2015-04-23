@@ -137,6 +137,7 @@ module.exports = {
     loadFlows: flows.load,
     stopFlows: flows.stopFlows,
     setFlows: flows.setFlows,
+    deployFlows : flows.deployFlows,
     getFlows: flows.getFlows,
 
     // Credentials

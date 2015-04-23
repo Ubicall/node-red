@@ -25,7 +25,7 @@ var plistMapper = {
     "isMandatory": {name: "isMandatory", type: "String"},
     "keyboard": {name: "Keyboard", type: "String"},
     "placeholder": {name: "Placeholder", type: "String"},
-    "Values":{name:"Values",type:"String"},
+    "Values": {name: "Values", type: "String"},
     "screen_name": {name: "ScreenTitle", type: "String"},
     "screen_content": {name: "ContentText", type: "String"},
     "url": {name: "URL", type: "String"},
@@ -112,14 +112,14 @@ module.exports = {
         });
     },
     deployFlowOnline: function (licence, version) {
-        return when.promise(function (resolve) {
+        return when.promise(function (resolve, reject) {
             console.log("deploy URL " + ws_server_url + server_url + licence + "/" + version);
             request(ws_server_url + server_url + licence + "/" + version,
                 function (error, response, body) {
                     if (!error && response.statusCode == 200) {
-                       return resolve(body);
+                        return resolve(body);
                     } else {
-                        return resolve(null);
+                        return reject(new Error("Unable to Deploy Flow"));
                     }
                 })
         });

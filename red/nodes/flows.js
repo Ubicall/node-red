@@ -24,6 +24,7 @@ var log = require("../log");
 var events = require("../events");
 var redUtil = require("../util");
 var storage = null;
+var plistUtil = require('../api/plist/util');
 
 
 var activeFlow = null;
@@ -32,15 +33,17 @@ var nodes = {};
 var subflows = {};
 var activeConfig = [];
 var activeConfigNodes = {};
+var nodeModel = require('../mongos').nodeModel;
 
-events.on('type-registered',function(type) {
+
+events.on('type-registered', function (type) {
     if (activeFlow && activeFlow.typeRegistered(type)) {
-        log.info("Missing type registered: "+type);
+        log.info("Missing type registered: " + type);
     }
 });
 
 var flowNodes = module.exports = {
-    init: function(_storage) {
+    init: function (_storage) {
         storage = _storage;
     },
 
@@ -48,18 +51,18 @@ var flowNodes = module.exports = {
      * Load the current activeConfig from storage and start it running
      * @return a promise for the loading of the config
      */
-    load: function(user) {
+    load: function (user) {
         var username;
-        if(user){
-            username=user.username;
+        if (user) {
+            username = user.username;
         }
-        return storage.getFlows(username).then(function(flows) {
-            return credentials.load(username).then(function() {
+        return storage.getFlows(username).then(function (flows) {
+            return credentials.load(username).then(function () {
                 activeFlow = new Flow(flows);
                 flowNodes.startFlows();
             });
-        }).otherwise(function(err) {
-            log.warn("Error loading flows : "+err);
+        }).otherwise(function (err) {
+            log.warn("Error loading flows : " + err);
             console.log(err.stack);
         });
     },
@@ -69,38 +72,42 @@ var flowNodes = module.exports = {
      * @param i the node id
      * @return the node
      */
-    get: function(i) {
+    get: function (i) {
         return activeFlow.getNode(i);
     },
 
-    eachNode: function(cb) {
+    eachNode: function (cb) {
         activeFlow.eachNode(cb);
     },
 
     /**
      * @return the active configuration
      */
-    getFlows: function(user) {
+    getFlows: function (user) {
         var username;
-        if(user){
-            username=user.username;
+        if (user) {
+            username = user.username;
         }
         return activeFlow.getFlow(username);
     },
-
+    /**
+     *
+     * @param flow must be nodeModel
+     * @returns {Promise|*}
+     */
+    deployFlows: function (flow) {
+        return plistUtil.deployFlowOnline(flow.key , flow.version).then(function (resolve) {
+            return resolve(flow);
+        });
+    },
     /**
      * Sets the current active config.
      * @param config the configuration to enable
      * @param type the type of deployment to do: full (default), nodes, flows
      * @return a promise for the starting of the new flow
      */
-    setFlows: function (config,type,user,deploy) {
-        var username;
-        if(user){
-            username=user.username;
-        }
-
-        type = type||"full";
+    setFlows: function (config, type) {
+        type = type || "full";
 
         var credentialsChanged = false;
 
@@ -110,69 +117,89 @@ var flowNodes = module.exports = {
         // Clone config and extract credentials prior to saving
         // Original config needs to retain credentials so that flow.applyConfig
         // knows which nodes have had changes.
-        var cleanConfig = clone(config);
-        cleanConfig.forEach(function(node) {
+        var cleanConfig;
+        // extract flow from mongo model
+        if (config instanceof nodeModel) {
+            cleanConfig = clone(config.Nodes);
+        } else {
+            cleanConfig = clone(config);
+        }
+        cleanConfig.forEach(function (node) {
             if (node.credentials) {
                 credentials.extract(node);
                 credentialsChanged = true;
             }
         });
 
+        if (config instanceof nodeModel) {
+            config.Nodes = cleanConfig;
+            cleanConfig = config;
+        }
+
         if (credentialsChanged) {
             credentialSavePromise = credentials.save();
         } else {
             credentialSavePromise = when.resolve();
         }
-        if (type=="full") {
+        if (type == "full") {
             return credentialSavePromise
-                .then(function() { return storage.saveFlows(cleanConfig,username,deploy);})
-                .then(function() { return flowNodes.stopFlows(); })
-                .then(function() { activeFlow = new Flow(config); flowNodes.startFlows();});
+                .then(function () {
+                    return storage.saveFlows(cleanConfig);
+                })
+                .then(function () {
+                    return flowNodes.stopFlows();
+                })
+                .then(function () {
+                    activeFlow = new Flow(config);
+                    flowNodes.startFlows();
+                });
         } else {
             return credentialSavePromise
-                .then(function() { return storage.saveFlows(cleanConfig,username,deploy);})
-                .then(function() {
-                    var configDiff = activeFlow.diffConfig(config,type);
-                    return flowNodes.stopFlows(configDiff).then(function() {
+                .then(function () {
+                    return storage.saveFlows(cleanConfig);
+                })
+                .then(function () {
+                    var configDiff = activeFlow.diffConfig(config, type);
+                    return flowNodes.stopFlows(configDiff).then(function () {
                         activeFlow.parseConfig(config);
                         flowNodes.startFlows(configDiff);
                     });
                 });
         }
     },
-    startFlows: function(configDiff) {
+    startFlows: function (configDiff) {
         if (configDiff) {
-            log.info("Starting modified "+configDiff.type);
+            log.info("Starting modified " + configDiff.type);
         } else {
             log.info("Starting flows");
         }
         try {
             activeFlow.start(configDiff);
             if (configDiff) {
-                log.info("Started modified "+configDiff.type);
+                log.info("Started modified " + configDiff.type);
             } else {
                 log.info("Started flows");
             }
-        } catch(err) {
+        } catch (err) {
             var missingTypes = activeFlow.getMissingTypes();
             if (missingTypes.length > 0) {
                 log.info("Waiting for missing types to be registered:");
-                for (var i=0;i<missingTypes.length;i++) {
-                    log.info(" - "+missingTypes[i]);
+                for (var i = 0; i < missingTypes.length; i++) {
+                    log.info(" - " + missingTypes[i]);
                 }
             }
         }
     },
-    stopFlows: function(configDiff) {
+    stopFlows: function (configDiff) {
         if (configDiff) {
-            log.info("Stopping modified "+configDiff.type);
+            log.info("Stopping modified " + configDiff.type);
         } else {
             log.info("Stopping flows");
         }
         if (activeFlow) {
-            return activeFlow.stop(configDiff).then(function() {
+            return activeFlow.stop(configDiff).then(function () {
                 if (configDiff) {
-                    log.info("Stopped modified "+configDiff.type);
+                    log.info("Stopped modified " + configDiff.type);
                 } else {
                     log.info("Stopped flows");
                 }
@@ -183,8 +210,8 @@ var flowNodes = module.exports = {
             return;
         }
     },
-    handleError: function(node,logMessage,msg) {
-        activeFlow.handleError(node,logMessage,msg);
+    handleError: function (node, logMessage, msg) {
+        activeFlow.handleError(node, logMessage, msg);
     }
 };
 

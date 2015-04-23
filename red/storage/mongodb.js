@@ -14,13 +14,8 @@
  * limitations under the License.
  **/
 
-var fs = require('fs');
 var when = require('when');
-var keys = require('when/keys');
-
 var mongos = require('../mongos');
-var plistUtil = require('../api/plist/util');
-
 var log = require("../log");
 
 var settings;
@@ -51,6 +46,7 @@ var mongostorage = {
 
     getFlows: function (owner) {
         return when.promise(function (resolve) {
+            // load latest saved flow ,change deploy : {$gt : 0} to get latest deployed flow only
             var query = nodeModel.where({key: owner, deploy: {$gte: 0}}).sort('-version');
             query.findOne(function (err, doc) {
                 if (err) {
@@ -68,33 +64,19 @@ var mongostorage = {
             });
         });
     },
-
-    saveFlows: function (flows, owner, deploy) {
+    /**
+     *
+     * @param flows must be nodeModel
+     * @returns {*}
+     */
+    saveFlows: function (flows) {
         return when.promise(function (resolve, reject) {
-            var nod = new nodeModel({
-                key: owner,
-                deploy: deploy ? Date.now() : 0,
-                version: Date.now(),
-                Nodes: flows
-            });
-            nod.save(function (err) {
+            flows.save(function (err) {
                 if (err) {
                     return reject(err);
                 } else {
-                    log.info("saving flows version " + nod.version + " for " + owner);
-                    if (deploy) {
-                        return plistUtil.deployFlowOnline(owner, nod.version).then(function (result) {
-                            if (result) {
-                                return resolve(nod);
-                            } else {
-                                nodeModel.remove({version: nod.version}, function () {
-                                    return reject(new Error("not deployed on mobile yet"));
-                                });
-                            }
-                        });
-                    } else {
-                        return resolve(nod);
-                    }
+                    log.info("saving flows version " + flows.version + " for " + flows.key);
+                    return resolve(flows);
                 }
             });
         });
