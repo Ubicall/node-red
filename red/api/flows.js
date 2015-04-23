@@ -47,26 +47,20 @@ module.exports = {
 
         redNodes.setFlows(flows, deploymentType).then(function () {
             if (settings.get("storageModule") == "mongodb" && deploy) {
-                redNodes.deployFlows(flows).then(function () {
-                    res.send(204);
-                }).otherwise(function (err) {
-                    // try again but this time save online , and return 500 to the client too
-                    flows.deploy = 0;
-                    redNodes.setFlows(flows, deploymentType).then(function () {
-                        res.json(500, {message: "Unable to deploy on Mobile so flow saved only"});
-                    }).otherwise(function (err) {
-                        log.warn("Error Saving flows : " + err.message);
-                        log.warn(err.stack);
-                        res.json(500, {message: err.message + " ,Unable to deploy on Mobile and un able to rollback deploy flag"});
-                    });
-                });
-            } else {
-                res.send(204);
+                return redNodes.deployFlows(flows);
             }
-        }).otherwise(function (err) {
-            log.warn("Error saving flows : " + err.message);
-            log.warn(err.stack);
-            res.json(500, {message: err.message});
-        });
+        }).then(res.send(204))
+            .otherwise(function (err) {
+                flows.deploy = 0;
+                redNodes.setFlows(flows, deploymentType).then(function () {
+                    res.json(500, {message: "Unable to deploy on Mobile so flow saved only"});
+                }).otherwise(function (err) {
+                    log.warn("Error saving flows : " + err.message);
+                    log.warn(err.stack);
+                    res.json(500, {message: err.message});
+                })
+            });
+
     }
 }
+
