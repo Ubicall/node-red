@@ -96,8 +96,14 @@ var flowNodes = module.exports = {
      * @returns {Promise|*}
      */
     deployFlows: function (flow) {
-        return plistUtil.deployFlowOnline(flow.key , flow.version).then(function (resolve) {
-            return resolve(flow);
+        return plistUtil.deployFlowOnline(flow.key , flow.version).then(function (result) {
+            if(result){
+                return when.promise(result);
+            }else{
+                return when.promise(function(resolve,reject){
+                   reject(new Error("Un abl to deploy flow"));
+                });
+            }
         });
     },
     /**

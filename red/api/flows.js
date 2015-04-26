@@ -21,7 +21,7 @@ var path = require("path");
 var log = require("../log");
 var redNodes = require("../nodes");
 var settings = require("../settings");
-var when = require('when')
+var when = require('when');
 var nodeModel = require('../mongos').nodeModel;
 
 module.exports = {
@@ -48,19 +48,20 @@ module.exports = {
         redNodes.setFlows(flows, deploymentType).then(function () {
             if (settings.get("storageModule") == "mongodb" && deploy) {
                 return redNodes.deployFlows(flows);
+            } else {
+                return when.promise();
             }
-        }).then(res.send(204))
-            .otherwise(function (err) {
-                flows.deploy = 0;
-                redNodes.setFlows(flows, deploymentType).then(function () {
-                    res.json(500, {message: "Unable to deploy on Mobile so flow saved only"});
-                }).otherwise(function (err) {
-                    log.warn("Error saving flows : " + err.message);
-                    log.warn(err.stack);
-                    res.json(500, {message: err.message});
-                })
+        }).then(function (flow) {
+            res.send(204);
+        }).otherwise(function (err) {
+            flows.deploy = 0;
+            redNodes.setFlows(flows, deploymentType).then(function () {
+                res.json(500, {message: "Unable to deploy on Mobile so flow saved only"});
+            }).otherwise(function (er) {
+                log.warn("Error saving flows : " + err.message);
+                log.warn(err.stack);
+                res.json(500, {message: "Unable to deploy on Mobile or rollback saving deployed version"});
             });
-
+        });
     }
 }
-

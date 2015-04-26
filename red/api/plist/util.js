@@ -119,7 +119,7 @@ module.exports = {
                     if (!error && response.statusCode == 200) {
                         return resolve(body);
                     } else {
-                        return reject(new Error("Unable to Deploy Flow"));
+                        return resolve(null);
                     }
                 })
         });
