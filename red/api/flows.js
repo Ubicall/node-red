@@ -49,7 +49,9 @@ module.exports = {
             if (settings.get("storageModule") == "mongodb" && deploy) {
                 return redNodes.deployFlows(flows);
             } else {
-                return when.promise();
+                return when.promise(function(resolve){
+                    return resolve(flows);
+                });
             }
         }).then(function (flow) {
             res.send(204);
