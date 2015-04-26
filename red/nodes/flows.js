@@ -98,7 +98,9 @@ var flowNodes = module.exports = {
     deployFlows: function (flow) {
         return plistUtil.deployFlowOnline(flow.key , flow.version).then(function (result) {
             if(result){
-                return when.promise(result);
+                return when.promise(function(resolve){
+                    resolve(flow);
+                });
             }else{
                 return when.promise(function(resolve,reject){
                    reject(new Error("Un abl to deploy flow"));
