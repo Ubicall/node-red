@@ -80,40 +80,40 @@
 </script>
 
 <script type="text/javascript">
-(function() {
-    RED.nodes.registerType('e-mail',{
-        category: 'social-output',
-        color:"#c7e9c0",
-        defaults: {
-            server: {value:"smtp.gmail.com",required:true},
-            port: {value:"465",required:true},
-            name: {value:""},
-            dname: {value:""}
-        },
-        credentials: {
-            userid: {type:"text"},
-            password: {type: "password"},
-            global: { type:"boolean"}
-        },
-        inputs:1,
-        outputs:0,
-        icon: "envelope.png",
-        align: "right",
-        label: function() {
-            return this.dname||this.name||"email";
-        },
-        labelStyle: function() {
-            return (this.dname||!this.topic)?"node_label_italic":"";
-        },
-        oneditprepare: function() {
-            if (this.credentials.global) {
-                $('#node-tip').show();
-            } else {
-                $('#node-tip').hide();
-            };
-        }
-    });
-})();
+    (function() {
+        RED.nodes.registerType('e-mail',{
+            category: 'social-output',
+            color:"#c7e9c0",
+            defaults: {
+                server: {value:"smtp.gmail.com",required:true},
+                port: {value:"465",required:true},
+                name: {value:""},
+                dname: {value:""}
+            },
+            credentials: {
+                userid: {type:"text"},
+                password: {type: "password"},
+                global: { type:"boolean"}
+            },
+            inputs:1,
+            outputs:0,
+            icon: "envelope.png",
+            align: "right",
+            label: function() {
+                return this.dname||this.name||"email";
+            },
+            labelStyle: function() {
+                return (this.dname||!this.topic)?"node_label_italic":"";
+            },
+            oneditprepare: function() {
+                if (this.credentials.global) {
+                    $('#node-tip').show();
+                } else {
+                    $('#node-tip').hide();
+                };
+            }
+        });
+    })();
 </script>
 
 
@@ -135,8 +135,12 @@
         <input type="text" id="node-input-userid">
     </div>
     <div class="form-row">
-        <label for="node-config-input-password"><i class="fa fa-lock"></i> Password</label>
+        <label for="node-input-password"><i class="fa fa-lock"></i> Password</label>
         <input type="password" id="node-input-password">
+    </div>
+    <div class="form-row">
+        <label for="node-input-box"><i class="fa fa-inbox"></i> Folder</label>
+        <input type="text" id="node-input-box">
     </div>
     <br/>
     <div class="form-row">
@@ -151,42 +155,49 @@
     <p>Repeatedly gets a <b>single email</b> from an IMAP server and forwards on as a msg if not already seen.</p>
     <p>The subject is loaded into <b>msg.topic</b> and <b>msg.payload</b> is the plain text body.
        If there is text/html then that is returned in <b>msg.html</b>. <b>msg.from</b> and <b>msg.date</b> are also set if you need them.</p>
+    <p>Additionally <b>msg.header</b> contains the complete header object including
+    <i>to</i>, <i>cc</i> and other potentially useful properties.</p>
     <p>Uses the imap module.</p>
     <p><b>Note:</b> this node <i>only</i> gets the most recent single email from the inbox, so set the repeat (polling) time appropriately.</p>
 </script>
 
 <script type="text/javascript">
-(function() {
-    RED.nodes.registerType('e-mail in',{
-        category: 'social-input',
-        color:"#c7e9c0",
-        defaults: {
-            repeat: {value:"300",required:true},
-            server: {value:"imap.gmail.com",required:true},
-            port: {value:"993",required:true},
-            name: {value:""}
-        },
-        credentials: {
-            userid: {type:"text"},
-            password: {type: "password"},
-            global: { type:"boolean"}
-        },
-        inputs:0,
-        outputs:1,
-        icon: "envelope.png",
-        label: function() {
-            return this.name||"email";
-        },
-        labelStyle: function() {
-            return (this.name||!this.topic)?"node_label_italic":"";
-        },
-        oneditprepare: function() {
-            if (this.credentials.global) {
-                $('#node-tip').show();
-            } else {
-                $('#node-tip').hide();
-            };
-        }
-    });
-})();
+    (function() {
+        RED.nodes.registerType('e-mail in',{
+            category: 'social-input',
+            color:"#c7e9c0",
+            defaults: {
+                name: {value:""},
+                server: {value:"imap.gmail.com",required:true},
+                port: {value:"993",required:true},
+                box: {value:"INBOX"},
+                repeat: {value:"300",required:true}
+            },
+            credentials: {
+                userid: {type:"text"},
+                password: {type: "password"},
+                global: { type:"boolean"}
+            },
+            inputs:0,
+            outputs:1,
+            icon: "envelope.png",
+            label: function() {
+                return this.name||"email";
+            },
+            labelStyle: function() {
+                return (this.name||!this.topic)?"node_label_italic":"";
+            },
+            oneditprepare: function() {
+                if (this.credentials.global) {
+                    $('#node-tip').show();
+                } else {
+                    $('#node-tip').hide();
+                };
+                if (typeof this.box === 'undefined') {
+                    $("#node-input-box").val("INBOX");
+                    this.box = "INBOX";
+                }
+            }
+        });
+    })();
 </script>
