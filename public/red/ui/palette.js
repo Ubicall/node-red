@@ -16,8 +16,9 @@
 
 RED.palette = (function() {
 
-    var exclusion = ['config','unknown','deprecated'];
-    var core = ['subflows', 'input', 'output', 'function', 'social', 'storage', 'analysis', 'advanced','ivr'];
+    var exclusion = ['config','unknown','deprecated','subflows', 'input', 'output', 'function', 'social', 'storage', 'analysis', 'advanced',
+    'social-input' ,'advanced-input' ,'analysis-function','social-output','advanced-function','storage-input','storage-output'];
+    var core = ['ivr'];
 
     function createCategoryContainer(category){
         var escapedCategory = category.replace(" ","_");
