@@ -192,7 +192,7 @@ var RED = (function() {
     $(function() {
             
         if ((window.location.hostname !== "localhost") && (window.location.hostname !== "127.0.0.1")) {
-            document.title = "Node-RED : "+window.location.hostname;
+            document.title = window.location.hostname + ": IVR Designer";
         }
         
         ace.require("ace/ext/language_tools");
