@@ -2,7 +2,7 @@
 var when = require('when');
 var request = require('request');
 
-var server_url = "http://ubicall.com/design/plist/";
+var server_url = "https://ivr.ubicall.com/plist/";
 var ws_server_url = "http://ws.ubicall.com/webservice/check_ivr_version.php?url="
 //var ws_server_url = "http://10.0.0.161/webservice/check_ivr_version.php?url=";
 
