@@ -4,5 +4,5 @@ exports.uploadImage = function (req, res) {
     var file = req.files.file;
     console.log('file info: ', {name: file.name, path: file.path});
     res.set('Content-Type', 'application/json');
-    res.send({url: "http://ubicall.com/uploads/" + file.name});
+    res.send({url: "https://designer.ubicall.com/uploads/" + file.name});
 }
