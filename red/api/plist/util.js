@@ -1,10 +1,7 @@
 // convert mongo db object style to middle style used by plist.js
 var when = require('when');
 var request = require('request');
-
-var server_url = "https://designer.ubicall.com/plist/";
-var ws_server_url = "http://ws.ubicall.com/webservice/check_ivr_version.php?url="
-//var ws_server_url = "http://10.0.0.161/webservice/check_ivr_version.php?url=";
+var settings = require("../../settings");
 
 var g_flow;
 var plistMapper = {
@@ -91,11 +88,22 @@ module.exports = {
                 g_flow = _flow;
                 __flow.key = _flow.key;
                 __flow.Version = _flow.version;
+                __flow.Font = "Default";
 
-                var startId = _flow.Nodes.filter(function (node) {
+                var startNode = _flow.Nodes.filter(function (node) {
                     // TODO : if it has no start point through exception
                     return (node.hasOwnProperty('type') && node.type == 'start');
-                })[0].wires[0][0];
+                })[0];
+
+                var startId = startNode.wires[0][0];
+
+                //get meta data from start node
+                var startNodeMeta = startNode.meta || [];
+                startNodeMeta.forEach(function (met) {
+                    __flow[met.t] = met['url'];
+                });
+
+                //End meta extraction
                 var initial = getNodeWithId(startId);
                 var rest_of_flow = _flow.Nodes.filter(function (node) {
                     return (node.type != 'start' && node.type != 'tab');
@@ -113,8 +121,8 @@ module.exports = {
     },
     deployFlowOnline: function (licence, version) {
         return when.promise(function (resolve, reject) {
-            console.log("deploy URL " + ws_server_url + server_url + licence + "/" + version);
-            request(ws_server_url + server_url + licence + "/" + version,
+            console.log("deploy URL " + settings.staticPlistSubmittingService + settings.staticPlistHostingUrl + licence + "/" + version);
+            request(settings.staticPlistSubmittingService + settings.staticPlistHostingUrl + licence + "/" + version,
                 function (error, response, body) {
                     if (!error && response.statusCode == 200) {
                         return resolve(body);

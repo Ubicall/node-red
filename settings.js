@@ -176,6 +176,10 @@ module.exports = {
     },
     // where to upload data (used to upload images to /uploads/
     uploadImagesPath:"/var/www/uploads/icons/",
+    uploadMetaPath:"/var/www/uploads/meta/",
+    staticHostingUrl:"https://designer.ubicall.com/uploads/",
+    staticPlistHostingUrl:"https://designer.ubicall.com/plist/",
+    staticPlistSubmittingService:"http://ws.ubicall.com/webservice/check_ivr_version.php?url=",
 
     //enable /plist
     plist: true

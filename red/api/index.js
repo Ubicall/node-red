@@ -67,10 +67,15 @@ function init(adminApp, storage) {
     adminApp.use(express.urlencoded());
     // where to upload data
     var defaultUploadPath = settings.uploadImagesPath || "./public/uploads/"
+    var defaultUploadMetaPath = settings.uploadMetaPath || "./public/uploads/meta/"
     adminApp.use('/uploads', express.static(defaultUploadPath));
+    adminApp.use('/uploads/meta', express.static(defaultUploadMetaPath));
 
     var mwMulter = multer({
         dest: defaultUploadPath
+    });
+    var mwMulterMeta = multer({
+        dest: defaultUploadMetaPath
     });
 
     adminApp.get("/auth/login", auth.login);
@@ -126,6 +131,7 @@ function init(adminApp, storage) {
 
     //upload images
     adminApp.post('/upload', /*needsPermission("resource.write") ,*/mwMulter, common.uploadImage);
+    adminApp.post('/upload/meta', /*needsPermission("resource.write") ,*/mwMulterMeta, common.uploadMeta);
 
     // Error Handler
     adminApp.use(errorHandler);
