@@ -126,8 +126,8 @@ function init(adminApp, storage) {
     adminApp.get("/me", needsPermission("me.read"), auth.me);
     //admin user can create Users
     adminApp.get("/user/:username", needsPermission("user.read"), auth.userInfo);
-    adminApp.post("/user/:username", needsPermission("user.write"), auth.signUp);
-    adminApp.put("/user/:username", needsPermission("user.write"), auth.updateUser);
+    // adminApp.post("/user/:username", needsPermission("user.write"), auth.signUp);
+    // adminApp.put("/user/:username", needsPermission("user.write"), auth.updateUser);
 
     //upload images
     adminApp.post('/upload', /*needsPermission("resource.write") ,*/mwMulter, common.uploadImage);

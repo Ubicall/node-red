@@ -26,15 +26,7 @@ function get(username) {
                     return resolve(null);
                 }
             }
-
-            //TODO : REMOVE THIS
-            log.info("No User Found // create user with name " + username + " and password admin");
-            create(username, "admin", "*").then(function (user) {
-                return resolve(user);
-            });
-            //TODO :END REMOVE THIS
-
-            //return resolve(null);
+            return resolve(null);
         });
     });
 }
@@ -42,6 +34,10 @@ function get(username) {
 function authenticate(username, password) {
     return get(username).then(function (user) {
         if (user) {
+            if (user.status && (user.status != true || user.status != 1)) {
+                console.log("user status is " + user.status + " so he can't login ");
+                return when.resolve(null);
+            }
             return when.promise(function (resolve, reject) {
                 bcrypt.compare(password, user.password, function (err, res) {
                     return resolve(res ? user : null);
@@ -53,6 +49,7 @@ function authenticate(username, password) {
 }
 
 function create(username, password, permissions) {
+    console.log("DEPRECATED NOT USED ANY MORE ");
     return when.promise(function (resolve, reject) {
         var Us = new UserModal({
             username: username,
@@ -72,6 +69,7 @@ function create(username, password, permissions) {
 
 
 function update(username, password, permisssions) {
+    console.log("DEPRECATED NOT USED ANY MORE ");
     return when.promise(function (resolve, reject) {
         UserModal.findOne({username: username}, function (err, user) {
             if (!err) {
@@ -91,5 +89,5 @@ module.exports = {
     get: get,
     authenticate: authenticate,
     create: create,
-    update:update
+    update: update
 };
