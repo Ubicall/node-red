@@ -37,19 +37,23 @@ module.exports = {
         var deploy = req.get("Node-RED-Deploy-Save") === "deploy" ? true : false;
 
         if (settings.get("storageModule") == "mongodb") {
-            flows = new nodeModel({
-                key: req.user.username,
-                deploy: deploy ? Date.now() : 0,
-                version: Date.now(),
-                Nodes: flows
-            });
+            if ((req.user.licence_key || req.user.username) && req.user.status != 0) {
+                flows = new nodeModel({
+                    key: req.user.licence_key || req.user.username,
+                    deploy: deploy ? Date.now() : 0,
+                    version: Date.now(),
+                    Nodes: flows
+                });
+            } else {
+                return res.json(500, {message: "Unable to deploy or save , you should has enabled licence key first"});
+            }
         }
 
         redNodes.setFlows(flows, deploymentType).then(function () {
             if (settings.get("storageModule") == "mongodb" && deploy) {
                 return redNodes.deployFlows(flows);
             } else {
-                return when.promise(function(resolve){
+                return when.promise(function (resolve) {
                     return resolve(flows);
                 });
             }

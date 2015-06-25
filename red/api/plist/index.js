@@ -8,10 +8,18 @@ module.exports = {
         plistStorage.init(_settings);
     },
     get: function (req, res) {
-        plistStorage.getFlow(req.params.username, req.params.version).then(function (resolve) {
+        plistStorage.getFlow(req.params.licence, req.params.version).then(function (resolve) {
             res.set('Content-Type', 'text/xml');
-            console.log("JSON  : \n" + JSON.stringify(resolve, null, 4));
-            console.log("PLIST : \n" + plist.build(resolve));
+            //console.log("JSON  : \n" + JSON.stringify(resolve, null, 4));
+            //console.log("PLIST : \n" + plist.build(resolve));
+            res.send(plist.build(resolve));
+        });
+    },
+    getFromAll: function (req, res) {
+        plistStorage.getFlow(req.params.licence, req.params.version, true).then(function (resolve) {
+            res.set('Content-Type', 'text/xml');
+            //console.log("JSON  : \n" + JSON.stringify(resolve, null, 4));
+            //console.log("PLIST : \n" + plist.build(resolve));
             res.send(plist.build(resolve));
         });
     }

@@ -15,13 +15,21 @@ mongoStorage = {
         mongos.init(_settings);
         nodeModel = mongos.nodeModel;
     },
-    getFlow: function (owner, ver) {
+    getFlow: function (licence, ver, all) {
         return when.promise(function (resolve) {
             var query;
             if (!ver || ver == 'latest') {
-                query = nodeModel.where({key: owner, deploy: {$gt: 0}}).sort('-version');
+                if (all) {
+                    query = nodeModel.where({key: licence}).sort('-version');
+                } else {
+                    query = nodeModel.where({key: licence, deploy: {$gt: 0}}).sort('-version');
+                }
             } else {
-                query = nodeModel.where({key: owner, deploy: {$gt: 0}, version: ver});
+                if (all) {
+                    query = nodeModel.where({key: licence, version: ver});
+                } else {
+                    query = nodeModel.where({key: licence, deploy: {$gt: 0}, version: ver});
+                }
             }
             query.findOne(function (err, doc) {
                 if (err) {

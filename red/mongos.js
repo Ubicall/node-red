@@ -26,6 +26,8 @@ var SessionSchema = new Schema({Sessions: Schema.Types.Mixed});
 var UserSchema = mongoose.Schema({
     username: {type: String, unique: true, required: true},
     password: {type: String, required: true},
+    status: {type: Number, default: 1},
+    licence_key: {type: String, required: true},
     permissions: Schema.Types.Mixed
 });
 var LibrarySchema = mongoose.Schema({
