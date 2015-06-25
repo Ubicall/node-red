@@ -23,8 +23,6 @@ catch (e) {
     bcrypt = require('bcryptjs');
 }
 
-var SALT = "$2a$08$V2h5IFlvdSBTaG91bGQgVX";
-
 function ensureString(o) {
     if (Buffer.isBuffer(o)) {
         return o.toString();
@@ -109,7 +107,7 @@ function compareObjects(obj1, obj2) {
 }
 
 function generateHash(password) {
-    return bcrypt.hashSync(password, SALT);
+    return bcrypt.hashSync(password, bcrypt.genSaltSync(8));
 }
 
 module.exports = {
