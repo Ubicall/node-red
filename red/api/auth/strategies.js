@@ -86,7 +86,8 @@ var passwordTokenExchange = function(client, username, password, scope, done) {
                 });
                 Tokens.create(username,client.id,scope).then(function(tokens) {
                     // TODO: audit log
-                    done(null,tokens.accessToken,null,{expires_in:tokens.expires_in});
+                    done(null,tokens.accessToken,null,
+                        {expires_in:tokens.expires_in, licence:user.licence_key||user.username});
                 });
             } else {
                 done(null,false);
