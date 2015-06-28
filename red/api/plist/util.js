@@ -2,6 +2,7 @@
 var when = require('when');
 var request = require('request');
 var settings = require("../../settings");
+var log = require("../../log");
 
 var g_flow;
 var plistMapper = {
@@ -121,7 +122,7 @@ module.exports = {
     },
     deployFlowOnline: function (licence, version) {
         return when.promise(function (resolve, reject) {
-            console.log("deploy URL " + settings.staticPlistSubmittingService + settings.staticPlistHostingUrl + licence + "/" + version);
+            log.info("deploy url : " + settings.staticPlistSubmittingService + settings.staticPlistHostingUrl + licence + "/" + version);
             request(settings.staticPlistSubmittingService + settings.staticPlistHostingUrl + licence + "/" + version,
                 function (error, response, body) {
                     if (!error && response.statusCode == 200) {

@@ -37,14 +37,17 @@ module.exports = {
         var deploy = req.get("Node-RED-Deploy-Save") === "deploy" ? true : false;
 
         if (settings.get("storageModule") == "mongodb") {
-            if ((req.user.licence_key || req.user.username) && req.user.status != 0) {
+            var licence_key = req.user.licence_key || req.user.username;
+            log.info("saving flow with licence key "+ licence_key );
+            if (req.user.status == true || req.user.status == 1) {
                 flows = new nodeModel({
-                    key: req.user.licence_key || req.user.username,
+                    key: licence_key ,
                     deploy: deploy ? Date.now() : 0,
                     version: Date.now(),
                     Nodes: flows
                 });
             } else {
+                log.info("user "+ username +" has status " + req.user.status + " so he can't deploy or save  ");
                 return res.json(500, {message: "Unable to deploy or save , you should has enabled licence key first"});
             }
         }
