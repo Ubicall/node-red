@@ -34,8 +34,8 @@ function get(username) {
 function authenticate(username, password) {
     return get(username).then(function (user) {
         if (user) {
-            if (user.status && (user.status != true || user.status != 1)) {
-                console.log("user status is " + user.status + " so he can't login ");
+            if (user.status != true && user.status != 1) {
+                log.info("user "+ username +" has status " + user.status + " so he can't login ");
                 return when.resolve(null);
             }
             return when.promise(function (resolve, reject) {
