@@ -32,7 +32,9 @@ var bearerStrategy = function (accessToken, done) {
         if (token) {
             Users.get(token.user).then(function(user) {
                 if (user) {
-                    done(null,user,{scope:token.scope});
+                    done(null,user,{scope:token.scope,
+                        expires_in:token.expires,
+                        licence:user.licence_key || user.username});
                 } else {
                     done(null,false);
                 }
