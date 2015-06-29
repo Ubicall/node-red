@@ -52,12 +52,12 @@ var flowNodes = module.exports = {
      * @return a promise for the loading of the config
      */
     load: function (user) {
-        var username;
+        var licence;
         if (user) {
-            username = user.username;
+            licence = user.licence_key;
         }
-        return storage.getFlows(username).then(function (flows) {
-            return credentials.load(username).then(function () {
+        return storage.getFlows(licence).then(function (flows) {
+            return credentials.load(licence).then(function () {
                 activeFlow = new Flow(flows);
                 flowNodes.startFlows();
             });
@@ -84,11 +84,11 @@ var flowNodes = module.exports = {
      * @return the active configuration
      */
     getFlows: function (user) {
-        var username;
+        var licence;
         if (user) {
-            username = user.username;
+            licence = user.licence_key;
         }
-        return activeFlow.getFlow(username);
+        return activeFlow.getFlow(licence);
     },
     /**
      *

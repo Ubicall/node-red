@@ -47,6 +47,7 @@ var mongostorage = {
     getFlows: function (owner) {
         return when.promise(function (resolve) {
             // load latest saved flow ,change deploy : {$gt : 0} to get latest deployed flow only
+            log.info("mongodb.js getFlows owner : " + owner );
             var query = nodeModel.where({key: owner, deploy: {$gte: 0}}).sort('-version');
             query.findOne(function (err, doc) {
                 if (err) {

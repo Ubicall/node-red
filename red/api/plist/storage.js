@@ -24,12 +24,17 @@ mongoStorage = {
                 } else {
                     query = nodeModel.where({key: licence, deploy: {$gt: 0}}).sort('-version');
                 }
+                log.info("getting flow with latest version for licence key "+ licence);
             } else {
                 if (all) {
                     query = nodeModel.where({key: licence, version: ver});
                 } else {
                     query = nodeModel.where({key: licence, deploy: {$gt: 0}, version: ver});
                 }
+                log.info("getting flow with version " + ver + " for licence key "+ licence);
+            }
+            if(all){
+                log.info("get from all flow not only deployed one");
             }
             query.findOne(function (err, doc) {
                 if (err) {
