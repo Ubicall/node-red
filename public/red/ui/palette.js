@@ -78,7 +78,7 @@ RED.palette = (function() {
             if (label != type) {
                 l = "<p><b>"+label+"</b><br/><i>"+type+"</i></p>";
             }
-            
+
             popOverContent = $(l+($("script[data-help-name|='"+type+"']").html()||"<p>no information available</p>").trim())
                                 .filter(function(n) {
                                     return this.nodeType == 1 || (this.nodeType == 3 && this.textContent.trim().length > 0)
@@ -121,12 +121,11 @@ RED.palette = (function() {
                 label = (typeof def.paletteLabel === "function" ? def.paletteLabel.call(def) : def.paletteLabel)||"";
             }
 
-            
+
             $('<div/>',{class:"palette_label"+(def.align=="right"?" palette_label_right":"")}).appendTo(d);
 
             d.className="palette_node";
-            
-            
+
             if (def.icon) {
                 var iconContainer = $('<div/>',{class:"palette_icon_container"+(def.align=="right"?" palette_icon_container_right":"")}).appendTo(d);
                 $('<div/>',{class:"palette_icon",style:"background-image: url(icons/"+def.icon+")"}).appendTo(iconContainer);
@@ -178,7 +177,7 @@ RED.palette = (function() {
                 revertDuration: 50,
                 start: function() {RED.view.focus();}
             });
-            
+
             if (def.category == "subflows") {
                 $(d).dblclick(function(e) {
                     RED.workspaces.show(nt.substring(8));
@@ -187,7 +186,7 @@ RED.palette = (function() {
             }
 
             setLabel(nt,$(d),label);
-            
+
             var categoryNode = $("#palette-container-"+category);
             if (categoryNode.find(".palette_node").length === 1) {
                 if (!categoryNode.find("i").hasClass("expanded")) {
@@ -195,7 +194,13 @@ RED.palette = (function() {
                     categoryNode.find("i").toggleClass("expanded");
                 }
             }
-            
+            if(def.paletteSort){
+              d.setAttribute( 'data-sort' , def.paletteSort );
+              categoryNode.find('.palette_node').sort(function (a, b) {
+                return +a.dataset.sort - +b.dataset.sort;
+              }).appendTo( categoryNode );
+            }
+
         }
     }
 
@@ -272,26 +277,26 @@ RED.palette = (function() {
         } else {
             core.forEach(createCategoryContainer);
         }
-        
+
         $("#palette-search-input").focus(function(e) {
             RED.keyboard.disable();
         });
         $("#palette-search-input").blur(function(e) {
             RED.keyboard.enable();
         });
-    
+
         $("#palette-search-clear").on("click",function(e) {
             e.preventDefault();
             $("#palette-search-input").val("");
             filterChange();
             $("#palette-search-input").focus();
         });
-    
+
         $("#palette-search-input").val("");
         $("#palette-search-input").on("keyup",function() {
             filterChange();
         });
-    
+
         $("#palette-search-input").on("focus",function() {
             $("body").one("mousedown",function() {
                 $("#palette-search-input").blur();
