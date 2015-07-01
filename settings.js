@@ -172,7 +172,7 @@ module.exports = {
     //uri and database name for mongodb if not defined (uri : "localhost" and db :"rrrtest")
     mongodb: {
         uri: "localhost",
-        db: "rrrtest"
+        db: "ubi_ivr_designer"
     },
     // where to upload data (used to upload images to /uploads/
     uploadImagesPath:"/var/www/uploads/icons/",
