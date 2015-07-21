@@ -68,10 +68,10 @@ function mapElement(that) {
                 });
             } else if (plistMapper[k].name == 'FormFields') {
                 rObj[plistMapper[k].name] = that.form_screen_items.map(mapElement);
-                var Node = getNodeWithId(that.wires[0][0]);
-                if(Node && Node.type == 'call'){
-                  rObj.QueueDestination = Node.queue.id;
-                }
+                // var Node = getNodeWithId(that.wires[0][0]);
+                // if(Node && Node.type == 'call'){
+                //   rObj.QueueDestination = Node.queue.id;
+                // }
             } else {
                 rObj[plistMapper[k].name] = k == 'type' ? plistMapper[that[k]].name : that[k];
             }
