@@ -38,14 +38,20 @@ mongoStorage = {
             }
             query.findOne(function (err, doc) {
                 if (err) {
-                    log.info("Creating new flows file");
+                    log.error("error parsing flow for " + licence + " with version " + ver || 'latest' );
                     return resolve([]);
                 }
                 if (doc) {
                     //convert from db style to intermediate style before forwarding to plist
-                    plistUtil.extractFlow(doc).then(function (res) {
+                    return plistUtil.extractFlow(doc).then(function (res) {
                         return resolve(res);
+                    }).otherwise(function(error){
+                        log.error("error parsing flow for " + licence + " with version " + ver || 'latest' );
+                        return resolve([]);
                     })
+                }else {
+                  log.error("No flow found for " + licence + " with version " + ver || 'latest' );
+                  return resolve([]);
                 }
             });
         });
