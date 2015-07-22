@@ -1030,7 +1030,7 @@ div.node-info {
     font-size: 16px !important;
 }
 #workspace-tabs {
-    margin-right: 28px;
+    // margin-right: 28px;
 }
 #workspace-add-tab {
     position: absolute;
