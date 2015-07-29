@@ -61,7 +61,8 @@ function mapElement(that) {
                         delete choice.ScreenName;
                     } else if (Node.type == 'call') {
                         choice.QueueDestination = Node.queue.id;
-                        delete choice.ScreenName;
+                        // delete choice.ScreenName;
+                        choice.ScreenName = that.wires[index][0];
                     } else {
                         choice.ScreenName = that.wires[index][0];
                     }
