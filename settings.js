@@ -18,6 +18,19 @@
 // to make it available:
 //var fs = require("fs");
 
+var loader = require('node-remote-config-loader');
+
+process.env.node_env = process.env.node_env || 'development';
+
+if (!process.env.config_version) {
+  throw new Error("Missed config_version environment variable");
+}
+
+var config = loader.load({
+  configHost: process.env.node_env == "production" ? "http://developer.ubicall.com/conf/" : "http://developer.dev.ubicall.com/conf/",
+  configVersion: process.env.config_version,
+  configEnv: process.env.node_env
+});
 
 module.exports = {
     // the tcp port that the Node-RED web server is listening on
@@ -178,8 +191,8 @@ module.exports = {
     uploadImagesPath:"/var/www/uploads/icons/",
     uploadMetaPath:"/var/www/uploads/meta/",
     staticHostingUrl:"https://designer.ubicall.com/uploads/",
-    staticPlistHostingUrl:"https://designer.ubicall.com/plist/",
-    staticPlistSubmittingService:"http://ws.ubicall.com/webservice/check_ivr_version.php?url=",
+    staticPlistHostingUrl: config.defaultPlistHost,
+    staticPlistSubmittingService: config.endPoints.plistDeploy || "http://ws.ubicall.com/webservice/check_ivr_version.php?url=",
 
     //enable /plist
     plist: true

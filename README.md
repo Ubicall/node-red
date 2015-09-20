@@ -19,11 +19,13 @@ A visual tool for wiring the Internet of Things.
 Check out [INSTALL](INSTALL.md) for full instructions on getting started.
 
 1. download the zip and unzip, or git clone
-2. cd node-red
-3. npm install
-4. node red.js
-5. Open <http://localhost:1880>
-
+```
+cd node-red ; git checkout ivr
+npm install
+# config_version - which configuration version you like to use i.e. old api => 20150908 | new api => 20150920
+config_version=20150908 node red.js
+```
+Open <http://localhost:1880>
 ## Getting Help
 
 More documentation can be found [here](http://nodered.org/docs).

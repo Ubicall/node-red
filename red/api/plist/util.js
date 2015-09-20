@@ -127,15 +127,29 @@ module.exports = {
     },
     deployFlowOnline: function (licence, version) {
         return when.promise(function (resolve, reject) {
-            log.info("deploy url : " + settings.staticPlistSubmittingService + settings.staticPlistHostingUrl + licence + "/" + version);
-            request(settings.staticPlistSubmittingService + settings.staticPlistHostingUrl + licence + "/" + version,
-                function (error, response, body) {
+            var deployURL ;
+            var regex = /^http:\/\/ws.ubicall.com/;
+            if(regex.test(settings.staticPlistSubmittingService)){ //old api http://ws.ubicall.com
+                deployURL = settings.staticPlistSubmittingService + settings.staticPlistHostingUrl + licence + "/" + version;
+                log.info("deploy url : " + deployURL);
+                request.get(deployURL,function (error, response, body) {
                     if (!error && response.statusCode == 200) {
-                        return resolve(body);
+                      return resolve(body);
                     } else {
-                        return resolve(null);
+                      return resolve(null);
                     }
-                })
+                  });
+            }else { //new api https://api.ubicall.com
+                deployURL = settings.staticPlistSubmittingService + licence + "/" + version;
+                log.info("deploy url : " + deployURL);
+                request.post(deployURL,function (error, response, body) {
+                    if (!error && response.statusCode == 200) {
+                      return resolve(body);
+                    } else {
+                      return resolve(null);
+                    }
+                  });
+            }
         });
     }
 }
