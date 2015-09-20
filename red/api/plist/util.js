@@ -106,7 +106,7 @@ module.exports = {
                 //get meta data from start node
                 var startNodeMeta = startNode.meta || [];
                 startNodeMeta.forEach(function (met) {
-                    __flow[met.t] = met['url'] || "Default";
+                    __flow[met.key] = met['value'] || "Default";
                 });
 
                 //End meta extraction
