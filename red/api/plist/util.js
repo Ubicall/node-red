@@ -1,8 +1,16 @@
 // convert mongo db object style to middle style used by plist.js
 var when = require('when');
 var request = require('request');
-var settings = require("../../settings");
+var settings = require("../../../settings");
 var log = require("../../log");
+
+var PLIST_DEPLOY = settings.staticPlistSubmittingService || "http://ws.ubicall.com/webservice/check_ivr_version.php?url=";
+var PLIST_HOST = settings.staticPlistHostingUrl || "https://designer.ubicall.com/plist/";
+
+var oldApiRegex = /^http:\/\/ws.ubicall.com/;
+
+var REQUEST_METHOD = oldApiRegex.test(PLIST_DEPLOY) ? 'get' : 'post';
+
 
 var g_flow;
 var plistMapper = {
@@ -127,29 +135,20 @@ module.exports = {
     },
     deployFlowOnline: function (licence, version) {
         return when.promise(function (resolve, reject) {
-            var deployURL ;
-            var regex = /^http:\/\/ws.ubicall.com/;
-            if(regex.test(settings.staticPlistSubmittingService)){ //old api http://ws.ubicall.com
-                deployURL = settings.staticPlistSubmittingService + settings.staticPlistHostingUrl + licence + "/" + version;
-                log.info("deploy url : " + deployURL);
-                request.get(deployURL,function (error, response, body) {
-                    if (!error && response.statusCode == 200) {
-                      return resolve(body);
-                    } else {
-                      return resolve(null);
-                    }
-                  });
-            }else { //new api https://api.ubicall.com
-                deployURL = settings.staticPlistSubmittingService + licence + "/" + version;
-                log.info("deploy url : " + deployURL);
-                request.post(deployURL,function (error, response, body) {
-                    if (!error && response.statusCode == 200) {
-                      return resolve(body);
-                    } else {
-                      return resolve(null);
-                    }
-                  });
-            }
+            var deployURL = oldApiRegex.test(PLIST_DEPLOY) ? (PLIST_DEPLOY + PLIST_HOST + licence + "/" + version) : (PLIST_DEPLOY + licence + "/" + version);
+            log.info("Deploy to : " + REQUEST_METHOD + " " + deployURL);
+
+            request({ url : deployURL, method : REQUEST_METHOD },function (err, response, body) {
+                if(err){
+                  log.error(err);
+                  return resolve(null);
+                }else if (!err && response.statusCode == 200) {
+                  return resolve(body);
+                } else {
+                  log.error(body);
+                  return resolve(null);
+                }
+            });
         });
     }
 }

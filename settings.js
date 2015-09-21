@@ -21,6 +21,7 @@
 var loader = require('node-remote-config-loader');
 
 process.env.node_env = process.env.node_env || 'development';
+process.env.config_version = process.env.config_version || 20150906;
 
 if (!process.env.config_version) {
   throw new Error("Missed config_version environment variable");
@@ -31,6 +32,11 @@ var config = loader.load({
   configVersion: process.env.config_version,
   configEnv: process.env.node_env
 });
+
+var DEVENV = (process.env.node_env=="development" || process.env.node_env == "test");
+if(DEVENV){
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
+}
 
 module.exports = {
     // the tcp port that the Node-RED web server is listening on
@@ -191,8 +197,8 @@ module.exports = {
     uploadImagesPath:"/var/www/uploads/icons/",
     uploadMetaPath:"/var/www/uploads/meta/",
     staticHostingUrl:"https://designer.ubicall.com/uploads/",
-    staticPlistHostingUrl: config.defaultPlistHost,
-    staticPlistSubmittingService: config.endPoints.plistDeploy || "http://ws.ubicall.com/webservice/check_ivr_version.php?url=",
+    staticPlistHostingUrl:  DEVENV ? config.endPoints.dev.defaultPlistHost :config.endPoints.defaultPlistHost,
+    staticPlistSubmittingService: DEVENV ? config.endPoints.dev.plistDeploy : config.endPoints.plistDeploy,
 
     //enable /plist
     plist: true

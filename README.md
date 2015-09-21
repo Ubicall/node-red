@@ -22,7 +22,7 @@ Check out [INSTALL](INSTALL.md) for full instructions on getting started.
 ```
 cd node-red ; git checkout ivr
 npm install
-# config_version - which configuration version you like to use i.e. old api => 20150908 | new api => 20150920
+# config_version - which configuration version you like to use i.e. old api => 20150906 | new api => 20150920
 config_version=20150908 node red.js
 ```
 Open <http://localhost:1880>
