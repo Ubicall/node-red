@@ -26,6 +26,8 @@ var plistMapper = {
     "form_screen_name": {name: "ScreenTitle", type: "String"},
     "form_screen_title": {name: "FormTitle", type: "String"},
     "form_screen_items": {name: "FormFields", type: "Array"},
+    "form_type": {name: "Callback", type: "String"},
+    "form_dest": {name: "Destination", type: "String"},
     "fieldLabel": {name: "FieldLabel", type: "String"},
     "fieldType": {name: "FieldType", type: "String"},
     "isMandatory": {name: "isMandatory", type: "String"},
