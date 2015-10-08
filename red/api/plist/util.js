@@ -137,7 +137,14 @@ module.exports = {
     },
     deployFlowOnline: function (licence, version) {
         return when.promise(function (resolve, reject) {
-            var deployURL = oldApiRegex.test(PLIST_DEPLOY) ? (PLIST_DEPLOY + PLIST_HOST + licence + "/" + version) : (PLIST_DEPLOY + licence + "/" + version);
+            if(oldApiRegex.test(PLIST_DEPLOY)){
+                deployURL = PLIST_DEPLOY + PLIST_HOST + licence + "/" + version;
+                if(process.env.node_env === "development"){
+                    deployURL +="&server=dev";
+                }
+            }else{
+                deployURL = PLIST_DEPLOY + licence + "/" + version;
+            }
             log.info("Deploy to : " + REQUEST_METHOD + " " + deployURL);
 
             request({ url : deployURL, method : REQUEST_METHOD },function (err, response, body) {
