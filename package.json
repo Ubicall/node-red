@@ -71,6 +71,7 @@
     "sentiment": "0.2.3",
     "serialport": "1.4.10",
     "twitter-ng": "0.6.2",
+    "ubicall-oauth": "git://github.com/Ubicall/ubicall-oauth",
     "uglify-js": "2.4.16",
     "when": "3.7.2",
     "ws": "0.7.1",

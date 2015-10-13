@@ -14,13 +14,13 @@
  * limitations under the License.
  **/
 RED.user = (function() {
-        
+
     function login(opts,done) {
         if (typeof opts == 'function') {
             done = opts;
             opts = {};
         }
-        
+
         var dialog = $('<div id="node-dialog-login" title="you are going to update IVR , please provide your credential " class="hide">'+
                        '<div style="display: inline-block;width: 250px; vertical-align: top; margin-right: 10px; margin-bottom: 20px;"><img src="node-red-256.png"/></div>'+
                        '<div style="display: inline-block; width: 250px; vertical-align: bottom; margin-left: 10px; margin-bottom: 20px;">'+
@@ -37,7 +37,7 @@ RED.user = (function() {
             resizable: false,
             draggable: false
         });
-        
+
         $("#node-dialog-login-fields").empty();
         $.ajax({
             dataType: "json",
@@ -59,9 +59,9 @@ RED.user = (function() {
                         $("#node-dialog-login-submit").button("option","disabled",true);
                         $("#node-dialog-login-failed").hide();
                         $(".login-spinner").show();
-                        
+
                         var body = {
-                            client_id: "node-red-editor",
+                            client_id: "ubicall-admin",
                             grant_type: "password",
                             scope:"*"
                         }
@@ -70,7 +70,7 @@ RED.user = (function() {
                             body[field.id] = $("#node-dialog-login-"+field.id).val();
                         }
                         $.ajax({
-                            url:"auth/token",
+                            url:"https://api.dev.ubicall.com/auth/token",
                             type: "POST",
                             data: body
                         }).done(function(data,textStatus,xhr) {
@@ -93,13 +93,13 @@ RED.user = (function() {
                     }
                 }
                 dialog.dialog("open");
-            }     
+            }
         });
     }
 
     function logout() {
         $.ajax({
-            url: "auth/revoke",
+            url: "https://api.dev.ubicall.com/auth/revoke",
             type: "POST",
             data: {token:RED.settings.get("auth-tokens").access_token},
             success: function() {
@@ -108,7 +108,7 @@ RED.user = (function() {
             }
         })
     }
-    
+
     function updateUserMenu() {
         $("#btn-usermenu-submenu li").remove();
         if (RED.settings.user.anonymous) {
@@ -137,11 +137,11 @@ RED.user = (function() {
                 }
             });
         }
-        
+
     }
-    
-    
-    
+
+
+
     function init() {
         if (RED.settings.user) {
             $('<li><a id="btn-usermenu" class="button hide" data-toggle="dropdown" href="#"><i class="fa fa-user"></i></a></li>')
@@ -152,7 +152,7 @@ RED.user = (function() {
             });
             updateUserMenu();
         }
-        
+
     }
     return {
         init: init,

@@ -4,13 +4,12 @@ var request = require('request');
 var settings = require("../../../settings");
 var log = require("../../log");
 
-var PLIST_DEPLOY = settings.staticPlistSubmittingService || "http://ws.ubicall.com/webservice/check_ivr_version.php?url=";
+var PLIST_DEPLOY = settings.staticPlistSubmittingService;
 var PLIST_HOST = settings.staticPlistHostingUrl || "https://designer.ubicall.com/plist/";
 
-var oldApiRegex = /^http:\/\/ws.ubicall.com/;
-
-var REQUEST_METHOD = oldApiRegex.test(PLIST_DEPLOY) ? 'get' : 'post';
-
+if(!PLIST_DEPLOY){
+  throw new Error("ws.ubicall.com is abslote use new configuration i.e. config_version=20150920")
+}
 
 var g_flow;
 var plistMapper = {
@@ -135,20 +134,20 @@ module.exports = {
             resolve(__flow);
         });
     },
-    deployFlowOnline: function (licence, version) {
+    deployFlowOnline: function (authorization_header, version) {
         return when.promise(function (resolve, reject) {
-            var deployURL = oldApiRegex.test(PLIST_DEPLOY) ? (PLIST_DEPLOY + PLIST_HOST + licence + "/" + version) : (PLIST_DEPLOY + licence + "/" + version);
-            log.info("Deploy to : " + REQUEST_METHOD + " " + deployURL);
-
-            request({ url : deployURL, method : REQUEST_METHOD },function (err, response, body) {
-                if(err){
-                  log.error(err);
+            var options = { url : PLIST_DEPLOY + version, method : 'POST'};
+            if(authorization_header){
+              options.headers = options.headers || {};
+              options.headers['Authorization'] = authorization_header;
+            }
+            log.info("Deploy to : " + JSON.stringify(options));
+            request(options,function (err, response, body) {
+                if(err || response.statusCode !== 200){
+                  log.error(err || response.statusCode);
                   return resolve(null);
-                }else if (!err && response.statusCode == 200) {
+                }else {
                   return resolve(body);
-                } else {
-                  log.error(body);
-                  return resolve(null);
                 }
             });
         });

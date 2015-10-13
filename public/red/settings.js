@@ -91,7 +91,7 @@ RED.settings = (function () {
                 if (!/^\s*(https?:|\/|\.)/.test(settings.url)) {
                     var auth_tokens = RED.settings.get("auth-tokens");
                     if (auth_tokens) {
-                        jqXHR.setRequestHeader("Authorization","Bearer "+auth_tokens.access_token);
+                        jqXHR.setRequestHeader("Authorization","Bearer " + auth_tokens.access_token);
                     }
                 }
             }

@@ -37,7 +37,7 @@ function init(_server,_settings) {
     server = _server;
     settings = _settings;
 
-    comms.init(_server,_settings);
+    // comms.init(_server,_settings);
 
     nodeApp = express();
     app = express();
@@ -50,7 +50,7 @@ function start() {
             if (settings.httpAdminRoot !== false) {
                 require("./api").init(app,storage);
             }
-            
+
             if (log.metric()) {
                 runtimeMetricInterval = setInterval(function() {
                     reportMetrics();
@@ -107,7 +107,7 @@ function start() {
             }).otherwise(function(err) {
                 console.log(err);
             });
-            comms.start();
+            // comms.start();
     });
 }
 
