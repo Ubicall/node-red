@@ -9,7 +9,6 @@ try {
 catch (e) {
     bcrypt = require('bcryptjs');
 }
-var permissions = require('./api/auth/permissions');
 
 var settings;
 
@@ -22,14 +21,6 @@ var NodeSchema = new Schema({
 });
 var CredentialSchema = new Schema({version: Number, Credentials: [Schema.Types.Mixed]});
 var SettingSchema = new Schema({version: Number, Settings: [Schema.Types.Mixed]});
-var SessionSchema = new Schema({Sessions: Schema.Types.Mixed});
-var UserSchema = mongoose.Schema({
-    username: {type: String, unique: true, required: true},
-    password: {type: String, required: true},
-    status: {type: Number, default: 1},
-    licence_key: {type: String, required: true},
-    permissions: Schema.Types.Mixed
-});
 var LibrarySchema = mongoose.Schema({
     type: {type: String, unique: true, required: true},
     path: {type: String, required: true},
@@ -37,14 +28,6 @@ var LibrarySchema = mongoose.Schema({
 });
 
 
-//schemas method & validators
-UserSchema.methods.generateHash = function (password) {
-    return red_util.generateHash(password);
-};
-
-
-UserSchema.path('permissions').validate(permissions.isValidPermission,
-    'permission may be * , ["xyz.read", "xyz.write")');
 //END schemas method
 
 var mongos = {
@@ -65,8 +48,6 @@ var mongos = {
     nodeModel: mongoose.model('Nodes', NodeSchema),
     credentialModel: mongoose.model('Credentials', CredentialSchema),
     settingModel: mongoose.model('Settings', SettingSchema),
-    sessionModel: mongoose.model('Sessions', SessionSchema),
-    userModel: mongoose.model('User', UserSchema),
     libraryModel:mongoose.model('Library', LibrarySchema)
 };
 

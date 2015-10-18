@@ -22,8 +22,9 @@ Check out [INSTALL](INSTALL.md) for full instructions on getting started.
 ```
 cd node-red ; git checkout ivr
 npm install
-# config_version - which configuration version you like to use i.e. old api => 20150906 | new api => 20150920
-config_version=20150908 node red.js
+# config_version - which configuration version you like to use i.e. 20150920 - default _specified in settings.js_
+# db_env - [internal | external] control db connections attributes , default *internal* which use internal_ip and internal_port to connect to DB - default _internel_
+db_env=external node red.js
 ```
 Open <http://localhost:1880>
 ## Getting Help

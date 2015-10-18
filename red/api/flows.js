@@ -26,35 +26,32 @@ var nodeModel = require('../mongos').nodeModel;
 
 module.exports = {
     get: function (req, res) {
-        redNodes.loadFlows(req.user).then(function () {
-            res.json(redNodes.getFlows(req.user));
+        redNodes.loadFlows(req.user.licence_key).then(function () {
+            res.json(redNodes.getFlows(req.user.licence_key));
         });
 
     },
     post: function (req, res) {
         var flows = req.body;
         var deploymentType = req.get("Node-RED-Deployment-Type") || "full";
+        var authz = req.user.authz;
         var deploy = req.get("Node-RED-Deploy-Save") === "deploy" ? true : false;
 
         if (settings.get("storageModule") == "mongodb") {
-            var licence_key = req.user.licence_key || req.user.username;
-            log.info("saving flow with licence key "+ licence_key );
-            if (req.user.status == true || req.user.status == 1) {
-                flows = new nodeModel({
-                    key: licence_key ,
-                    deploy: deploy ? Date.now() : 0,
-                    version: Date.now(),
-                    Nodes: flows
-                });
-            } else {
-                log.info("user "+ username +" has status " + req.user.status + " so he can't deploy or save  ");
-                return res.json(500, {message: "Unable to deploy or save , you should has enabled licence key first"});
-            }
+            var licence_key = req.user.licence_key;
+            var ver = Date.now();
+            log.info("saving flow " + ver + " with licence key "+ licence_key );
+            flows = new nodeModel({
+              key: licence_key ,
+              deploy: deploy ? ver : 0,
+              version: ver,
+              Nodes: flows
+            });
         }
 
         redNodes.setFlows(flows, deploymentType).then(function () {
             if (settings.get("storageModule") == "mongodb" && deploy) {
-                return redNodes.deployFlows(flows);
+                return redNodes.deployFlows(authz,flows);
             } else {
                 return when.promise(function (resolve) {
                     return resolve(flows);

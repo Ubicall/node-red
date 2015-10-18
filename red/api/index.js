@@ -17,8 +17,8 @@
 var express = require("express");
 var util = require('util');
 var path = require('path');
-var passport = require('passport');
 var multer = require('multer');
+var passport = require('passport');
 
 var ui = require("./ui");
 var nodes = require("./nodes");
@@ -26,9 +26,7 @@ var flows = require("./flows");
 var plist = require("./plist");
 var library = require("./library");
 var info = require("./info");
-
-var auth = require("./auth");
-var users = require("./auth/users");
+var auth = require('./auth');
 var needsPermission = auth.needsPermission;
 
 var settings = require("../settings");
@@ -52,7 +50,7 @@ var _permissions = [
 
 function init(adminApp, storage) {
 
-    auth.init(settings, storage);
+    auth.init(settings);
 
     // Editor
     if (!settings.disableEditor) {
@@ -65,6 +63,7 @@ function init(adminApp, storage) {
 
     adminApp.use(express.json());
     adminApp.use(express.urlencoded());
+    adminApp.use(passport.initialize());
     // where to upload data
     var defaultUploadPath = settings.uploadImagesPath || "./public/uploads/"
     var defaultUploadMetaPath = settings.uploadMetaPath || "./public/uploads/meta/"
@@ -81,15 +80,7 @@ function init(adminApp, storage) {
     adminApp.get("/auth/login", auth.login);
 
     if (settings.adminAuth) {
-        //TODO: all passport references ought to be in ./auth
-        adminApp.use(passport.initialize());
-        adminApp.post("/auth/token",
-            auth.ensureClientSecret,
-            auth.authenticateClient,
-            auth.getToken,
-            auth.errorHandler
-        );
-        adminApp.post("/auth/revoke", auth.revoke);
+        console.log('settings.adminAuth has no effect in red/api/auth/index.js');
     }
 
     // Flows
@@ -119,21 +110,12 @@ function init(adminApp, storage) {
     // Plist
     if (settings.plist) {
         plist.init(settings);
-        adminApp.get("/plist/all/:licence/:version"/*, needsPermission("plist.read")*/, plist.getFromAll);
-        adminApp.get("/plist/all/:licence/"/*, needsPermission("plist.read")*/, plist.getFromAll);
-        adminApp.get("/plist/:licence/:version"/*, needsPermission("plist.read")*/, plist.get);
-        adminApp.get("/plist/:licence"/*, needsPermission("plist.read")*/, plist.get);
+        adminApp.get("/plist/:version", needsPermission("plist.read"), plist.get);
     }
 
-    adminApp.get("/me", needsPermission("me.read"), auth.me);
-    //admin user can create Users
-    adminApp.get("/user/:username", needsPermission("user.read"), auth.userInfo);
-    // adminApp.post("/user/:username", needsPermission("user.write"), auth.signUp);
-    // adminApp.put("/user/:username", needsPermission("user.write"), auth.updateUser);
-
     //upload images
-    adminApp.post('/upload', /*needsPermission("resource.write") ,*/mwMulter, common.uploadImage);
-    adminApp.post('/upload/meta', /*needsPermission("resource.write") ,*/mwMulterMeta, common.uploadMeta);
+    adminApp.post('/upload', needsPermission("resource.write") ,mwMulter, common.uploadImage);
+    adminApp.post('/upload/meta', needsPermission("resource.write") ,mwMulterMeta, common.uploadMeta);
 
     // Error Handler
     adminApp.use(errorHandler);

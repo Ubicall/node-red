@@ -51,11 +51,7 @@ var flowNodes = module.exports = {
      * Load the current activeConfig from storage and start it running
      * @return a promise for the loading of the config
      */
-    load: function (user) {
-        var licence;
-        if (user) {
-            licence = user.licence_key;
-        }
+    load: function (licence) {
         return storage.getFlows(licence).then(function (flows) {
             return credentials.load(licence).then(function () {
                 activeFlow = new Flow(flows);
@@ -83,20 +79,16 @@ var flowNodes = module.exports = {
     /**
      * @return the active configuration
      */
-    getFlows: function (user) {
-        var licence;
-        if (user) {
-            licence = user.licence_key;
-        }
+    getFlows: function (licence) {
         return activeFlow.getFlow(licence);
     },
     /**
-     *
+     * @param authorization_header - to authenticate against plist deployment api
      * @param flow must be nodeModel
      * @returns {Promise|*}
      */
-    deployFlows: function (flow) {
-        return plistUtil.deployFlowOnline(flow.key , flow.version).then(function (result) {
+    deployFlows: function (authorization_header , flow) {
+        return plistUtil.deployFlowOnline(authorization_header , flow.version).then(function (result) {
             if(result){
                 return when.promise(function(resolve){
                     resolve(flow);

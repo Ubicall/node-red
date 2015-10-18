@@ -21,7 +21,8 @@
 var loader = require('node-remote-config-loader');
 
 process.env.node_env = process.env.node_env || 'development';
-process.env.config_version = process.env.config_version || 20150906;
+process.env.db_env = process.env.db_env || 'internel';
+process.env.config_version = process.env.config_version || 20150920;
 
 if (!process.env.config_version) {
   throw new Error("Missed config_version environment variable");
@@ -180,10 +181,6 @@ module.exports = {
 
     adminAuth: {
         type: "credentials",
-        users: require('./red/api/auth/users_db').get,
-        authenticate: require('./red/api/auth/users_db').authenticate,
-        create: require('./red/api/auth/users_db').create,
-        update: require('./red/api/auth/users_db').update
     },
 
     // mongo db as persistence backend

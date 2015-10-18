@@ -13,23 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
- 
+
 RED.comms = (function() {
-    
+
     var errornotification = null;
     var clearErrorTimer = null;
-    
+
     var subscriptions = {};
     var ws;
     var pendingAuth = false;
-    
+
     function connectWS() {
+        return;
         var path = location.hostname+":"+location.port+document.location.pathname;
         path = path+(path.slice(-1) == "/"?"":"/")+"comms";
         path = "ws"+(document.location.protocol=="https:"?"s":"")+"://"+path;
         var auth_tokens = RED.settings.get("auth-tokens");
         pendingAuth = (auth_tokens!=null);
-        
+
         function completeConnection() {
             for (var t in subscriptions) {
                 if (subscriptions.hasOwnProperty(t)) {
@@ -37,7 +38,7 @@ RED.comms = (function() {
                 }
             }
         }
-        
+
         ws = new WebSocket(path);
         ws.onopen = function() {
             if (errornotification) {
@@ -83,8 +84,9 @@ RED.comms = (function() {
             setTimeout(connectWS,1000);
         }
     }
-    
+
     function subscribe(topic,callback) {
+        return;
         if (subscriptions[topic] == null) {
             subscriptions[topic] = [];
         }
@@ -93,8 +95,9 @@ RED.comms = (function() {
             ws.send(JSON.stringify({subscribe:topic}));
         }
     }
-    
+
     function unsubscribe(topic,callback) {
+        return;
         if (subscriptions[topic]) {
             for (var i=0;i<subscriptions[topic].length;i++) {
                 if (subscriptions[topic][i] === callback) {
@@ -107,7 +110,7 @@ RED.comms = (function() {
             }
         }
     }
-    
+
     return {
         connect: connectWS,
         subscribe: subscribe,

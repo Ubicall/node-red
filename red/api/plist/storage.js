@@ -15,30 +15,16 @@ mongoStorage = {
         mongos.init(_settings);
         nodeModel = mongos.nodeModel;
     },
-    getFlow: function (licence, ver, all) {
+    getFlow: function (licence, ver, deployed) {
         return when.promise(function (resolve) {
-            var query;
-            if (!ver || ver == 'latest') {
-                if (all) {
-                    query = nodeModel.where({key: licence}).sort('-version');
-                } else {
-                    query = nodeModel.where({key: licence, deploy: {$gt: 0}}).sort('-version');
-                }
-                log.info("getting flow with latest version for licence key "+ licence);
-            } else {
-                if (all) {
-                    query = nodeModel.where({key: licence, version: ver});
-                } else {
-                    query = nodeModel.where({key: licence, deploy: {$gt: 0}, version: ver});
-                }
-                log.info("getting flow with version " + ver + " for licence key "+ licence);
+            var options = {key: licence, version: ver};
+            if( deployed ){
+              options.deploy = {$gt: 0};
             }
-            if(all){
-                log.info("get from all flow not only deployed one");
-            }
-            query.findOne(function (err, doc) {
+            log.info("finding doc with " + JSON.stringify(options));
+            nodeModel.where(options).findOne(function (err, doc) {
                 if (err) {
-                    log.error("error parsing flow for " + licence + " with version " + ver || 'latest' );
+                    log.error("error parsing flow for " + licence + " with version " + ver);
                     return resolve([]);
                 }
                 if (doc) {
@@ -46,11 +32,10 @@ mongoStorage = {
                     return plistUtil.extractFlow(doc).then(function (res) {
                         return resolve(res);
                     }).otherwise(function(error){
-                        log.error("error parsing flow for " + licence + " with version " + ver || 'latest' );
+                        log.error("error parsing flow for " + licence + " with version " + ver);
                         return resolve([]);
                     })
                 }else {
-                  log.error("No flow found for " + licence + " with version " + ver || 'latest' );
                   return resolve([]);
                 }
             });
