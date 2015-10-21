@@ -72,11 +72,9 @@ RED.settings = (function () {
             }
         }
         var accessTokenMatch = /[?&]access_token=(.*?)(?:$|&)/.exec(window.location.search);
-        var licenceMatch = /[?&]licence_key=(.*?)(?:$|&)/.exec(window.location.search);
-        if (accessTokenMatch || licenceMatch) {//catch access_token if it in url or not
+        if (accessTokenMatch) {//catch access_token if it in url or not
             var accessToken = accessTokenMatch[1];
-            var licenceKey = licenceMatch[1];
-            RED.settings.set("auth-tokens",{access_token: accessToken , licence :licenceKey});
+            RED.settings.set("auth-tokens",{access_token: accessToken});
             window.location.search = "";
         }else if(RED.settings.get("auth-tokens")){//otherwise check if local storage contain access_token or not
             console.log("get from local storage");
