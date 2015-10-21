@@ -33,16 +33,28 @@ var LibrarySchema = mongoose.Schema({
 var mongos = {
     init: function (_settings) {
         settings = _settings;
-        if (!settings.mongodb) {
-            settings.mongodb = settings.mongodb || {};
-            settings.mongodb.uri = settings.mongodb.uri || "localhost"
-            settings.mongodb.db = settings.mongodb.db || "rrrtest"
+        var _host = settings.storage.ivr_mongo.external_ip;
+        var _port = settings.storage.ivr_mongo.external_port;
+        if (!process.env.db_env || process.env.db_env === "internal") {
+            _host = settings.storage.ivr_mongo.internal_ip;
+            _port = settings.storage.ivr_mongo.internal_port;
         }
-        log.info("mongo db connection is : " + mongoose.connection.readyState === 0 ? ' closed ' : ' open');
+        log.info("mongo db connection is : " + mongoose.connection.readyState === 0 ? " closed " : " open");
         if (mongoose.connection.readyState === 0) {
-            mongoose.connect(settings.mongodb.uri, settings.mongodb.db);
-            log.info("DB URL : " + settings.mongodb.uri);
-            log.info("DB     : " + settings.mongodb.db);
+            var uri = "mongodb://" + _host + "/" + settings.storage.ivr_mongo.database;
+            var options = {
+                db: {
+                    native_parser: true
+                },
+                server: {
+                    poolSize: 5
+                },
+                user: settings.storage.ivr_mongo.username || "",
+                pass: settings.storage.ivr_mongo.password || ""
+            };
+            mongoose.connect(uri, options, function() {
+                log.info("connected successfully to DB => " + settings.storage.ivr_mongo.database + ":" + _host + ":" + _port);
+            });
         }
     },
     nodeModel: mongoose.model('Nodes', NodeSchema),

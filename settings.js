@@ -186,9 +186,8 @@ module.exports = {
     // mongo db as persistence backend
     storageModule: "mongodb",
     //uri and database name for mongodb if not defined (uri : "localhost" and db :"rrrtest")
-    mongodb: {
-        uri: "localhost",
-        db: "ubi_ivr_designer"
+    storage: {
+      ivr_mongo: config.storage.mongo.ivr_db
     },
     // where to upload data (used to upload images to /uploads/
     uploadImagesPath:"/var/www/uploads/icons/",
