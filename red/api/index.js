@@ -111,6 +111,8 @@ function init(adminApp, storage) {
     if (settings.plist) {
         plist.init(settings);
         adminApp.get("/plist/:version", needsPermission("plist.read"), plist.get);
+        // till absolute php code
+        adminApp.get("/plist/:licence/:version", plist._get);
     }
 
     //upload images
