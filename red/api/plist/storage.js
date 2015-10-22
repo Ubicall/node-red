@@ -16,7 +16,7 @@ mongoStorage = {
         nodeModel = mongos.nodeModel;
     },
     getFlow: function (licence, ver, deployed) {
-        return when.promise(function (resolve) {
+        return when.promise(function (resolve,reject) {
             var options = {key: licence, version: ver};
             if( deployed ){
               options.deploy = {$gt: 0};
@@ -25,7 +25,7 @@ mongoStorage = {
             nodeModel.where(options).findOne(function (err, doc) {
                 if (err) {
                     log.error("error parsing flow for " + licence + " with version " + ver);
-                    return resolve([]);
+                    reject(err);
                 }
                 if (doc) {
                     //convert from db style to intermediate style before forwarding to plist
@@ -33,10 +33,10 @@ mongoStorage = {
                         return resolve(res);
                     }).otherwise(function(error){
                         log.error("error parsing flow for " + licence + " with version " + ver);
-                        return resolve([]);
-                    })
+                        reject(error);
+                    });
                 }else {
-                  return resolve([]);
+                  return reject("no doc found");
                 }
             });
         });
