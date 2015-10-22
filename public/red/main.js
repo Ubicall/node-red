@@ -150,9 +150,7 @@ var RED = (function() {
                     {id:"btn-export-library",label:"Library",disabled:true,onselect:RED.library.export}
                 ]},
                 null,
-                {id:"btn-config-nodes",label:"Configuration nodes",onselect:RED.sidebar.config.show},
-                null,
-                {id:"btn-subflow-menu",label:"Subflows", options: [
+                {id:"btn-subflow-menu",label:"Subflows",disabled:true, options: [
                     {id:"btn-create-subflow",label:"Create subflow",onselect:RED.subflow.createSubflow},
                     {id:"btn-convert-subflow",label:"Selection to subflow",disabled:true,onselect:RED.subflow.convertToSubflow},
                 ]},
@@ -164,8 +162,7 @@ var RED = (function() {
                     null
                 ]},
                 null,
-                {id:"btn-keyboard-shortcuts",label:"Keyboard Shortcuts",onselect:RED.keyboard.showHelp},
-                {id:"btn-help",label:"Node-RED Website", href:"http://nodered.org/docs"}
+                {id:"btn-keyboard-shortcuts",label:"Keyboard Shortcuts",onselect:RED.keyboard.showHelp}
             ]
         });
         
