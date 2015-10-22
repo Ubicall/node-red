@@ -155,7 +155,7 @@ var RED = (function() {
                     {id:"btn-convert-subflow",label:"Selection to subflow",disabled:true,onselect:RED.subflow.convertToSubflow},
                 ]},
                 null,
-                {id:"btn-workspace-menu",label:"Workspaces",options:[
+                {id:"btn-workspace-menu",label:"Workspaces",disabled:true,options:[
                     {id:"btn-workspace-add",label:"Add",onselect:RED.workspaces.add},
                     {id:"btn-workspace-edit",label:"Rename",onselect:RED.workspaces.edit},
                     {id:"btn-workspace-delete",label:"Delete",onselect:RED.workspaces.remove},
