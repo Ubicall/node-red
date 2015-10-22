@@ -19,7 +19,7 @@ module.exports = {
   // till absolute php code
   _get: function(req,res){
     var deployed = (req.query.deployed === "false") ? false : true;
-    log.info("finding plist for " + req.user.licence_key + " with version " + req.params.version + " in " + (deployed ? "deployed flows." : "all saved flows."));
+    log.info("finding plist for " + req.params.licence + " with version " + req.params.version + " in " + (deployed ? "deployed flows." : "all saved flows."));
     plistStorage.getFlow(req.params.licence, req.params.version, deployed).then(function(resolve) {
       res.set('Content-Type', 'text/xml');
       res.send(plist.build(resolve));
