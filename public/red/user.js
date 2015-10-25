@@ -70,7 +70,7 @@ RED.user = (function() {
                             body[field.id] = $("#node-dialog-login-"+field.id).val();
                         }
                         $.ajax({
-                            url:"https://api.dev.ubicall.com/auth/token",
+                            url:"https://api-dev.ubicall.com/auth/token",
                             type: "POST",
                             data: body
                         }).done(function(data,textStatus,xhr) {
@@ -98,15 +98,22 @@ RED.user = (function() {
     }
 
     function logout() {
-        $.ajax({
-            url: "https://api.dev.ubicall.com/auth/revoke",
-            type: "POST",
-            data: {token:RED.settings.get("auth-tokens").access_token},
-            success: function() {
-                RED.settings.remove("auth-tokens");
-                document.location.reload(true);
-            }
-        })
+        var ats = RED.settings.get("auth-tokens");
+        var at = ats ? ats.access_token : undefined;
+        if(at){
+          $.ajax({
+              url: "https://api-dev.ubicall.com/auth/revoke",
+              type: "POST",
+              data: {token:at},
+              success: function() {
+                  RED.settings.remove("auth-tokens");
+                  document.location.reload(true);
+              }
+          });
+        }else {
+          RED.settings.remove("auth-tokens");
+          document.location.reload(true);
+        }
     }
 
     function updateUserMenu() {

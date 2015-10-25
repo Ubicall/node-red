@@ -30,7 +30,7 @@ if(DEVENV){
 }
 
 var config = loader.load({
-  configHost: process.env.node_env === "production" ? "http://developer.ubicall.com/conf/" : "http://developer.dev.ubicall.com/conf/",
+  configHost: process.env.node_env === "production" ? "http://developer.ubicall.com/conf/" : "http://developer-dev.ubicall.com/conf/",
   configVersion: process.env.config_version,
   configEnv: process.env.node_env
 });
@@ -193,7 +193,7 @@ module.exports = {
     // where to upload data (used to upload images to /uploads/
     uploadImagesPath:"/var/www/uploads/icons/",
     uploadMetaPath:"/var/www/uploads/meta/",
-    staticHostingUrl:DEVENV ? "https://designer.dev.ubicall.com/uploads/" : "https://designer.ubicall.com/uploads/",
+    staticHostingUrl:DEVENV ? "https://designer-dev.ubicall.com/uploads/" : "https://designer.ubicall.com/uploads/",
     staticPlistHostingUrl:  DEVENV ? config.endPoints.dev.defaultPlistHost :config.endPoints.defaultPlistHost,
     staticPlistSubmittingService: DEVENV ? config.endPoints.dev.plistDeploy : config.endPoints.plistDeploy,
 

@@ -112,3 +112,5 @@ nodes/node-red-nodes/
 .sessions.json
 public/uploads/
 
+# node-red-contrib-ivr
+nodes/node-red-contrib-ivr
