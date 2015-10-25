@@ -94,6 +94,12 @@ RED.settings = (function () {
                 }
             }
         });
+                
+        $.ajaxError(function(event, jqxhr, settings, thrownError) {
+          if(jqxhr.status === 401){
+            RED.user.logout();
+          }
+        });
 
         load(done);
     }
