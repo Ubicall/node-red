@@ -92,13 +92,12 @@ RED.settings = (function () {
                         jqXHR.setRequestHeader("Authorization","Bearer " + auth_tokens.access_token);
                     }
                 }
+            },
+            error:function(jqXHR, status,error){
+               if(jqXHR.status === 401) {
+                 RED.user.logout();
+               }
             }
-        });
-                
-        $.ajaxError(function(event, jqxhr, settings, thrownError) {
-          if(jqxhr.status === 401){
-            RED.user.logout();
-          }
         });
 
         load(done);
