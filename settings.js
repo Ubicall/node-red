@@ -193,7 +193,7 @@ module.exports = {
     // where to upload data (used to upload images to /uploads/
     uploadImagesPath:"/var/www/uploads/icons/",
     uploadMetaPath:"/var/www/uploads/meta/",
-    staticHostingUrl:"https://designer.ubicall.com/uploads/",
+    staticHostingUrl:DEVENV ? "https://designer.dev.ubicall.com/uploads/" : "https://designer.ubicall.com/uploads/",
     staticPlistHostingUrl:  DEVENV ? config.endPoints.dev.defaultPlistHost :config.endPoints.defaultPlistHost,
     staticPlistSubmittingService: DEVENV ? config.endPoints.dev.plistDeploy : config.endPoints.plistDeploy,
 
