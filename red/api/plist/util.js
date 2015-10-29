@@ -83,7 +83,13 @@ function mapElement(that) {
                 //   rObj.QueueDestination = Node.queue.id;
                 // }
             } else {
-                rObj[plistMapper[k].name] = k == 'type' ? plistMapper[that[k]].name : that[k];
+              if ((that.type == 'InfoScreen' || that.type == 'url') && that.wires[0][0]){
+                var nextID = that.wires[0][0];
+                var nextNode = getNodeWithId(nextID);
+                rObj.nextType = plistMapper[nextNode.type].name;
+                rObj.nextID = nextNode.id;
+              }
+              rObj[plistMapper[k].name] = k == 'type' ? plistMapper[that[k]].name : that[k];
             }
         }
     }
