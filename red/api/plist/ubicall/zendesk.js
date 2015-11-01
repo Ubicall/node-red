@@ -66,14 +66,16 @@ function _mapToUbiCallForm(tikFld) {
 
 function mapToZendesk(credentials, flows) {
   return when.promise(function(resolve, reject) {
+    var visited = [];
     getTicketFields(credentials).then(function(tikFlds) {
-      for (int i = 0; i < flows.length; i++) {
-        if (flows[i].type === "zendesk-ticket") {
-          flows[i].type = "formscreen";
-          flows[i].form_screen_items = [];
+      for (var i = 0; i < flows.length; i++) {
+        if (flows[i].type === "zendesk-ticket" && !(visited.indexOf(flows[i].id) > -1)) {
+          visited.push(flows[i].id);
+          var zdcomp = flows[i];
+          zdcomp.form_screen_items = [];
           for (var i = 0; i < tikFlds.length; i++) {
             var _item = _mapToUbiCallForm(tikFlds[i]);
-            if (_item) flows[i].form_screen_items.push(_item);
+            if (_item) zdcomp.form_screen_items.push(_item);
           }
         }
       }

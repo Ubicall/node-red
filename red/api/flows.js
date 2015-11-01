@@ -23,7 +23,7 @@ var redNodes = require("../nodes");
 var settings = require("../settings");
 var when = require('when');
 var nodeModel = require('../mongos').nodeModel;
-var ubiZDMapper = require('../plist/ubicall/zendesk');
+var ubiZDMapper = require('./plist/ubicall/zendesk');
 
 module.exports = {
   get: function(req, res) {
@@ -48,6 +48,7 @@ module.exports = {
         domain: "Ubicall"
       };
       ubiZDMapper.mapToZendesk(zd_cred, flows).then(function(_flows) {
+        log.info("mapToZendesk flow " + JSON.stringify(_flows));
         flows = new nodeModel({
           key: licence_key,
           deploy: deploy ? ver : 0,
