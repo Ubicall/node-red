@@ -1,13 +1,13 @@
+var zendesk = require("node-zendesk");
 var when = require("when");
 var log = require("../../../log");
-var zendesk = require("node-zendesk");
 
-function getTicketFields(creadintails) {
+function getTicketFields(credentials) {
   return when.promise(function(resolve, reject) {
     var client = zendesk.createClient({
-      username: creadintails.username,
-      password: creadintails.password,
-      remoteUri: 'https://' + creadintails.domain + '.zendesk.com/api/v2'
+      username: credentials.username,
+      password: credentials.password,
+      remoteUri: 'https://' + credentials.domain + '.zendesk.com/api/v2'
     });
     client.ticketfields.list(function(err, statusList, body, responseList, resultList) {
       if (err) return reject(err);
@@ -60,34 +60,24 @@ function _mapToUbiCallForm(tikFld) {
   item.isMandatory = tikFld.required;
   item.placeholder = tikFld.description;
 
-  console.log("zendesk mapping done: " + tikFld.type + " - " + tikFld.url);
   return item;
 }
 
-function mapToZendesk(creadintails, zendeskNode) {
+
+function mapToZendesk(credentials, flows) {
   return when.promise(function(resolve, reject) {
-    getTicketFields(creadintails).then(function(tikFlds) {
-      var _form = {};
-      _form.type = "formscreen";
-      _form.id = zendeskNode.id;
-      _form.wires = zendeskNode.wires;
-      _form.x = zendeskNode.x;
-      _form.y = zendeskNode.y;
-      _form.z = zendeskNode.z;
-
-
-      var form_items = [];
-
-      for (var i = 0; i < tikFlds.length; i++) {
-
-        var _item = _mapToUbiCallForm(tikFlds[i]);
-        if (_item) form_items.push(_item);
-
+    getTicketFields(credentials).then(function(tikFlds) {
+      for (int i = 0; i < flows.length; i++) {
+        if (flows[i].type === "zendeskformscreen") {
+          flows[i].type = "formscreen";
+          flows[i].form_screen_items = [];
+          for (var i = 0; i < tikFlds.length; i++) {
+            var _item = _mapToUbiCallForm(tikFlds[i]);
+            if (_item) flows[i].form_screen_items.push(_item);
+          }
+        }
       }
-      _form.form_screen_items = form_items;
-      console.log(JSON.stringify(_form));
-      return resolve(_form);
-
+      return resolve(flows);
     }).otherwise(function(err) {
       return reject(err);
     });
@@ -95,6 +85,5 @@ function mapToZendesk(creadintails, zendeskNode) {
 }
 
 module.exports = {
-
   mapToZendesk: mapToZendesk
 }
