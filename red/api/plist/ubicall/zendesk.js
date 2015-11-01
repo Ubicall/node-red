@@ -68,7 +68,7 @@ function mapToZendesk(credentials, flows) {
   return when.promise(function(resolve, reject) {
     getTicketFields(credentials).then(function(tikFlds) {
       for (int i = 0; i < flows.length; i++) {
-        if (flows[i].type === "zendeskformscreen") {
+        if (flows[i].type === "zendesk-ticket") {
           flows[i].type = "formscreen";
           flows[i].form_screen_items = [];
           for (var i = 0; i < tikFlds.length; i++) {

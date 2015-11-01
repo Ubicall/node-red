@@ -42,7 +42,7 @@ describe("plist api", function() {
     "z": "97859874.687a68",
     "y": 25.454544067382812,
     "x": 720.9091186523438,
-    "type": "zendeskformscreen",
+    "type": "zendesk-ticket",
     "id": "24bccc0d.dcd5a4"
   };
   
