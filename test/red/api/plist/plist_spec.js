@@ -22,6 +22,7 @@ var when = require('when');
 var log = require('../../../../red/log');
 var plistStorage = require('../../../../red/storage');
 var plist = require("../../../../red/api/plist");
+var zd = require("../../../../red/api/plist/ubicall/zendesk");
 var settings = require("../../../../settings");
 
 describe("plist api", function() {
@@ -29,7 +30,22 @@ describe("plist api", function() {
   var app;
   var licence = "7e6TAj6OXjv";
   var version = "1446109305008";
-
+  
+  var x_cred = {
+    username: "founders@ubicall.com",
+    password: "1234ubicall",
+    domain: "Ubicall"
+  };
+    
+  var x_node = {
+    "wires": [],
+    "z": "97859874.687a68",
+    "y": 25.454544067382812,
+    "x": 720.9091186523438,
+    "type": "zendeskformscreen",
+    "id": "24bccc0d.dcd5a4"
+  };
+  
   before(function() {
     app = express();
     app.use(express.json());
@@ -49,4 +65,21 @@ describe("plist api", function() {
         done();
       });
   });
+  
+  it('deploy plist with zendesk', function(done) {
+    // zd.mapToZendesk(x_cred, x_node).then(function(nn) {
+    //   log.info(nn);
+    // }).otherwise(function(err) {
+    //   log.error(err);
+    // })
+    request(app)
+      .post('/plist/' + licence + '/' + version + '?deployed=false')
+      .set('Accept', 'application/json')
+      .expect(200)
+      .end(function(err, res) {
+        console.log(res.body);
+        done();
+      });
+  });
+  
 });

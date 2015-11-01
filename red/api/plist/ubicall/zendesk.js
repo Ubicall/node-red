@@ -94,30 +94,6 @@ function mapToZendesk(creadintails, zendeskNode) {
   });
 }
 
-var x_node = {
-  "wires": [],
-  "z": "97859874.687a68",
-  "y": 25.454544067382812,
-  "x": 720.9091186523438,
-  "type": "zendeskformscreen",
-  "id": "24bccc0d.dcd5a4"
-};
-
-var x_cred = {
-  username: "founders@ubicall.com",
-  password: "1234ubicall",
-  domain: "Ubicall"
-};
-
-mapToZendesk(x_cred, x_node).then(function(nn) {
-  log.info(nn);
-}).otherwise(function(err) {
-  log.error(err);
-})
-
-
-
-
 module.exports = {
 
   mapToZendesk: mapToZendesk
