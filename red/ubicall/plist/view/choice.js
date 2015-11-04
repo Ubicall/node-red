@@ -5,6 +5,11 @@ var PlistMapper = {
   choices: "choices"
 };
 
+// choices choice object element as keys will be mapped to plist choice element as values
+var ChoicesPlistMapper = {
+  text: "ChoiceText"
+};
+
 var TYPE = "Choice";
 
 /**
@@ -82,7 +87,7 @@ function createChoice(node) {
     }
   }
 
-  _choice[PlistMapper.choices] = createChoiceItems(node);
+  _choice[PlistMapper.choices] = createChoiceItems(node.choices, node.wires);
 
   return _choice;
 }
@@ -103,21 +108,24 @@ function createChoice(node) {
 <array>
 ```
 **/
-function createChoiceItems(node) {
+function createChoiceItems(choices, wires) {
   var _items = [];
 
-  var choices = node.choices;
-  var wires = node.wires;
   // skip choices if missed wired found
-  if(wires.length !== choices.length) return [];
+  if (wires.length !== choices.length) return [];
 
-  for (int i = 0; i < choices.length; i++) {
+  for (var i = 0; i < choices.length; i++) {
     var item = {
-      ChoiceText: choices[0].text,
-      __next: {
-        id: wires[i][0]
+      __next: wires[i][0]
+    };
+    
+    var choice = choices[i];
+    for (var key in ChoicesPlistMapper) {
+      if (ChoicesPlistMapper.hasOwnProperty(key)) {
+        item[ChoicesPlistMapper[key]] = choice[key];
       }
     }
+    _items.push(item);
   }
 
   return _items;
