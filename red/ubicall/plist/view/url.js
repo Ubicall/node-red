@@ -9,16 +9,16 @@ var TYPE = "URL";
 
 /**
 @param node
-```json
+```javascript
   {
-    id: "66a152ec.995eac"
-    type: "url"
-    url: "https://www.ubicall.com"
-    name: "our website"
-    wires: [["d8d0fdc3.272f"]]
-    x: 591
-    y: 298
-    z: "d8dr6dc3.802p"
+    id: "66a152ec.995eac",
+    type: "url",
+    url: "https://www.ubicall.com",
+    name: "our website",
+    wires: [["d8d0fdc3.272f"]],
+    x: 591,
+    y: 298,
+    z: "d8dr6dc3.802p",
   }
 ```
 @return
@@ -41,7 +41,7 @@ var TYPE = "URL";
 **/
 function createURL(node) {
   // TODO for all nodes types - assert node has id , type
-  // TODO for info node - assert node has url
+  // TODO for url node - assert node has url
   // wires is optional
 
   // custom plist node type
@@ -51,7 +51,7 @@ function createURL(node) {
 
   for (var key in PlistMapper) {
     if (p.hasOwnProperty(key)) {
-      _url[InfoPlistMapper[key]] = node[key];
+      _url[PlistMapper[key]] = node[key];
     }
   }
 
@@ -60,8 +60,8 @@ function createURL(node) {
   if (nextWires.length > 0) {
     // create __next node if nextWires is not empty
     // note only first next wire is used
-    _info.__next = {};
-    _info.__next.id = nextWires[0];
+    _url.__next = {};
+    _url.__next.id = nextWires[0][0];
   }
 
   return _url;

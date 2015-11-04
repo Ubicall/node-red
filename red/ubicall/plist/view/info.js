@@ -9,7 +9,7 @@ var TYPE = "Info";
 
 /**
 @param node
-```json
+```javascript
   {
     "id":"4b266393.b4d99c",
     "type":"view-info",
@@ -55,7 +55,7 @@ function createInfo(node) {
 
   for (var key in PlistMapper) {
     if (p.hasOwnProperty(key)) {
-      _info[InfoPlistMapper[key]] = node[key];
+      _info[PlistMapper[key]] = node[key];
     }
   }
 
@@ -65,7 +65,7 @@ function createInfo(node) {
     // create __next node if nextWires is not empty
     // note only first next wire is used
     _info.__next = {};
-    _info.__next.id = nextWires[0];
+    _info.__next.id = nextWires[0][0];
   }
 
   return _info;

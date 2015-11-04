@@ -2,18 +2,18 @@
 
 /**
 @param node
-```json
+```javascript
 {
-  id: "b7a280b0.485d8"
+  id: "b7a280b0.485d8",
   meta: [
     {type: "file", value: "Default", key: "Font"},
     {type: "text", value: "Orange", key: "Theme"}
   ]
-  type: "start"
-  wires: [["4b266393.b4d99c"]]
-  x: 155.66665649414062
-  y: 129.66664123535156
-  z: "17032888.e8fcd7"
+  type: "start",
+  wires: [["4b266393.b4d99c"]],
+  x: 155.66665649414062,
+  y: 129.66664123535156,
+  z: "17032888.e8fcd7",
 }
 ```
 @return
@@ -43,10 +43,7 @@ function createStart(flow) {
   // TODO for start node - assert node has wires
 
   // extract start node , only first node will catched
-  var node = flow.Nodes.filter(function(node) {
-    // TODO : if it has no start point through exception
-    return (node.hasOwnProperty('type') && node.type == 'start');
-  })[0];
+  var node = getStartNode(flow);
 
 
   var _start = {};
@@ -83,6 +80,13 @@ function getNodeWithId(flow, id) {
   //get first one , id attribute doesn't duplicate
   return flow.Nodes.filter(function(node) {
     return (id && node.hasOwnProperty('id') && node.id == id);
+  })[0];
+}
+
+function getStartNode(flow){
+  return flow.Nodes.filter(function(node) {
+    // TODO : if it has no start point through exception
+    return (node.hasOwnProperty('type') && node.type == 'start');
   })[0];
 }
 
