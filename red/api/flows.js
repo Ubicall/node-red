@@ -23,7 +23,7 @@ var redNodes = require("../nodes");
 var settings = require("../settings");
 var when = require('when');
 var nodeModel = require('../mongos').nodeModel;
-var ubiZDMapper = require('./plist/ubicall/zendesk');
+var ubiZDMapper = require('../ubicall/plist/utils/zendesk.js');
 
 module.exports = {
   get: function(req, res) {
@@ -42,7 +42,7 @@ module.exports = {
       var licence_key = req.user.licence_key;
       var ver = Date.now();
       log.info("saving flow " + ver + " with licence key " + licence_key);
-      var zd_cred = {
+      var zd_cred = req.user.zendesk ||  {
         username: "founders@ubicall.com",
         password: "1234ubicall",
         domain: "Ubicall"

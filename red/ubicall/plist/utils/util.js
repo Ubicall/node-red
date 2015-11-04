@@ -1,8 +1,8 @@
 // convert mongo db object style to middle style used by plist.js
 var when = require('when');
 var request = require('request');
-var settings = require("../../../settings");
-var log = require("../../log");
+var settings = require("../../../../settings");
+var log = require("../../../log");
 
 var PLIST_DEPLOY = settings.staticPlistSubmittingService;
 var PLIST_HOST = settings.staticPlistHostingUrl || "https://designer.ubicall.com/plist/";

@@ -24,7 +24,7 @@ var log = require("../log");
 var events = require("../events");
 var redUtil = require("../util");
 var storage = null;
-var plistUtil = require('../api/plist/util');
+var plistUtil = require('../ubicall/plist/utils/util.js');
 
 
 var activeFlow = null;
@@ -95,7 +95,7 @@ var flowNodes = module.exports = {
                 });
             }else{
                 return when.promise(function(resolve,reject){
-                   reject(new Error("Un abl to deploy flow"));
+                   reject(new Error("Unabl to deploy flow"));
                 });
             }
         });

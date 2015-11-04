@@ -1,5 +1,5 @@
 var when = require('when');
-var plistUtil = require("./util");
+var plistUtil = require("./utils/util.js");
 var mongos = require('../../mongos');
 var log = require("../../log");
 
