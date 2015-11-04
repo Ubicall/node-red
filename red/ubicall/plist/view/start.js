@@ -73,7 +73,6 @@ function createStart(flow) {
     _info.__home = {};
     var initView = getNodeWithId(flow, nextWires[0]);
     _info.__home.id = initView.id;
-    _info.__home.type = initView.type;
   }
 
   return _start;
