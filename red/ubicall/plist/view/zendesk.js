@@ -10,13 +10,28 @@ var PlistMapper = {
 
 // form field object element as keys will be mapped to plist FormField element as values
 var FieldPlistMapper = {
-  label: "FieldLabel",
+  title: "FieldLabel",
   type: "FieldType",
   required: "required",
   description: "Placeholder"
 };
 
-var TYPE = "Form";
+// zendesk field type as keys will be value of FieldPlistMapper[type]
+var FieldTypePlistMapper = {
+  subject: "Text Area",
+  description: "Text Area",
+  textarea: "Text Area",
+  text: "Text Field",
+  date: "Date",
+  integer: "Integer",
+  decimal: "Decimal",
+  tickettype: "Selector",
+  priority: "Selector",
+  status: "Selector",
+  checkbox: "Check Box"
+};
+
+var TYPE = "ZendeskForm";
 
 /**
 @param node
@@ -29,34 +44,8 @@ var TYPE = "Form";
   wires: [["ckhb56fg4.548jng"]],
   x: 455,
   y: 442,
-  z: "17032888.e8fcd7",
-  fields:[
-      {
-        label: "Name",
-        type: "Text",
-        required: true,
-        description: "John Smith"
-      },
-      {
-        label: "Email",
-        type: "Text",
-        required: true,
-        description: "JohnSmith@example.com"
-      },
-      {
-        label: "Birth Date",
-        type: "Date",
-        required: true,
-        description: "31/12/1990"
-      },
-      {
-        label: "Max Price",
-        type: "Decimal",
-        required: true,
-        description: "200.00"
-      }
-    ]
-  }
+  z: "17032888.e8fcd7"
+}
 ```
 @return
 ```xml
@@ -120,7 +109,7 @@ var TYPE = "Form";
 </dict>
 ```
 **/
-function createForm(node) {
+function createZendeskForm(node) {
   // TODO for all nodes types - assert node has id , type
   // TODO for info node - assert node has name, wires `nextWires[0][0]`, fields `with at least one Field`
   // help is optional
@@ -135,7 +124,7 @@ function createForm(node) {
       _form[PlistMapper[key]] = node[key];
     }
   }
-  
+
   _form[PlistMapper.fields] = createFormFields(node.fields);
 
   // generate __next node
@@ -159,6 +148,8 @@ function createForm(node) {
     <string>Text Field</string>
     <key>required</key>
     <true/>
+    <key>Keyboard</key>
+    <string>Text</string>
     <key>Placeholder</key>
     <string>John Smith</string>
   </dict>
@@ -167,14 +158,16 @@ function createForm(node) {
 
 function createFormFields(fields) {
   var _items = [];
-  
-  for(var field in fields){
-    var item ={};
+
+  for (var field in fields) {
+    var item = {};
     for (var key in FieldPlistMapper) {
       if (FieldPlistMapper.hasOwnProperty(key)) {
         item[FieldPlistMapper[key]] = field[key];
       }
     }
+    // zendesk field type as keys will be value of FieldPlistMapper[type]
+    item[FieldPlistMapper["type"]] = FieldTypePlistMapper[field["type"]];
     _items.push(item);
   }
 
@@ -183,5 +176,5 @@ function createFormFields(fields) {
 
 module.exports = {
 
-  createForm: createForm
+  createZendeskForm: createZendeskForm
 }

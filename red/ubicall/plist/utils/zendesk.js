@@ -1,6 +1,7 @@
 var zendesk = require("node-zendesk");
 var when = require("when");
 var log = require("../../../log");
+var util = require('./index.js')
 
 function getTicketFields(credentials) {
   return when.promise(function(resolve, reject) {
@@ -16,75 +17,23 @@ function getTicketFields(credentials) {
   });
 }
 
-function _mapToUbiCallForm(tikFld) {
-
-  var item = {};
-
-  if (tikFld.type === "tickettype" || tikFld.type === "priority" || tikFld.type === "status") {
-    var Values = [];
-    for (var i = 0; i < tikFld.system_field_options.length; i++) {
-      Values.push(tikFld.system_field_options[i].name)
-    }
-    item.Values = Values;
-    item.fieldType = "Selector";
-  }
-
-  if (tikFld.type === "decimal") {
-    item.fieldType = "Decimal";
-    item.keyboard = 2;
-  }
-
-  if (tikFld.type === "integer") {
-    item.fieldType = "Integer";
-    item.keyboard = 2;
-  }
-
-  if (tikFld.type === "date") {
-    item.fieldType = "Date";
-  }
-
-  if (tikFld.type === "checkbox") {
-    item.fieldType = "Check Box";
-  }
-
-  if (tikFld.type === "subject" || tikFld.type === "description" || tikFld.type === "textarea") {
-    item.fieldType = "Text Area";
-  }
-
-  if (tikFld.type === "text") {
-    item.fieldType = "Text Field";
-  }
-
-  item.keyboard = item.keyboard || 1;
-  item.fieldLabel = tikFld.title;
-  item.isMandatory = tikFld.required;
-  item.placeholder = tikFld.description;
-
-  return item;
-}
-
 
 function mapToZendesk(credentials, flows) {
   return when.promise(function(resolve, reject) {
-    var visited = [];
-    getTicketFields(credentials).then(function(tikFlds) {
-      for (var i = 0; i < flows.length; i++) {
-        if (flows[i].type === "zendesk-ticket" && !(visited.indexOf(flows[i].id) > -1)) {
-          visited.push(flows[i].id);
-          var zdcomp = flows[i];
-          zdcomp.form_screen_items = [];
-          for (var i = 0; i < tikFlds.length; i++) {
-            var _item = _mapToUbiCallForm(tikFlds[i]);
-            if (_item) zdcomp.form_screen_items.push(_item);
+      var zendeskFormNodes = util.getZendeskTicketFormNode(flows);
+      if (zendeskFormNodes.length > 0) {
+        getTicketFields(credentials).then(function(tikFlds) {
+          for (var zdNode in zendeskFormNodes) {
+            zdNode.fields = tikFlds;
           }
-        }
-      }
-      return resolve(flows);
-    }).otherwise(function(err) {
-      return reject(err);
-    });
-  });
+          return resolve(flows);
+        }).otherwise(function(err) {
+          return reject(err);
+        });
+      });
+  }
 }
+
 
 module.exports = {
   mapToZendesk: mapToZendesk

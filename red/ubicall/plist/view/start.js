@@ -1,5 +1,6 @@
-// info object element as keys will be mapped to plist element as values
+var util = require("../utils/index.js");
 
+// info object element as keys will be mapped to plist element as values
 /**
 @param node
 ```javascript
@@ -43,7 +44,7 @@ function createStart(flow) {
   // TODO for start node - assert node has wires
 
   // extract start node , only first node will catched
-  var node = getStartNode(flow);
+  var node = util.getStartNode(flow);
 
 
   var _start = {};
@@ -68,26 +69,11 @@ function createStart(flow) {
     // create __home node if nextWires is not empty
     // note only first next wire is used
     _info.__home = {};
-    var initView = getNodeWithId(flow, nextWires[0]);
+    var initView = util.getNodeWithId(flow, nextWires[0]);
     _info.__home.id = initView.id;
   }
 
   return _start;
-}
-
-
-function getNodeWithId(flow, id) {
-  //get first one , id attribute doesn't duplicate
-  return flow.Nodes.filter(function(node) {
-    return (id && node.hasOwnProperty('id') && node.id == id);
-  })[0];
-}
-
-function getStartNode(flow){
-  return flow.Nodes.filter(function(node) {
-    // TODO : if it has no start point through exception
-    return (node.hasOwnProperty('type') && node.type == 'start');
-  })[0];
 }
 
 module.exports = {

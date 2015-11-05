@@ -1,3 +1,5 @@
+var util = require("../utils/index.js");
+
 // info object element as keys will be mapped to plist element as values
 var PlistMapper = {
   type: "ScreenType",
