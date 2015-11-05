@@ -1,5 +1,4 @@
 var when = require('when');
-var plistUtil = require("./utils/util.js");
 var mongos = require('../../mongos');
 var log = require("../../log");
 
@@ -28,13 +27,7 @@ mongoStorage = {
                     reject(err);
                 }
                 if (doc) {
-                    //convert from db style to intermediate style before forwarding to plist
-                    return plistUtil.extractFlow(doc).then(function (res) {
-                        return resolve(res);
-                    }).otherwise(function(error){
-                        log.error("error parsing flow for " + licence + " with version " + ver);
-                        reject(error);
-                    });
+                    return resolve(doc);
                 }else {
                   return reject("no doc found");
                 }

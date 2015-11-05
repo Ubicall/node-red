@@ -1,4 +1,5 @@
-var util = require("../utils/index.js");
+var plistUtils = require("../utils.js");
+var log = require("../../../../log");
 
 // form object element as keys will be mapped to plist element as values
 var PlistMapper = {
@@ -37,30 +38,30 @@ var TYPE = "ZendeskForm";
 @param node
 ```javascript
 {
-  name : "sign up form",
-  help : "sign up to get latest promotions",
-  id: "c77036b2.388fc8",
-  type: "view-form",
-  wires: [["ckhb56fg4.548jng"]],
+  name : "submit an issue",
+  help : "fill next form to submit an issue",
+  id: "ckbf465.68kjvg",
+  type: "view-zendesk-ticket-form",
+  wires: [["98hg3cg4.knh897"]],
   x: 455,
   y: 442,
-  z: "17032888.e8fcd7"
+  z: "17032888.e8fcd7",
 }
 ```
 @return
 ```xml
-<key>c77036b2.388fc8</key>
+<key>ckbf465.68kjvg</key>
 <dict>
   <key>ScreenType</key>
-  <string>Form</string>
+  <string>ZendeskForm</string>
   <key>ScreenTitle</key>
-  <string>sign up form</string>
+  <string>submit an issue</string>
   <key>FormTitle</key>
-  <string>sign up to get latest promotions</string>
+  <string>fill next form to submit an issue</string>
   <key>__next</key>
   <dict>
     <key>id</key>
-    <string>ckhb56fg4.548jng</string>
+    <string>98hg3cg4.knh897</string>
   </dict>
   <key>FormFields</key>
   <array>
@@ -94,16 +95,6 @@ var TYPE = "ZendeskForm";
       <key>Placeholder</key>
       <string>31/12/1990</string>
     </dict>
-    <dict>
-      <key>FieldLabel</key>
-      <string>Max Price</string>
-      <key>FieldType</key>
-      <string>Decimal</string>
-      <key>required</key>
-      <true/>
-      <key>Placeholder</key>
-      <string>200.00</string>
-    </dict>
   </array>
   </dict>
 </dict>
@@ -120,22 +111,23 @@ function createZendeskForm(node) {
   var _form = {};
 
   for (var key in PlistMapper) {
-    if (p.hasOwnProperty(key)) {
+    if (PlistMapper.hasOwnProperty(key)) {
       _form[PlistMapper[key]] = node[key];
     }
   }
 
   _form[PlistMapper.fields] = createFormFields(node.fields);
 
-  // generate __next node
+  // generate __next key
   var nextWires = node.wires;
-  if (nextWires.length > 0) {
+  if (nextWires.length > 0 && nextWires[0][0]) {
     // create __next node if nextWires is not empty
     // note only first next wire is used
     _form.__next = {};
     _form.__next.id = nextWires[0][0];
   }
-
+  
+  log.info("form " + JSON.stringify(_form) );
   return _form;
 }
 
@@ -158,9 +150,8 @@ function createZendeskForm(node) {
 
 function createFormFields(fields) {
   var _items = [];
-
-  for (var field in fields) {
-    var item = {};
+  for (var i = 0; i < fields.length; i++) {
+    var field = fields[i];
     for (var key in FieldPlistMapper) {
       if (FieldPlistMapper.hasOwnProperty(key)) {
         item[FieldPlistMapper[key]] = field[key];

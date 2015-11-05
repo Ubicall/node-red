@@ -1,23 +1,23 @@
-var util = require("../utils/index.js");
+var plistUtils = require("../utils.js");
+var log = require("../../../../log");
 
 // email object element as keys will be mapped to plist element as values
 var PlistMapper = {
   type: "ScreenType",
-  name: "ScreenTitle",
-  destination: "destination"
+  name: "ScreenTitle"
 };
 
-var TYPE = "SendEmail";
+var TYPE = "SubmitZendeskTicket";
 var ACTION_NODE__TYPE = "Action";
 
 /**
 @param node
 ```javascript
 {
-  id: "548uuttr.jkou8975",
-  name : "Send an Email To Help Center",
-  destination: {id : 701 , name: "Help Center"}
-  wires: [["5487kgd.laax98"]],
+  id: "ouh87658.aawed098",
+  type: "action-submit-zendesk-ticket",
+  name : "Submit Ticket To zendesk",
+  wires: [["28ojkdhq.jk34haw"]],
   x: 591,
   y: 298,
   z: "d8dr6dc3.802p"
@@ -25,12 +25,12 @@ var ACTION_NODE__TYPE = "Action";
 ```
 @return
 ```xml
-<key>5872hjd.poj906</key>
+<key>ouh87658.aawed098</key>
 <dict>
   <key>ScreenTitle</key>
-  <string>Send an Email To Help Center</string>
+  <string>Submit Ticket To zendesk</string>
   <key>ScreenType</key>
-  <string>SendEmail</string>
+  <string>SubmitZendeskTicket</string>
   <key>__type</key>
   <string>Action</string>
   <key>destination</key>
@@ -40,55 +40,55 @@ var ACTION_NODE__TYPE = "Action";
       <key>HTTPMethod</key>
       <key>POST</key>
       <key>endPoint</key>
-      <string>https://api.ubicall.com/v1/sip/call/701/help-center</string>
+      <string>https://api.ubicall.com/v1/3rd/zendesk/ticket</string>
     </dict>
     <key>web</key>
     <dict>
       <key>HTTPMethod</key>
       <key>POST</key>
       <key>endPoint</key>
-      <string>https://api.ubicall.com/v1/web/call/701/help-center</string>
+      <string>https://api.ubicall.com/v1/3rd/zendesk/ticket</string>
     </dict>
   </dict>
   <key>__next</key>
   <dict>
     <key>id</key>
-    <string>5487kgd.laax98</string>
+    <string>28ojkdhq.jk34haw</string>
   </dict>
 </dict>
 ```
 **/
-function createActionEmail(node) {
+function createActionZendeskTicket(node) {
   // TODO for all nodes types - assert node has id , type
-  // TODO for email node - assert node destination object
   // wires is optional
 
   // custom plist node type
   node.type = TYPE || node.type;
 
-  var _email_action = {};
+  var _zendesk_ticket_action = {};
 
   for (var key in PlistMapper) {
     if (PlistMapper.hasOwnProperty(key)) {
-      _email_action[PlistMapper[key]] = node[key];
+      _zendesk_ticket_action[PlistMapper[key]] = node[key];
     }
   }
 
-  _email_action[PlistMapper.destination] = createDestination(node.destination);
+  _zendesk_ticket_action[PlistMapper.destination] = createDestination(node.destination);
 
   // generate __type node
-  _email_action.__type = ACTION_NODE__TYPE || "Action";
+  _zendesk_ticket_action.__type = ACTION_NODE__TYPE || "Action";
 
-  // generate __next node
+  // generate __next key
   var nextWires = node.wires;
-  if (nextWires.length > 0) {
+  if (nextWires.length > 0 && nextWires[0][0]) {
     // create __next node if nextWires is not empty
     // note only first next wire is used
-    _email_action.__next = {};
-    _email_action.__next.id = nextWires[0][0];
+    _zendesk_ticket_action.__next = {};
+    _zendesk_ticket_action.__next.id = nextWires[0][0];
   }
-
-  return _email_action;
+  
+  log.info("zendesk ticket action " + JSON.stringify(_zendesk_ticket_action ));
+  return _zendesk_ticket_action;
 }
 
 /**
@@ -98,14 +98,14 @@ function createActionEmail(node) {
     <key>HTTPMethod</key>
     <key>POST</key>
     <key>endPoint</key>
-    <string>https://api.ubicall.com/v1/sip/call/701/help-center</string>
+    <string>https://api.ubicall.com/v1/3rd/zendesk/ticket</string>
   </dict>
   <key>web</key>
   <dict>
     <key>HTTPMethod</key>
     <key>POST</key>
     <key>endPoint</key>
-    <string>https://api.ubicall.com/v1/web/call/701/help-center</string>
+    <string>https://api.ubicall.com/v1/3rd/zendesk/ticket</string>
   </dict>
 </dict>
 **/
@@ -113,16 +113,16 @@ function createDestination(destination) {
   return {
     mobile: {
       HTTPMethod: "POST",
-      endPoint: "https://api.ubicall.com/v1/sip/call/701/help-center"
+      endPoint: "https://api.ubicall.com/v1/3rd/zendesk/ticket"
     },
     web: {
       HTTPMethod: "POST",
-      endPoint: "https://api.ubicall.com/v1/sip/call/701/help-center"
+      endPoint: "https://api.ubicall.com/v1/3rd/zendesk/ticket"
     }
   };
 }
 
 module.exports = {
 
-  createActionEmail: createActionEmail
+  createActionZendeskTicket: createActionZendeskTicket
 }

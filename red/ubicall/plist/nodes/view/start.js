@@ -1,6 +1,7 @@
-var util = require("../utils/index.js");
+var plistUtils = require("../utils.js");
+var log = require("../../../../log");
 
-// info object element as keys will be mapped to plist element as values
+// start object element as keys will be mapped to plist element as values
 /**
 @param node
 ```javascript
@@ -35,6 +36,19 @@ var util = require("../utils/index.js");
       <key>type</key>
       <string>Choice</string>
     </dict>
+    <key>__lookup</key>
+    <dict>
+      <key>4b266393.b4d99c</key>
+      <string>SubmitZendeskTicket</string>
+      <key>8976ghh.2457ohd</key>
+      <string>Info</string>
+      <key>uhdiqh8.87qed</key>
+      <string>Choice</string>
+      <key>lknxwd.87qd</key>
+      <string>URL</string>
+      <key>ohdiqw978.qdw87c</key>
+      <string>Grid</string>
+    </dict>
 	</dict>
 ```
 **/
@@ -44,7 +58,7 @@ function createStart(flow) {
   // TODO for start node - assert node has wires
 
   // extract start node , only first node will catched
-  var node = util.getStartNode(flow);
+  var node = plistUtils.getStartNode(flow);
 
 
   var _start = {};
@@ -62,18 +76,51 @@ function createStart(flow) {
     }
   }
 
+  // generate __lookup key
+  _start.__lookup = getNodesLookups(flow);
 
-  // generate __next node
+
+  // generate __home key
   var nextWires = node.wires;
   if (nextWires.length > 0) {
     // create __home node if nextWires is not empty
     // note only first next wire is used
-    _info.__home = {};
-    var initView = util.getNodeWithId(flow, nextWires[0]);
-    _info.__home.id = initView.id;
+    _start.__home = {};
+    var initView = plistUtils.getNodeWithId(flow, nextWires[0]);
+    _start.__home.id = initView.id;
   }
 
+  log.info("start " + JSON.stringify(_start));
   return _start;
+}
+
+/**
+@return
+```xml
+  <dict>
+    <key>4b266393.b4d99c</key>
+    <string>SubmitZendeskTicket</string>
+    <key>8976ghh.2457ohd</key>
+    <string>Info</string>
+    <key>uhdiqh8.87qed</key>
+    <string>Choice</string>
+    <key>lknxwd.87qd</key>
+    <string>URL</string>
+    <key>ohdiqw978.qdw87c</key>
+    <string>Grid</string>
+  </dict>
+```
+**/
+function getNodesLookups(flow) {
+
+  var _lookups = {};
+
+  flow.Nodes.forEach(function(node) {
+    // utils.NodePlistMapper:  map every ivr node with type as key to plist element type as value
+    _lookups[node.id] = plistUtils.NodePlistMapper[node.type] || node.type ;
+  });
+  
+  return _lookups;
 }
 
 module.exports = {

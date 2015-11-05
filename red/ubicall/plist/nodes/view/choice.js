@@ -1,4 +1,5 @@
-var util = require("../utils/index.js");
+var plistUtils = require("../utils.js");
+var log = require("../../../../log");
 
 // info object element as keys will be mapped to plist element as values
 var PlistMapper = {
@@ -9,25 +10,24 @@ var PlistMapper = {
 
 // choices choice object element as keys will be mapped to plist choice element as values
 var ChoicesPlistMapper = {
-  text: "ChoiceText",
-  icon: "UrlImage"
+  text: "ChoiceText"
 };
 
-var TYPE = "Grid";
+var TYPE = "Choice";
 
 /**
 @param node
 ```javascript
   {
     choices: [
-      {text : "Sales" , icon "https://designer-dev.ubicall.com/uploads/b32ed83fef8be9a9a3d735e752610413.png"},
-      {text : "Subscriptions", icon: "https://designer-dev.ubicall.com/uploads/b32ed83fef8be9a9a3d735e752610413.png"},
-      {text : "Technical support", icon: "https://designer-dev.ubicall.com/uploads/b32ed83fef8be9a9a3d735e752610413.png"}
+      {text : "Sales"},
+      {text : "Subscriptions"},
+      {text : "Technical support"}
     ],
     id: "3dd947db.c226b8",
     outputs: 3,
-    name: "Visual Help Types",
-    type: "view-grid",
+    name: "Help Types",
+    type: "view-choice",
     wires: [["d8d0fdc3.272f"], ["kiad65rf.55fg9"] , ["66a152ec.995eac"]],
     x: 357,
     y: 141,
@@ -41,14 +41,12 @@ var TYPE = "Grid";
 		<key>ScreenTitle</key>
 		<string>Help Types</string>
 		<key>ScreenType</key>
-		<string>Grid</string>
+		<string>Choice</string>
 		<key>choices</key>
     <array>
       <dict>
         <key>ChoiceText</key>
         <string>Sales</string>
-        <key>UrlImage</key>
-        <string>https://designer-dev.ubicall.com/uploads/b32ed83fef8be9a9a3d735e752610413.png</string>
         <key>__next</key>
         <dict>
           <key>id</key>
@@ -58,8 +56,6 @@ var TYPE = "Grid";
       <dict>
         <key>ChoiceText</key>
         <string>Subscriptions</string>
-        <key>UrlImage</key>
-        <string>https://designer-dev.ubicall.com/uploads/b32ed83fef8be9a9a3d735e752610413.png</string>
         <key>__next</key>
         <dict>
           <key>id</key>
@@ -69,8 +65,6 @@ var TYPE = "Grid";
       <dict>
         <key>ChoiceText</key>
         <string>Technical support</string>
-        <key>UrlImage</key>
-        <string>https://designer-dev.ubicall.com/uploads/b32ed83fef8be9a9a3d735e752610413.png</string>
         <key>__next</key>
         <dict>
           <key>id</key>
@@ -81,24 +75,25 @@ var TYPE = "Grid";
 	</dict>
 ```
 **/
-function createGrid(node) {
+function createChoice(node) {
   // TODO for all nodes types - assert node has id , type
   // TODO for choice node - assert node has choices and wires
 
   // custom plist node type
   node.type = TYPE || node.type;
 
-  var _grid = {};
+  var _choice = {};
 
   for (var key in PlistMapper) {
     if (PlistMapper.hasOwnProperty(key)) {
-      _grid[PlistMapper[key]] = node[key];
+      _choice[PlistMapper[key]] = node[key];
     }
   }
 
-  _grid[PlistMapper.choices] = createChoiceItems(node.choices, node.wires);
+  _choice[PlistMapper.choices] = createChoiceItems(node.choices, node.wires);
 
-  return _grid;
+  log.info("choice " + JSON.stringify(_choice ));
+  return _choice;
 }
 
 /**
@@ -108,8 +103,6 @@ function createGrid(node) {
   <dict>
     <key>ChoiceText</key>
     <string>Sales</string>
-    <key>UrlImage</key>
-    <string>https://designer-dev.ubicall.com/uploads/b32ed83fef8be9a9a3d735e752610413.png</string>
     <key>__next</key>
     <dict>
       <key>id</key>
@@ -144,5 +137,5 @@ function createChoiceItems(choices, wires) {
 
 module.exports = {
 
-  createGrid: createGrid
+  createChoice: createChoice
 }

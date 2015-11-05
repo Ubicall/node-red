@@ -1,4 +1,5 @@
-var util = require("../utils/index.js");
+var plistUtils = require("../utils.js");
+var log = require("../../../../log");
 
 // call object element as keys will be mapped to plist element as values
 var PlistMapper = {
@@ -80,15 +81,16 @@ function createActionCall(node) {
   // generate __type node
   _call_action.__type = ACTION_NODE__TYPE || "Action";
 
-  // generate __next node
+  // generate __next key
   var nextWires = node.wires;
-  if (nextWires.length > 0) {
+  if (nextWires.length > 0 && nextWires[0][0]) {
     // create __next node if nextWires is not empty
     // note only first next wire is used
     _call_action.__next = {};
     _call_action.__next.id = nextWires[0][0];
   }
-
+  
+  log.info("call action " + JSON.stringify(_call_action ));
   return _call_action;
 }
 

@@ -1,7 +1,7 @@
 var zendesk = require("node-zendesk");
 var when = require("when");
 var log = require("../../../log");
-var util = require('./index.js')
+var plistUtils = require('../nodes/utils.js')
 
 function getTicketFields(credentials) {
   return when.promise(function(resolve, reject) {
@@ -18,23 +18,24 @@ function getTicketFields(credentials) {
 }
 
 
-function mapToZendesk(credentials, flows) {
+function fetchZendeskFields(credentials, nodes) {
   return when.promise(function(resolve, reject) {
-      var zendeskFormNodes = util.getZendeskTicketFormNode(flows);
-      if (zendeskFormNodes.length > 0) {
-        getTicketFields(credentials).then(function(tikFlds) {
-          for (var zdNode in zendeskFormNodes) {
-            zdNode.fields = tikFlds;
-          }
-          return resolve(flows);
-        }).otherwise(function(err) {
-          return reject(err);
-        });
+    var zendeskFormNodes = plistUtils.getZendeskTicketFormNodes(nodes);
+    if (zendeskFormNodes.length > 0) {
+      getTicketFields(credentials).then(function(tikFlds) {
+        for (var zdNode in zendeskFormNodes) {
+          zdNode.fields = tikFlds;
+        }
+        return resolve(nodes);
+      }).otherwise(function(err) {
+        return reject(err);
       });
-  }
+    }
+    return resolve(nodes);
+  });
 }
 
 
 module.exports = {
-  mapToZendesk: mapToZendesk
+  fetchZendeskFields: fetchZendeskFields
 }

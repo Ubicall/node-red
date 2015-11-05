@@ -47,8 +47,7 @@ module.exports = {
         password: "1234ubicall",
         domain: "Ubicall"
       };
-      ubiZDMapper.mapToZendesk(zd_cred, flows).then(function(_flows) {
-        log.info("mapToZendesk flow " + JSON.stringify(_flows));
+      ubiZDMapper.fetchZendeskFields(zd_cred, flows).then(function(_flows) {
         flows = new nodeModel({
           key: licence_key,
           deploy: deploy ? ver : 0,

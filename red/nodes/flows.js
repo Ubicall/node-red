@@ -24,7 +24,7 @@ var log = require("../log");
 var events = require("../events");
 var redUtil = require("../util");
 var storage = null;
-var plistUtil = require('../ubicall/plist/utils/util.js');
+var plistUtil = require('../ubicall/plist/utils');
 
 
 var activeFlow = null;

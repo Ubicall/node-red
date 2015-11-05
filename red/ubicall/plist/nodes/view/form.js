@@ -1,4 +1,5 @@
-var util = require("../utils/index.js");
+var plistUtils = require("../utils.js");
+var log = require("../../../../log");
 
 // form object element as keys will be mapped to plist element as values
 var PlistMapper = {
@@ -131,22 +132,23 @@ function createForm(node) {
   var _form = {};
 
   for (var key in PlistMapper) {
-    if (p.hasOwnProperty(key)) {
+    if (PlistMapper.hasOwnProperty(key)) {
       _form[PlistMapper[key]] = node[key];
     }
   }
-  
+
   _form[PlistMapper.fields] = createFormFields(node.fields);
 
-  // generate __next node
+  // generate __next key
   var nextWires = node.wires;
-  if (nextWires.length > 0) {
+  if (nextWires.length > 0 && nextWires[0][0]) {
     // create __next node if nextWires is not empty
     // note only first next wire is used
     _form.__next = {};
     _form.__next.id = nextWires[0][0];
   }
 
+  log.info("form " + JSON.stringify(_form));
   return _form;
 }
 
@@ -167,9 +169,9 @@ function createForm(node) {
 
 function createFormFields(fields) {
   var _items = [];
-  
-  for(var field in fields){
-    var item ={};
+  for (var i = 0; i < fields.length; i++) {
+    var field = fields[i];
+    var item = {};
     for (var key in FieldPlistMapper) {
       if (FieldPlistMapper.hasOwnProperty(key)) {
         item[FieldPlistMapper[key]] = field[key];

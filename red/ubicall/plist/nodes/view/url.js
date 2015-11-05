@@ -1,4 +1,5 @@
-var util = require("../utils/index.js");
+var plistUtils = require("../utils.js");
+var log = require("../../../../log");
 
 // info object element as keys will be mapped to plist element as values
 var PlistMapper = {
@@ -57,15 +58,16 @@ function createURL(node) {
     }
   }
 
-  // generate __next node
+  // generate __next key
   var nextWires = node.wires;
-  if (nextWires.length > 0) {
+  if (nextWires.length > 0 && nextWires[0][0]) {
     // create __next node if nextWires is not empty
     // note only first next wire is used
     _url.__next = {};
     _url.__next.id = nextWires[0][0];
   }
-
+  
+  log.info("url " + JSON.stringify(_url) );
   return _url;
 }
 
