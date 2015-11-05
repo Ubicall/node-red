@@ -91,7 +91,7 @@ function createGrid(node) {
   var _grid = {};
 
   for (var key in PlistMapper) {
-    if (p.hasOwnProperty(key)) {
+    if (PlistMapper.hasOwnProperty(key)) {
       _grid[PlistMapper[key]] = node[key];
     }
   }

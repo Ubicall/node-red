@@ -52,7 +52,7 @@ function createURL(node) {
   var _url = {};
 
   for (var key in PlistMapper) {
-    if (p.hasOwnProperty(key)) {
+    if (PlistMapper.hasOwnProperty(key)) {
       _url[PlistMapper[key]] = node[key];
     }
   }

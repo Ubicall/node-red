@@ -56,7 +56,7 @@ function createInfo(node) {
   var _info = {};
 
   for (var key in PlistMapper) {
-    if (p.hasOwnProperty(key)) {
+    if (PlistMapper.hasOwnProperty(key)) {
       _info[PlistMapper[key]] = node[key];
     }
   }
