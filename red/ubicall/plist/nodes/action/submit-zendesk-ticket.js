@@ -4,7 +4,8 @@ var log = require("../../../../log");
 // email object element as keys will be mapped to plist element as values
 var PlistMapper = {
   type: "ScreenType",
-  name: "ScreenTitle"
+  name: "ScreenTitle",
+  destination: "destination"
 };
 
 var TYPE = "SubmitZendeskTicket";

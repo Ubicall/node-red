@@ -47,12 +47,12 @@ module.exports = {
         password: "1234ubicall",
         domain: "Ubicall"
       };
-      ubiZDMapper.fetchZendeskFields(zd_cred, flows).then(function(_flows) {
+      ubiZDMapper.fetchZendeskFields(zd_cred, flows).then(function(_nodes) {
         flows = new nodeModel({
           key: licence_key,
           deploy: deploy ? ver : 0,
           version: ver,
-          Nodes: _flows
+          Nodes: _nodes
         });
         redNodes.setFlows(flows, deploymentType).then(function() {
           if (settings.get("storageModule") == "mongodb" && deploy) {

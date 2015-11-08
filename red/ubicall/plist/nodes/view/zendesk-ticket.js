@@ -14,7 +14,8 @@ var FieldPlistMapper = {
   title: "FieldLabel",
   type: "FieldType",
   required: "required",
-  description: "Placeholder"
+  description: "Placeholder",
+  system_field_options: "select_field_options"
 };
 
 // zendesk field type as keys will be value of FieldPlistMapper[type]
@@ -95,8 +96,44 @@ var TYPE = "ZendeskForm";
       <key>Placeholder</key>
       <string>31/12/1990</string>
     </dict>
+    <dict>
+      <key>FieldLabel</key>
+      <string>Type</string>
+      <key>FieldType</key>
+      <string>Selector</string>
+      <key>required</key>
+      <false/>
+      <key>Placeholder</key>
+      <string>Request type</string>
+      <key>select_field_options</key>
+      <array>
+        <dict>
+          <key>value</key>
+          <string>question</string>
+          <key>name</key>
+          <string>Question</string>
+        </dict>
+        <dict>
+          <key>value</key>
+          <string>incident</string>
+          <key>name</key>
+          <string>Incident</string>
+        </dict>
+        <dict>
+          <key>value</key>
+          <string>problem</string>
+          <key>name</key>
+          <string>Problem</string>
+        </dict>
+        <dict>
+          <key>value</key>
+          <string>task</string>
+          <key>name</key>
+          <string>Task</string>
+        </dict>
+      </array>
+    </dict>
   </array>
-  </dict>
 </dict>
 ```
 **/
@@ -126,8 +163,8 @@ function createZendeskForm(node) {
     _form.__next = {};
     _form.__next.id = nextWires[0][0];
   }
-  
-  log.info("form " + JSON.stringify(_form) );
+
+  log.info("form " + JSON.stringify(_form));
   return _form;
 }
 
@@ -140,8 +177,6 @@ function createZendeskForm(node) {
     <string>Text Field</string>
     <key>required</key>
     <true/>
-    <key>Keyboard</key>
-    <string>Text</string>
     <key>Placeholder</key>
     <string>John Smith</string>
   </dict>
@@ -150,8 +185,13 @@ function createZendeskForm(node) {
 
 function createFormFields(fields) {
   var _items = [];
+  if (!fields) {
+    // TODO should throw error
+    return _items;
+  }
   for (var i = 0; i < fields.length; i++) {
     var field = fields[i];
+    var item = {};
     for (var key in FieldPlistMapper) {
       if (FieldPlistMapper.hasOwnProperty(key)) {
         item[FieldPlistMapper[key]] = field[key];

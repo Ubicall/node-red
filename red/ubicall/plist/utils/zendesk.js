@@ -20,18 +20,20 @@ function getTicketFields(credentials) {
 
 function fetchZendeskFields(credentials, nodes) {
   return when.promise(function(resolve, reject) {
-    var zendeskFormNodes = plistUtils.getZendeskTicketFormNodes(nodes);
-    if (zendeskFormNodes.length > 0) {
+    if (plistUtils.hasZendeskTicketFormNodes(nodes)) {
       getTicketFields(credentials).then(function(tikFlds) {
-        for (var zdNode in zendeskFormNodes) {
-          zdNode.fields = tikFlds;
-        }
+        nodes.forEach(function(node) {
+          if (node.hasOwnProperty('type') && node.type == 'view-zendesk-ticket-form') {
+            node.fields = tikFlds;
+          }
+        });
         return resolve(nodes);
       }).otherwise(function(err) {
         return reject(err);
       });
+    } else {
+      return resolve(nodes);
     }
-    return resolve(nodes);
   });
 }
 

@@ -14,7 +14,8 @@ var FieldPlistMapper = {
   label: "FieldLabel",
   type: "FieldType",
   required: "required",
-  description: "Placeholder"
+  description: "Placeholder",
+  select_field_options : "select_field_options"
 };
 
 var TYPE = "Form";

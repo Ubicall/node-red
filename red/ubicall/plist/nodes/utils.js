@@ -4,6 +4,15 @@ function getZendeskTicketFormNodes(nodes) {
   });
 }
 
+function hasZendeskTicketFormNodes(nodes) {
+  if (nodes.filter(function(node) {
+      return (node.hasOwnProperty('type') && node.type == 'view-zendesk-ticket-form');
+    })[0]) {
+    return true;
+  }
+  return false;
+}
+
 function getNodeWithId(flow, id) {
   //get first one , id attribute doesn't duplicate
   return flow.Nodes.filter(function(node) {
@@ -32,6 +41,7 @@ module.exports = {
     "action-submit-zendesk-ticket": "SubmitZendeskTicket"
   },
   getZendeskTicketFormNodes: getZendeskTicketFormNodes,
+  hasZendeskTicketFormNodes: hasZendeskTicketFormNodes,
   getNodeWithId: getNodeWithId,
   getStartNode: getStartNode,
 }

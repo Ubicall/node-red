@@ -9,7 +9,7 @@ var view_form = require('../nodes/view/form');
 var view_grid = require('../nodes/view/grid');
 var view_info = require('../nodes/view/info');
 var view_url = require('../nodes/view/url');
-var view_zendesk = require('../nodes/view/zendesk');
+var view_zendesk_ticket = require('../nodes/view/zendesk-ticket');
 // action components
 var action_submit_call = require('../nodes/action/submit-call');
 var action_submit_email = require('../nodes/action/submit-email');
@@ -50,7 +50,7 @@ function extractFlow(flow) {
           __flow[node.id] = view_url.createURL(node);
           break;
         case "view-zendesk-ticket-form":
-          __flow[node.id] = view_zendesk.createZendeskForm(node);
+          __flow[node.id] = view_zendesk_ticket.createZendeskForm(node);
           break;
 
           // action components
