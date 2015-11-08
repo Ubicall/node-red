@@ -36,8 +36,8 @@ module.exports = {
     "view-info": "Info",
     "view-url": "URL",
     "view-zendesk-ticket-form": "ZendeskForm",
-    "action-submit-call": "SubmitCall",
-    "action-submit-call": "SendEmail",
+    "view-submit-call": "SubmitCall",
+    "action-submit-email": "SendEmail",
     "action-submit-zendesk-ticket": "SubmitZendeskTicket"
   },
   getZendeskTicketFormNodes: getZendeskTicketFormNodes,

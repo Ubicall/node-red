@@ -9,14 +9,13 @@ var PlistMapper = {
 };
 
 var TYPE = "SubmitCall";
-var ACTION_NODE__TYPE = "Action";
 
 /**
 @param node
 ```javascript
   {
     id: "5872hjd.poj906",
-    type: "action-submit-call"
+    type: "view-submit-call"
     name : "call our customer support",
     destination: {id : 201 , name: "Customer Support"},
     wires: [["d8d0fdc3.272f"]],
@@ -33,8 +32,6 @@ var ACTION_NODE__TYPE = "Action";
   <string>call our customer support</string>
   <key>type</key>
   <string>SubmitCall</string>
-  <key>__type</key>
-  <string>Action</string>
   <key>destination</key>
   <dict>
     <key>mobile</key>
@@ -60,7 +57,7 @@ var ACTION_NODE__TYPE = "Action";
   </dict>
 ```
 **/
-function createActionCall(node) {
+function createViewCall(node) {
   // TODO for all nodes types - assert node has id , type
   // TODO for call node - assert node destination object
   // wires is optional
@@ -68,30 +65,28 @@ function createActionCall(node) {
   // custom plist node type
   node.type = TYPE || node.type;
 
-  var _call_action = {};
+  var _call = {};
 
   for (var key in PlistMapper) {
     if (PlistMapper.hasOwnProperty(key)) {
-      _call_action[PlistMapper[key]] = node[key];
+      _call[PlistMapper[key]] = node[key];
     }
   }
 
-  _call_action[PlistMapper.destination] = createDestination(node.destination);
+  _call[PlistMapper.destination] = createDestination(node.destination);
 
-  // generate __type node
-  _call_action.__type = ACTION_NODE__TYPE || "Action";
 
   // generate __next key
   var nextWires = node.wires;
   if (nextWires.length > 0 && nextWires[0][0]) {
     // create __next node if nextWires is not empty
     // note only first next wire is used
-    _call_action.__next = {};
-    _call_action.__next.id = nextWires[0][0];
+    _call.__next = {};
+    _call.__next.id = nextWires[0][0];
   }
   
-  log.info("call action " + JSON.stringify(_call_action ));
-  return _call_action;
+  log.info("call action " + JSON.stringify(_call ));
+  return _call;
 }
 
 /**
@@ -127,5 +122,5 @@ function createDestination(destination) {
 
 module.exports = {
 
-  createActionCall: createActionCall
+  createViewCall: createViewCall
 }

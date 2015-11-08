@@ -10,8 +10,8 @@ var view_grid = require('../nodes/view/grid');
 var view_info = require('../nodes/view/info');
 var view_url = require('../nodes/view/url');
 var view_zendesk_ticket = require('../nodes/view/zendesk-ticket');
+var submit_call = require('../nodes/view/call');
 // action components
-var action_submit_call = require('../nodes/action/submit-call');
 var action_submit_email = require('../nodes/action/submit-email');
 var action_submit_zendesk_ticket = require('../nodes/action/submit-zendesk-ticket');
 
@@ -52,11 +52,11 @@ function extractFlow(flow) {
         case "view-zendesk-ticket-form":
           __flow[node.id] = view_zendesk_ticket.createZendeskForm(node);
           break;
-
-          // action components
-        case "action-submit-call":
-          __flow[node.id] = action_submit_call.createActionCall(node);
+        case "view-submit-call":
+          __flow[node.id] = submit_call.createViewCall(node);
           break;
+          
+          // action components
         case "action-submit-email":
           __flow[node.id] = action_submit_email.createActionEmail(node);
           break;
