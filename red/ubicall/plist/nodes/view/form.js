@@ -174,7 +174,7 @@ function createFormFields(fields) {
     var field = fields[i];
     var item = {};
     for (var key in FieldPlistMapper) {
-      if (FieldPlistMapper.hasOwnProperty(key)) {
+      if (FieldPlistMapper.hasOwnProperty(key) && field[key]) {
         item[FieldPlistMapper[key]] = field[key];
       }
     }
