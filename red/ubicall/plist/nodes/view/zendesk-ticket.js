@@ -198,8 +198,14 @@ function createFormFields(fields) {
       }
     }
     // zendesk field type as keys will be value of FieldPlistMapper[type]
-    item[FieldPlistMapper["type"]] = FieldTypePlistMapper[field["type"]];
-    _items.push(item);
+    var __fieldType = FieldTypePlistMapper[field["type"]]
+    item[FieldPlistMapper["type"]] = __fieldType;
+    // ignore this field if we not support mapping of this element type yet
+    if(!__fieldType){
+      log.info("not support field " + field["type"] + "!!!")
+    }else {
+      _items.push(item);
+    }
   }
 
   return _items;
