@@ -1,5 +1,6 @@
 var plistUtils = require("../utils.js");
 var log = require("../../../../log");
+var slugify = require('slugify');
 
 // email object element as keys will be mapped to plist element as values
 var PlistMapper = {
@@ -115,11 +116,11 @@ function createDestination(destination) {
   return {
     mobile: {
       HTTPMethod: "POST",
-      endPoint: "https://api.ubicall.com/v1/email/" + destination.id + "/" + destination.name
+      endPoint: "https://api.ubicall.com/v1/email/" + destination.id + "/" + slugify(destination.name)
     },
     web: {
       HTTPMethod: "POST",
-      endPoint: "https://api.ubicall.com/v1/email/" + destination.id + "/" + destination.name
+      endPoint: "https://api.ubicall.com/v1/email/" + destination.id + "/" + slugify(destination.name)
     }
   };
 }
