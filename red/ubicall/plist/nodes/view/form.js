@@ -14,6 +14,7 @@ var FieldPlistMapper = {
   label: "FieldLabel",
   type: "FieldType",
   required: "required",
+  editable: "editable",
   description: "Placeholder",
   select_field_options : "select_field_options"
 };
@@ -174,7 +175,7 @@ function createFormFields(fields) {
     var field = fields[i];
     var item = {};
     for (var key in FieldPlistMapper) {
-      if (FieldPlistMapper.hasOwnProperty(key) && field[key]) {
+      if (FieldPlistMapper.hasOwnProperty(key) && (field[key] !== null && field[key] !== undefined)) {
         item[FieldPlistMapper[key]] = field[key];
       }
     }

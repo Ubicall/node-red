@@ -13,7 +13,8 @@ var PlistMapper = {
 var FieldPlistMapper = {
   title: "FieldLabel",
   type: "FieldType",
-  required: "required",
+  required_in_portal: "required",
+  editable_in_portal : "editable",
   description: "Placeholder",
   system_field_options: "select_field_options"
 };
@@ -191,9 +192,11 @@ function createFormFields(fields) {
   }
   for (var i = 0; i < fields.length; i++) {
     var field = fields[i];
+    // https://developer.zendesk.com/rest_api/docs/core/ticket_fields#list-ticket-fields
+    if(!field["visible_in_portal"]) continue; //Whether this field is available to end users
     var item = {};
     for (var key in FieldPlistMapper) {
-      if (FieldPlistMapper.hasOwnProperty(key) && field[key]) {
+      if (FieldPlistMapper.hasOwnProperty(key) && (field[key] !== null && field[key] !== undefined)) {
         item[FieldPlistMapper[key]] = field[key];
       }
     }
