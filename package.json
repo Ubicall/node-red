@@ -85,8 +85,9 @@
   "devDependencies": {
     "grunt": "0.4.5",
     "grunt-cli": "0.1.13",
-    "grunt-simple-mocha": "0.4.0",
     "grunt-contrib-jshint": "0.11.0",
+    "grunt-simple-mocha": "0.4.0",
+    "grunt-text-replace": "^0.4.0",
     "mocha": "2.1.0",
     "should": "4.6.5",
     "sinon": "1.12.2",
