@@ -18,7 +18,7 @@ RED.palette = (function() {
 
     var exclusion = ['config','unknown','deprecated','subflows', 'input', 'output', 'function', 'social', 'storage', 'analysis', 'advanced',
     'social-input' ,'advanced-input' ,'analysis-function','social-output','advanced-function','storage-input','storage-output'];
-    var core = ['ivr'];
+    var core = ['IVR','Action'];
 
     function createCategoryContainer(category){
         var escapedCategory = category.replace(" ","_");

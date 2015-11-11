@@ -80,16 +80,43 @@ module.exports = function(grunt) {
                     }
                 }
                 
-            }
+            },
+            replace: {
+              development: {
+                src: ["./public/red/**/*.*", "./red/**/*.*"],
+                overwrite: true,                 // overwrite matched source files
+                replacements: [{
+                  from: "https://api.ubicall.com",
+                  to: "https://api-dev.ubicall.com"
+                }]
+              },
+              production: {
+                src: ["./public/red/**/*.*", "./red/**/*.*"],
+                overwrite: true,                 // overwrite matched source files
+                replacements: [{
+                  from: "https://api-dev.ubicall.com",
+                  to: "https://api.ubicall.com"
+                }]
+              }
+          }
     });
     
     grunt.loadNpmTasks('grunt-simple-mocha');
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks("grunt-text-replace");
     
     grunt.registerTask('default', ['test-core','test-editor','test-nodes']);
     
     grunt.registerTask('test-core', ['jshint:core','simplemocha:core']);
     grunt.registerTask('test-editor', ['jshint:editor']);
     grunt.registerTask('test-nodes', ['simplemocha:nodes']);
+    
+    grunt.registerTask("preserve", "Clean then build to dist as a development", [
+        "replace:development"
+    ]);
+
+    grunt.registerTask("prebuild", "Clean then build to dist", [
+        "replace:production"
+    ]);
     
 };
