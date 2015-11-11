@@ -3,13 +3,9 @@ var when = require("when");
 var log = require("../../../log");
 var plistUtils = require('../nodes/utils.js')
 
-function getTicketFields(credentials) {
+function getTicketFields(zd_cred) {
   return when.promise(function(resolve, reject) {
-    var client = zendesk.createClient({
-      username: credentials.username,
-      password: credentials.password,
-      remoteUri: 'https://' + credentials.domain + '.zendesk.com/api/v2'
-    });
+    var client = zendesk.createClient(zd_cred);
     client.ticketfields.list(function(err, statusList, body, responseList, resultList) {
       if (err) return reject(err);
       else return resolve(resultList[0].ticket_fields);
@@ -18,12 +14,14 @@ function getTicketFields(credentials) {
 }
 
 
-function fetchZendeskFields(credentials, nodes) {
+function fetchZendeskFields(zd_cred, nodes) {
   return when.promise(function(resolve, reject) {
-    if (plistUtils.hasZendeskTicketFormNodes(nodes)) {
-      getTicketFields(credentials).then(function(tikFlds) {
+    if (plistUtils.hasZendeskNodes(nodes) && !zd_cred) {
+      return reject("You add zendesk components but you not configure your zendesk account yet!!");
+    } else if (plistUtils.hasZendeskNodes(nodes)) {
+      getTicketFields(zd_cred).then(function(tikFlds) {
         nodes.forEach(function(node) {
-          if (node.hasOwnProperty('type') && node.type == 'view-zendesk-ticket-form') {
+          if (plistUtils.isZendeskFormNode(node)) {
             node.fields = tikFlds;
           }
         });
@@ -32,6 +30,7 @@ function fetchZendeskFields(credentials, nodes) {
         return reject(err);
       });
     } else {
+      // has no zendesk credintials or zendesk components, well done
       return resolve(nodes);
     }
   });

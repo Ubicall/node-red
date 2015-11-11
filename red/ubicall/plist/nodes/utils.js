@@ -1,14 +1,22 @@
-function getZendeskTicketFormNodes(nodes) {
-  return nodes.filter(function(node) {
-    return (node.hasOwnProperty('type') && node.type == 'view-zendesk-ticket-form');
-  });
+function isZendeskFormNode(node) {
+  return (node.hasOwnProperty('type') && node.type == 'view-zendesk-ticket-form');
 }
 
-function hasZendeskTicketFormNodes(nodes) {
-  if (nodes.filter(function(node) {
-      return (node.hasOwnProperty('type') && node.type == 'view-zendesk-ticket-form');
-    })[0]) {
-    return true;
+function isZendeskNode(node) {
+  return (isZendeskFormNode(node) ||
+    ((node.hasOwnProperty('type') && node.type == 'action-submit-zendesk-ticket'))
+  )
+}
+
+function getZendeskTicketFormNodes(nodes) {
+  return nodes.filter(isZendeskFormNode);
+}
+
+function hasZendeskNodes(nodes) {
+  for (var i = 0; i < nodes.length; i++) {
+    if (isZendeskNode(nodes[i])) {
+      return true;
+    }
   }
   return false;
 }
@@ -40,8 +48,10 @@ module.exports = {
     "action-submit-email": "SendEmail",
     "action-submit-zendesk-ticket": "SubmitZendeskTicket"
   },
+  isZendeskFormNode: isZendeskFormNode,
+  isZendeskNode: isZendeskNode,
   getZendeskTicketFormNodes: getZendeskTicketFormNodes,
-  hasZendeskTicketFormNodes: hasZendeskTicketFormNodes,
+  hasZendeskNodes: hasZendeskNodes,
   getNodeWithId: getNodeWithId,
   getStartNode: getStartNode,
 }

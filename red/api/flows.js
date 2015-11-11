@@ -33,7 +33,7 @@ module.exports = {
 
   },
   post: function(req, res) {
-    var flows = req.body;
+    var _flows = req.body;
     var deploymentType = req.get("Node-RED-Deployment-Type") || "full";
     var authz = req.user.authz;
     var deploy = req.get("Node-RED-Deploy-Save") === "deploy" ? true : false;
@@ -42,18 +42,15 @@ module.exports = {
       var licence_key = req.user.licence_key;
       var ver = Date.now();
       log.info("saving flow " + ver + " with licence key " + licence_key);
-      var zd_cred = req.user.zendesk ||  {
-        username: "founders@ubicall.com",
-        password: "1234ubicall",
-        domain: "Ubicall"
-      };
-      ubiZDMapper.fetchZendeskFields(zd_cred, flows).then(function(_nodes) {
-        flows = new nodeModel({
-          key: licence_key,
-          deploy: deploy ? ver : 0,
-          version: ver,
-          Nodes: _nodes
-        });
+      var flows = new nodeModel({
+        key: licence_key,
+        deploy: deploy ? ver : 0,
+        version: ver,
+        Nodes: _flows
+      });
+      // only reject if you has zendesk account uncnfigured and use zendesk components
+      ubiZDMapper.fetchZendeskFields(req.user.zendesk, _flows).then(function(_nodes) {
+        flows.Nodes = _nodes;
         redNodes.setFlows(flows, deploymentType).then(function() {
           if (settings.get("storageModule") == "mongodb" && deploy) {
             return redNodes.deployFlows(authz, flows);
@@ -82,13 +79,13 @@ module.exports = {
         flows.deploy = 0;
         redNodes.setFlows(flows, deploymentType).then(function() {
           res.json(500, {
-            message: "Unable to deploy on Mobile so flow saved only"
+            message: "Unable to deploy - please check your zendesk credintials before using any zendesk component"
           });
         }).otherwise(function(er) {
           log.warn("Error saving flows : " + err.message);
           log.warn(err.stack);
           res.json(500, {
-            message: "Unable to deploy on Mobile or rollback saving deployed version"
+            message: "Unable to deploy or rollback - please check your zendesk credintials before using any zendesk component"
           });
         });
       });
