@@ -99,7 +99,7 @@ function createGrid(node) {
 
   _grid[PlistMapper.choices] = createChoiceItems(node.choices, node.wires);
 
-  log.info("grid " + JSON.stringify(_grid) );
+  log.info("grid " + JSON.stringify(_grid));
   return _grid;
 }
 
@@ -129,9 +129,11 @@ function createChoiceItems(choices, wires) {
 
   for (var i = 0; i < choices.length; i++) {
     var item = {
-      __next: wires[i][0]
+      __next: {
+        id: wires[i][0]
+      }
     };
-    
+
     var choice = choices[i];
     for (var key in ChoicesPlistMapper) {
       if (ChoicesPlistMapper.hasOwnProperty(key)) {
