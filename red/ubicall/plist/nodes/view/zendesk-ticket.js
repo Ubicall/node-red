@@ -11,13 +11,25 @@ var PlistMapper = {
 
 // form field object element as keys will be mapped to plist FormField element as values
 var FieldPlistMapper = {
-  title: "FieldLabel",
+  id: "FieldValue",
+  title_in_portal: "FieldLabel",
   type: "FieldType",
   required_in_portal: "required",
-  editable_in_portal : "editable",
+  editable_in_portal: "editable",
   description: "Placeholder",
   system_field_options: "select_field_options"
 };
+
+// static fields in zendesk, it not custom field
+var zendeskSystemFields = [
+  "subject",
+  "description",
+  "status",
+  "tickettype",
+  "priority",
+  "group",
+  "assignee"
+];
 
 // zendesk field type as keys will be value of FieldPlistMapper[type]
 var FieldTypePlistMapper = {
@@ -70,6 +82,8 @@ var TYPE = "ZendeskForm";
     <dict>
       <key>FieldLabel</key>
       <string>Name</string>
+      <key>FieldValue</key>
+      <string>Name</string>
       <key>FieldType</key>
       <string>Text Field</string>
       <key>required</key>
@@ -80,6 +94,8 @@ var TYPE = "ZendeskForm";
     <dict>
       <key>FieldLabel</key>
       <string>Email</string>
+      <key>FieldValue</key>
+      <string>27251078</string>
       <key>FieldType</key>
       <string>Text Field</string>
       <key>required</key>
@@ -90,6 +106,8 @@ var TYPE = "ZendeskForm";
     <dict>
       <key>FieldLabel</key>
       <string>Birth Date</string>
+      <key>FieldValue</key>
+      <string>27251088</string>
       <key>FieldType</key>
       <string>Date</string>
       <key>required</key>
@@ -99,6 +117,8 @@ var TYPE = "ZendeskForm";
     </dict>
     <dict>
       <key>FieldLabel</key>
+      <string>Type</string>
+      <key>FieldValue</key>
       <string>Type</string>
       <key>FieldType</key>
       <string>Selector</string>
@@ -174,6 +194,8 @@ function createZendeskForm(node) {
   <dict>
     <key>FieldLabel</key>
     <string>Name</string>
+    <key>FieldValue</key>
+    <string>Name</string>
     <key>FieldType</key>
     <string>Text Field</string>
     <key>required</key>
@@ -193,20 +215,26 @@ function createFormFields(fields) {
   for (var i = 0; i < fields.length; i++) {
     var field = fields[i];
     // https://developer.zendesk.com/rest_api/docs/core/ticket_fields#list-ticket-fields
-    if(!field["visible_in_portal"]) continue; //Whether this field is available to end users
+    if (!field["visible_in_portal"] || !field["active"] ) continue; //Whether this field is available to end users or active
     var item = {};
     for (var key in FieldPlistMapper) {
       if (FieldPlistMapper.hasOwnProperty(key) && (field[key] !== null && field[key] !== undefined)) {
         item[FieldPlistMapper[key]] = field[key];
       }
     }
+    
+    // if field["type"] is one of zendesk system fields @variable zendeskSystemFields => FieldValue will be same as field["title"]
+    if(zendeskSystemFields.indexOf(field["type"]) > -1){
+        item["FieldValue"] = field["title"].toLowerCase();
+    }
+    
     // zendesk field type as keys will be value of FieldPlistMapper[type]
-    var __fieldType = FieldTypePlistMapper[field["type"]]
+    var __fieldType = FieldTypePlistMapper[field["type"]];
     item[FieldPlistMapper["type"]] = __fieldType;
     // ignore this field if we not support mapping of this element type yet
-    if(!__fieldType){
+    if (!__fieldType) {
       log.info("not support field " + field["type"] + "!!!")
-    }else {
+    } else {
       _items.push(item);
     }
   }

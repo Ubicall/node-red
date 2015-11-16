@@ -12,6 +12,7 @@ var PlistMapper = {
 // form field object element as keys will be mapped to plist FormField element as values
 var FieldPlistMapper = {
   label: "FieldLabel",
+  value: "FieldValue",
   type: "FieldType",
   required: "required",
   editable: "editable",
@@ -36,24 +37,28 @@ var TYPE = "Form";
   fields:[
       {
         label: "Name",
+        value: "Name",
         type: "Text",
         required: true,
         description: "John Smith"
       },
       {
         label: "Email",
+        value: "Email",
         type: "Text",
         required: true,
         description: "JohnSmith@example.com"
       },
       {
         label: "Birth Date",
+        value: "Birth Date",
         type: "Date",
         required: true,
         description: "31/12/1990"
       },
       {
         label: "Max Price",
+        value: "Max Price",
         type: "Decimal",
         required: true,
         description: "200.00"
@@ -81,6 +86,8 @@ var TYPE = "Form";
     <dict>
       <key>FieldLabel</key>
       <string>Name</string>
+      <key>FieldValue</key>
+      <string>Name</string>
       <key>FieldType</key>
       <string>Text Field</string>
       <key>required</key>
@@ -90,6 +97,8 @@ var TYPE = "Form";
     </dict>
     <dict>
       <key>FieldLabel</key>
+      <string>Email</string>
+      <key>FieldValue</key>
       <string>Email</string>
       <key>FieldType</key>
       <string>Text Field</string>
@@ -101,6 +110,8 @@ var TYPE = "Form";
     <dict>
       <key>FieldLabel</key>
       <string>Birth Date</string>
+      <key>FieldValue</key>
+      <string>Birth Date</string>
       <key>FieldType</key>
       <string>Date</string>
       <key>required</key>
@@ -110,6 +121,8 @@ var TYPE = "Form";
     </dict>
     <dict>
       <key>FieldLabel</key>
+      <string>Max Price</string>
+      <key>FieldValue</key>
       <string>Max Price</string>
       <key>FieldType</key>
       <string>Decimal</string>
@@ -158,6 +171,8 @@ function createForm(node) {
 <array>
   <dict>
     <key>FieldLabel</key>
+    <string>Name</string>
+    <key>FieldValue</key>
     <string>Name</string>
     <key>FieldType</key>
     <string>Text Field</string>
