@@ -16,7 +16,9 @@
 
 
 RED.settings = (function () {
+    
     var loadedSettings = {};
+        
     var hasLocalStorage = function () {
         try {
             return 'localStorage' in window && window['localStorage'] !== null;
@@ -66,43 +68,28 @@ RED.settings = (function () {
     };
 
     var init = function (done) {
-        if(hasLocalStorage()){
-            for(var a in localStorage){
-                console.log("local storage as " + a + " : " + localStorage[a]);
-            }
-        }
         var accessTokenMatch = /[?&]access_token=(.*?)(?:$|&)/.exec(window.location.search);
-        if (accessTokenMatch) {//catch access_token if it in url or not
+        if (accessTokenMatch) {
             var accessToken = accessTokenMatch[1];
             RED.settings.set("auth-tokens",{access_token: accessToken});
             window.location.search = "";
-        }else if(RED.settings.get("auth-tokens")){//otherwise check if local storage contain access_token or not
-            console.log("get from local storage");
-        }else if($.cookie("ac_ubi")){  //otherwise check if cookie contain access_token or not
-            console.log("get from cookie");
-            RED.settings.set("auth-tokens", {access_token: $.cookie("ac_ubi")});
-            // $.removeCookie('ac_ubi', {domain: "ubicall.com", path: "/"});
         }
+        
         $.ajaxSetup({
             beforeSend: function(jqXHR,settings) {
                 // Only attach auth header for requests to relative paths
                 if (!/^\s*(https?:|\/|\.)/.test(settings.url)) {
                     var auth_tokens = RED.settings.get("auth-tokens");
                     if (auth_tokens) {
-                        jqXHR.setRequestHeader("Authorization","Bearer " + auth_tokens.access_token);
+                        jqXHR.setRequestHeader("Authorization","Bearer "+auth_tokens.access_token);
                     }
                 }
-            },
-            error:function(jqXHR, status,error){
-               if(jqXHR.status === 401) {
-                 RED.user.logout();
-               }
             }
         });
 
         load(done);
     }
-
+    
     var load = function(done) {
         $.ajax({
             headers: {

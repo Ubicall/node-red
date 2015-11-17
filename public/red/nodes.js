@@ -24,7 +24,7 @@ RED.nodes = (function() {
     var subflows = {};
     
     var dirty = false;
-
+    
     function setDirty(d) {
         dirty = d;
         eventHandler.emit("change",{dirty:dirty});
@@ -782,33 +782,7 @@ RED.nodes = (function() {
         
         return [new_nodes,new_links,new_workspaces,new_subflows];
     }
-
-    /**
-     * every node must pass it's defaults.should function (if exist) as last validity check
-     * @param nodes - all flow nodes
-     */
-    function validateNodes(nodes_set) {
-        var invalidNodes = nodes_set.filter(function (node_set) {
-            var _node = nodes.filter(function (d) {
-                return d.id == node_set.id;
-            });
-            var node = _node.length > 0 ? _node[0] : undefined;
-            if (node && node._def && node._def.defaults && node._def.defaults.should && typeof node._def.defaults.should === "function") {
-                if (!node._def.defaults.should.call(node, node, node_set)) {
-                    node.valid = false;
-                    return node;
-                }
-            }
-        });
-        var invalidNodesInfo = [];
-        invalidNodes.forEach(function (no) {
-            invalidNodesInfo.push(no.type + " id " + no.id);
-        });
-        return invalidNodes.length == 0 ? {valid: true} : {
-            valid: false, Nodes: invalidNodesInfo
-        };
-    }
-
+    
     // TODO: supports filter.z|type
     function filterNodes(filter) {
         var result = [];
@@ -936,7 +910,7 @@ RED.nodes = (function() {
         filterLinks: filterLinks,
         
         import: importNodes,
-        validateNodes: validateNodes,
+        
         getAllFlowNodes: getAllFlowNodes,
         createExportableNodeSet: createExportableNodeSet,
         createCompleteNodeSet: createCompleteNodeSet,

@@ -115,12 +115,6 @@ RED.deploy = (function() {
                     }
                 });
 
-                if(! invalid){
-                    var logical_validate = RED.nodes.validateNodes(nns);
-                    invalid = ! logical_validate.valid;
-                    inValidNodes = inValidNodes.concat(logical_validate.Nodes);
-                }
-
                 if (invalid) {
                     if (inValidNodes.length > 0 ) {
                         $( "#node-dialog-confirm-deploy-config" ).hide();
