@@ -225,8 +225,9 @@ function createFormFields(fields) {
     
     // if field["type"] is one of zendesk system fields @variable zendeskSystemFields => FieldValue will be same as field["title"]
     if(zendeskSystemFields.indexOf(field["type"]) > -1){
-        item["FieldValue"] = field["title"].toLowerCase();
+        item["FieldValue"] = field["title"];
     }
+    item["FieldValue"] = item["FieldValue"].toString().toLowerCase();
     
     // zendesk field type as keys will be value of FieldPlistMapper[type]
     var __fieldType = FieldTypePlistMapper[field["type"]];
