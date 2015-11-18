@@ -119,9 +119,13 @@ function createChoiceItems(choices, wires) {
   if (wires.length !== choices.length) return [];
 
   for (var i = 0; i < choices.length; i++) {
+    //skip choice has no wire
+    var nextId = wires[i][0];
+    if(!nextId) continue;
+    
     var item = {
       __next: {
-        id: wires[i][0]
+        id: nextId
       }
     };
 
