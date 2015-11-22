@@ -17,7 +17,8 @@ var FieldPlistMapper = {
   required_in_portal: "required",
   editable_in_portal: "editable",
   description: "Placeholder",
-  system_field_options: "select_field_options"
+  system_field_options: "select_field_options",
+  custom_field_options: "select_field_options"
 };
 
 // static fields in zendesk, it not custom field
@@ -40,10 +41,11 @@ var FieldTypePlistMapper = {
   date: "Date",
   integer: "Integer",
   decimal: "Decimal",
+  checkbox: "Check Box",
   tickettype: "Selector",
   priority: "Selector",
   status: "Selector",
-  checkbox: "Check Box"
+  tagger: "Selector"
 };
 
 var TYPE = "ZendeskForm";
