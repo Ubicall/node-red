@@ -1,7 +1,7 @@
 var when = require("when");
 var request = require("request");
-var log = require("../../../log");
-var plistUtils = require('../nodes/utils.js')
+var log = require("../../../../log");
+var plistUtils = require('../../nodes/utils.js')
 
 /**
  * curl https://{subdomain}.zendesk.com/api/v2/ticket_fields.json -v -u {email_address}/token:{token}
@@ -28,7 +28,7 @@ function getTicketFields(zd_cred) {
 }
 
 
-function fetchZendeskFields(zd_cred, nodes) {
+function fetchTicketsFields(zd_cred, nodes) {
   return when.promise(function(resolve, reject) {
     if (plistUtils.hasZendeskNodes(nodes) && !zd_cred) {
       return reject("You add zendesk components but you not configure your zendesk account yet!!");
@@ -50,7 +50,6 @@ function fetchZendeskFields(zd_cred, nodes) {
   });
 }
 
-
 module.exports = {
-  fetchZendeskFields: fetchZendeskFields
+  fetchTicketsFields : fetchTicketsFields
 }

@@ -35,6 +35,25 @@ function getStartNode(flow) {
   })[0];
 }
 
+/**
+ * push elements of @param source to @param dest
+ * _concat([] , [{},{}])
+ * @param {Array} dest
+ * @param {Array} source
+ * @return {Array} dest
+ **/
+function _concat(dest, source) {
+  if (!dest instanceof Array) dest = [dest]
+  if (source instanceof Array) {
+    source.forEach(function(item) {
+      dest.push(item);
+    });
+  } else {
+    dest.push(source);
+  }
+  return dest;
+}
+
 module.exports = {
   // every ivr node with type as key will be mapped to plist element type as value
   NodePlistMapper: {
@@ -54,4 +73,5 @@ module.exports = {
   hasZendeskNodes: hasZendeskNodes,
   getNodeWithId: getNodeWithId,
   getStartNode: getStartNode,
+  concat: _concat
 }
