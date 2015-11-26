@@ -22,8 +22,8 @@ var log = require("../log");
 var redNodes = require("../nodes");
 var settings = require("../settings");
 var when = require('when');
-var nodeModel = require('../mongos').nodeModel;
-var ubiZDMapper = require('../ubicall/plist/utils/zendesk.js');
+var nodeModel = require('../ubicall/mongos').nodeModel;
+var zendesk = require('../ubicall/plist/3rd/zendesk');
 
 module.exports = {
   get: function(req, res) {
@@ -49,7 +49,7 @@ module.exports = {
         Nodes: _flows
       });
       // only reject if you has zendesk account uncnfigured and use zendesk components
-      ubiZDMapper.fetchZendeskFields(req.user.zendesk, _flows).then(function(_nodes) {
+      zendesk.fetchTicketsFields(req.user.zendesk, _flows).then(function(_nodes) {
         flows.Nodes = _nodes;
         redNodes.setFlows(flows, deploymentType).then(function() {
           if (settings.get("storageModule") == "mongodb" && deploy) {

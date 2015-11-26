@@ -1,8 +1,8 @@
 var when = require("when");
 var request = require("request");
-var log = require("../../../../log");
-var plistUtils = require('../../nodes/utils.js');
-var hcUtils = require('./help-center-to-nodes');
+var log = require("../../../../../log");
+var plistUtils = require('../../../nodes/utils.js');
+var hcUtils = require('./nodes');
 
 /**
  * **not used**
@@ -10,7 +10,9 @@ var hcUtils = require('./help-center-to-nodes');
  **/
 function getCategoryArticles(zd_cred, category) {
   return when.promise(function(resolve, reject) {
-    if (!section || !section.id) return reject("No category or has no id attribute");
+    if (!section || !section.id) {
+      return reject("No category or has no id attribute");
+    }
     var options = {
       url: zd_cred.helpcenter + "/categories/" + category.id + "/articles.json",
       method: "GET",
@@ -23,8 +25,8 @@ function getCategoryArticles(zd_cred, category) {
       if (error || response.statusCode !== 200) {
         return reject(error || response.statusCode);
       } else {
-        var articles = JSON.parse(body);
-        return resolve(articles);
+        var result = JSON.parse(body);
+        return resolve(result.articles);
       }
     });
   });
@@ -35,7 +37,9 @@ function getCategoryArticles(zd_cred, category) {
  **/
 function getSectionArticles(zd_cred, section) {
   return when.promise(function(resolve, reject) {
-    if (!section || !section.id) return reject("No section or has no id attribute");
+    if (!section || !section.id) {
+      return reject("No section or has no id attribute");
+    }
     var options = {
       url: zd_cred.helpcenter + "/sections/" + section.id + "/articles.json",
       method: "GET",
@@ -48,8 +52,8 @@ function getSectionArticles(zd_cred, section) {
       if (error || response.statusCode !== 200) {
         return reject(error || response.statusCode);
       } else {
-        var articles = JSON.parse(body);
-        return resolve(articles);
+        var result = JSON.parse(body);
+        return resolve(result.articles);
       }
     });
   });
@@ -60,7 +64,9 @@ function getSectionArticles(zd_cred, section) {
  **/
 function getCategorySections(zd_cred, category) {
   return when.promise(function(resolve, reject) {
-    if (!category || !category.id) return reject("No category or has no id attribute");
+    if (!category || !category.id) {
+      return reject("No category or has no id attribute");
+    }
     var options = {
       url: zd_cred.helpcenter + "/categories/" + category.id + "/sections.json",
       method: "GET",
@@ -73,8 +79,8 @@ function getCategorySections(zd_cred, category) {
       if (error || response.statusCode !== 200) {
         return reject(error || response.statusCode);
       } else {
-        var sections = JSON.parse(body);
-        return resolve(sections);
+        var result = JSON.parse(body);
+        return resolve(result.sections);
       }
     });
   });
@@ -98,55 +104,16 @@ function getCategories(zd_cred) {
       if (error || response.statusCode !== 200) {
         return reject(error || response.statusCode);
       } else {
-        var categories = JSON.parse(body);
-        return resolve(categories);
+        var result = JSON.parse(body);
+        return resolve(result.categories);
       }
-    });
-  });
-}
-
-function buildKB(zd_cred) {
-  return when.promise(function(resolve, reject) {
-    var kb = [];
-    getCategories(zd_cred).then(function(categories) {
-      categories.forEach(function(category) {
-        kb.push(category);
-        getCategorySections(zd_cred, category).then(function(sections) {
-          category.sections = sections;
-          sections.forEach(function(section) {
-            getSectionArticles(zd_cred, section).then(function(articles) {
-              section.articles = articles;
-            }).otherwise(function(error) {
-              log.error(error)
-            });
-          });
-        }).otherwise(function(error) {
-          log.error(error);
-          return resolve(kb);
-        });
-      });
-    }).otherwise(function(error) {
-      log.error(error);
-      return resolve(kb);
     });
   });
 }
 
 module.exports = {
-  fetchKnowledgebase: function(zd_cred, nodes) {
-    return when.promise(function(resolve, reject) {
-      if (plistUtils.hasZendeskKBNodes(nodes) && !zd_cred) {
-        return reject("You add zendesk components but you not configure your zendesk account yet!!");
-      } else if (plistUtils.hasZendeskKBNodes(nodes)) {
-        buildKB(zd_cred).then(hcUtils.createKbScreens).then(function(kbScreens) {
-          plistUtils.concat(nodes, kbScreens);
-        }).otherwise(function(err) {
-          return reject(err);
-        });
-      } else {
-        // has no zendesk credintials or zendesk knowledge base components, well done
-        return resolve(nodes);
-      }
-    });
-  }
+  getCategories: getCategories,
+  getCategorySections: getCategorySections,
+  getCategoryArticles: getCategoryArticles,
+  getSectionArticles: getSectionArticles
 }

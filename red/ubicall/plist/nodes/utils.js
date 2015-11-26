@@ -56,7 +56,9 @@ function getStartNode(flow) {
  * @return {Array} dest
  **/
 function _concat(dest, source) {
-  if (!dest instanceof Array) dest = [dest]
+  if (!dest instanceof Array) {
+    dest = [dest];
+  }
   if (source instanceof Array) {
     source.forEach(function(item) {
       dest.push(item);
