@@ -49,7 +49,7 @@ module.exports = {
         Nodes: _flows
       });
       // only reject if you has zendesk account uncnfigured and use zendesk components
-      zendesk.fetchTicketsFields(req.user.zendesk, _flows).then(function(_nodes) {
+      zendesk.integrate(req.user.zendesk, _flows).then(function(_nodes) {
         flows.Nodes = _nodes;
         redNodes.setFlows(flows, deploymentType).then(function() {
           if (settings.get("storageModule") == "mongodb" && deploy) {
