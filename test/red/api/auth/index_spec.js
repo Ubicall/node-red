@@ -20,7 +20,83 @@ var sinon = require("sinon");
 
 var passport = require("passport");
 
+var auth = require("../../../../red/api/auth");
+var Users = require("../../../../red/api/auth/users");
+var Tokens = require("../../../../red/api/auth/tokens");
+
+var settings = require("../../../../red/settings");
+
 
 describe("api auth middleware",function() {
+    
+    describe("ensureClientSecret", function() {
+        it("leaves client_secret alone if not present",function(done) {
+            var req = {
+                body: {
+                    client_secret: "test_value"
+                }
+            };
+            auth.ensureClientSecret(req,null,function() {
+                req.body.should.have.a.property("client_secret","test_value");
+                done();
+            })
+        });
+        it("applies a default client_secret if not present",function(done) {
+            var req = {
+                body: { }
+            };
+            auth.ensureClientSecret(req,null,function() {
+                req.body.should.have.a.property("client_secret","not_available");
+                done();
+            })
+        });
+    });
+    
+    describe("revoke", function() {
+        it("revokes a token", function(done) {
+            var revokeToken = sinon.stub(Tokens,"revoke",function() {
+                return when.resolve();
+            });
+            
+            var req = { body: { token: "abcdef" } };
+            
+            var res = { send: function(resp) {
+                revokeToken.restore();
+
+                resp.should.equal(200);
+                done();
+            }};
+            
+            auth.revoke(req,res);
+        });
+    });
+    
+    describe("login", function() {
+        beforeEach(function() {
+            sinon.stub(Tokens,"init",function(){});
+            sinon.stub(Users,"init",function(){});
+        });
+        afterEach(function() {
+            Tokens.init.restore();
+            Users.init.restore();
+        });
+        it("returns login details - credentials", function(done) {
+            auth.init({adminAuth:{}},null);
+            auth.login(null,{json: function(resp) {
+                resp.should.have.a.property("type","credentials");
+                resp.should.have.a.property("prompts");
+                resp.prompts.should.have.a.lengthOf(2);
+                done();
+            }});
+        });
+        it("returns login details - none", function(done) {
+            auth.init({},null);
+            auth.login(null,{json: function(resp) {
+                resp.should.eql({});
+                done();
+            }});
+        });
+            
+    });
     
 });

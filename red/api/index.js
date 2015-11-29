@@ -30,7 +30,7 @@ var auth = require('./auth');
 var needsPermission = auth.needsPermission;
 
 var settings = require("../settings");
-var common = require('../ubicall/upload/common')
+var common = require('../upload/common')
 
 var errorHandler = function (err, req, res, next) {
     console.log(err.stack);
