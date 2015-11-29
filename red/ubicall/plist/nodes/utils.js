@@ -51,7 +51,9 @@ function nodeHasLink(node, another) {
 
   if (another instanceof Array) {
     for (var i = 0; i < another.length; i++) {
-      if (!another[i].id) continue;
+      if (!another[i].id) {
+        continue;
+      }
       return wires.indexOf(another[i].id) > -1;
     }
     return false;
@@ -80,7 +82,7 @@ function replaceWireWithAnother(node, awire, another) {
  * replace any input nodes for zd kb node to start node
  **/
 function bridgeNodesWithKbStart(nodes, start) {
-    
+
   var zdKBNodes = getZendeskKBNodes(nodes);
   var zdKBNodesIDs = zdKBNodes.map(function(node) {
     return node.id;
