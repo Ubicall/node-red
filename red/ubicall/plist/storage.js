@@ -1,5 +1,5 @@
 var when = require('when');
-var mongos = require('../../mongos');
+var mongos = require('../../ubicall/mongos');
 var log = require("../../log");
 
 var settings;

@@ -33,7 +33,7 @@ var nodes = {};
 var subflows = {};
 var activeConfig = [];
 var activeConfigNodes = {};
-var nodeModel = require('../mongos').nodeModel;
+var nodeModel = require('../ubicall/mongos').nodeModel;
 
 
 events.on('type-registered', function (type) {

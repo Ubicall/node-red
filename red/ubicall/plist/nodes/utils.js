@@ -8,6 +8,10 @@ function isZendeskNode(node) {
   )
 }
 
+function isZendeskKBNode(node) {
+  return ((node.hasOwnProperty('type') && node.type == 'view-zendesk-knowledge-base'))
+}
+
 function getZendeskTicketFormNodes(nodes) {
   return nodes.filter(isZendeskFormNode);
 }
@@ -15,6 +19,15 @@ function getZendeskTicketFormNodes(nodes) {
 function hasZendeskNodes(nodes) {
   for (var i = 0; i < nodes.length; i++) {
     if (isZendeskNode(nodes[i])) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function hasZendeskKBNodes(nodes) {
+  for (var i = 0; i < nodes.length; i++) {
+    if (isZendeskKBNode(nodes[i])) {
       return true;
     }
   }
@@ -35,6 +48,27 @@ function getStartNode(flow) {
   })[0];
 }
 
+/**
+ * push elements of @param source to @param dest
+ * _concat([] , [{},{}])
+ * @param {Array} dest
+ * @param {Array} source
+ * @return {Array} dest
+ **/
+function _concat(dest, source) {
+  if (!dest instanceof Array) {
+    dest = [dest];
+  }
+  if (source instanceof Array) {
+    source.forEach(function(item) {
+      dest.push(item);
+    });
+  } else {
+    dest.push(source);
+  }
+  return dest;
+}
+
 module.exports = {
   // every ivr node with type as key will be mapped to plist element type as value
   NodePlistMapper: {
@@ -52,6 +86,9 @@ module.exports = {
   isZendeskNode: isZendeskNode,
   getZendeskTicketFormNodes: getZendeskTicketFormNodes,
   hasZendeskNodes: hasZendeskNodes,
+  hasZendeskKBNodes: hasZendeskKBNodes,
+  isZendeskKBNode: isZendeskKBNode,
   getNodeWithId: getNodeWithId,
   getStartNode: getStartNode,
+  concat: _concat
 }
