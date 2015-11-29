@@ -19,7 +19,7 @@ function createKbNodes(categories) {
       y: 0,
       z: 0
     }
-    var categoryChoiceNode = createCatagoryNode(choiceNode, category.sections);
+    var categoryChoiceNode = createCatagoryNode(choiceNode, category.sections || []);
     plistUtils.concat(kbScreens, categoryChoiceNode.categoryNode);
     plistUtils.concat(kbScreens, categoryChoiceNode.sectionsNodes);
     plistUtils.concat(kbScreens, categoryChoiceNode.articlesNodes);
@@ -50,10 +50,10 @@ function createCatagoryNode(categoryNode, sections) {
       y: 0,
       z: 0
     };
-    var sectionNode = createSectionNode(choiceNode, section.articles);
+    var sectionNode = createSectionNode(choiceNode, section.articles || []);
     var sectionChoiceNode = sectionNode.sectionNode;
 
-    categoryNode.choices.push(sectionChoiceNode.name)
+    categoryNode.choices.push(sectionChoiceNode.name);
     categoryNode.wires.push(sectionChoiceNode.id);
 
     sectionsNodes.push(sectionChoiceNode);
