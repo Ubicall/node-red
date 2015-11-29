@@ -76,6 +76,7 @@ module.exports = {
           });
         });
       }).otherwise(function(err) {
+        log.warn(err.stack);
         flows.deploy = 0;
         redNodes.setFlows(flows, deploymentType).then(function() {
           res.json(500, {

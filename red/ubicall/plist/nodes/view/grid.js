@@ -99,7 +99,6 @@ function createGrid(node) {
 
   _grid[PlistMapper.choices] = createChoiceItems(node.choices, node.wires);
 
-  log.info("grid " + JSON.stringify(_grid));
   return _grid;
 }
 

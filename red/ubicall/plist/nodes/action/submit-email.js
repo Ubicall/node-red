@@ -90,7 +90,6 @@ function createActionEmail(node) {
     _email_action.__next.id = nextWires[0][0];
   }
 
-  log.info("email action " + JSON.stringify(_email_action));
   return _email_action;
 }
 

@@ -44,6 +44,7 @@ function hasZendeskKBNodes(nodes) {
  * @param [Array] nodes
  **/
 function nodeHasLink(node, another) {
+  node.wires = node.wires || [];
   var wires = node.wires.map(function(element) {
     return element[0];
   });
@@ -67,6 +68,7 @@ function nodeHasLink(node, another) {
  * @param String another - value used to replace @param aWire
  **/
 function replaceWireWithAnother(node, awire, another) {
+  node.wires = node.wires || [];
   node.wires = node.wires.map(function(wire) {
     return (wire[0] === awire) ? [another] : wire
   });
@@ -89,6 +91,7 @@ function bridgeNodesWithKbStart(nodes, start) {
   });
 
   kbInputNodes.forEach(function(node) {
+    node.wires = node.wires || [];
     node.wires.forEach(function(wire) {
       if (zdKBNodesIDs.indexOf(wire[0]) > -1) {
         replaceWireWithAnother(node, wire[0], start.id);

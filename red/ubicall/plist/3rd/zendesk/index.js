@@ -1,3 +1,4 @@
+var when = require("when");
 var tickets = require('./tickets');
 var hc = require('./help-center');
 

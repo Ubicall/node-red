@@ -90,7 +90,6 @@ function createStart(flow) {
     _start.__home.id = initView.id;
   }
 
-  log.info("start " + JSON.stringify(_start));
   return _start;
 }
 

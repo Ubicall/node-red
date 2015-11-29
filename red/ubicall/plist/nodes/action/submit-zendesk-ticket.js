@@ -88,7 +88,6 @@ function createActionZendeskTicket(node) {
     _zendesk_ticket_action.__next.id = nextWires[0][0];
   }
   
-  log.info("zendesk ticket action " + JSON.stringify(_zendesk_ticket_action ));
   return _zendesk_ticket_action;
 }
 
