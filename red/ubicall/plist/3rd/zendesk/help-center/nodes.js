@@ -7,6 +7,7 @@ var plistUtils = require('../../../nodes/utils.js');
  **/
 function createKbNodes(categories) {
   var kbScreens = [];
+  var categoryChoiceNode;
   categories.forEach(function(category) {
     var choiceNode = {
       choices: [],
@@ -19,12 +20,15 @@ function createKbNodes(categories) {
       y: 0,
       z: 0
     }
-    var categoryChoiceNode = createCatagoryNode(choiceNode, category.sections || []);
+    categoryChoiceNode = createCatagoryNode(choiceNode, category.sections || []);
     plistUtils.concat(kbScreens, categoryChoiceNode.categoryNode);
     plistUtils.concat(kbScreens, categoryChoiceNode.sectionsNodes);
     plistUtils.concat(kbScreens, categoryChoiceNode.articlesNodes);
   });
-  return kbScreens;
+  return {
+    start: categoryChoiceNode.categoryNode,
+    kbScreens: kbScreens
+  }
 }
 
 /**
@@ -54,7 +58,7 @@ function createCatagoryNode(categoryNode, sections) {
     var sectionChoiceNode = sectionNode.sectionNode;
 
     categoryNode.choices.push(sectionChoiceNode.name);
-    categoryNode.wires.push(sectionChoiceNode.id);
+    categoryNode.wires.push([sectionChoiceNode.id]);
 
     sectionsNodes.push(sectionChoiceNode);
     plistUtils.concat(articlesNodes, sectionNode.articlesNodes);
@@ -78,7 +82,7 @@ function createSectionNode(sectionNode, articles) {
   articles.forEach(function(article) {
     var articleInfoNode = createArticleNode(article);
     sectionNode.choices.push(articleInfoNode.name)
-    sectionNode.wires.push(articleInfoNode.id);
+    sectionNode.wires.push([articleInfoNode.id]);
     articlesNodes.push(articleInfoNode);
   });
   // should return sectionNode + articlesNodes

@@ -11,9 +11,6 @@ describe("ubicall/plist/3rd/zendesk/help-center", function() {
   
   var zd_cred;
   var nodesWithZendeskKB;
-  beforeEach(function() {
-
-  });
 
   before(function() {
     zd_cred = {
@@ -34,11 +31,9 @@ describe("ubicall/plist/3rd/zendesk/help-center", function() {
     }];
   });
 
-  after(function() {});
 
   it("should generate kb screens of ubicall", function(done) {
     hc.fetchKnowledgebase(zd_cred, nodesWithZendeskKB).then(function(nodes) {
-      console.log(JSON.stringify(nodes));
       nodes.should.be.an.instanceOf(Object);
       done()
     }).otherwise(function(error) {
