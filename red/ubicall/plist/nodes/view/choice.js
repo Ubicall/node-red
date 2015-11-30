@@ -92,7 +92,6 @@ function createChoice(node) {
 
   _choice[PlistMapper.choices] = createChoiceItems(node.choices, node.wires);
 
-  log.info("choice " + JSON.stringify(_choice));
   return _choice;
 }
 

@@ -7,11 +7,13 @@ var plistUtils = require('../../../nodes/utils.js');
  **/
 function createKbNodes(categories) {
   var kbScreens = [];
+  var categoriesNodes = [];
   categories.forEach(function(category) {
+    category.sections = category.sections || [];
     var choiceNode = {
       choices: [],
       id: (1 + Math.random() * 4294967295).toString(16),
-      //outputs: 3,
+      outputs: category.sections.length,
       name: category.name,
       type: "view-choice",
       wires: [],
@@ -23,8 +25,40 @@ function createKbNodes(categories) {
     plistUtils.concat(kbScreens, categoryChoiceNode.categoryNode);
     plistUtils.concat(kbScreens, categoryChoiceNode.sectionsNodes);
     plistUtils.concat(kbScreens, categoryChoiceNode.articlesNodes);
+    categoriesNodes.push(categoryChoiceNode.categoryNode);
   });
-  return kbScreens;
+  return {
+    start: createParentChoice("Help Center", categoriesNodes), // create choice screen as input for all categories
+    kbScreens: kbScreens
+  }
+}
+
+
+/**
+ * create choice node with name @param name on top of child nodes
+ * @param {String} name - name of parentNode
+ * @param {Array} childs - any valid nodes
+ **/
+function createParentChoice(name, childs) {
+
+  var parentNode = {
+    choices: [],
+    id: (1 + Math.random() * 4294967295).toString(16),
+    outputs: childs.length,
+    name: name || "Help Center",
+    type: "view-choice",
+    wires: [],
+    x: 0,
+    y: 0,
+    z: 0
+  }
+
+  childs.forEach(function(child) {
+    parentNode.push(child.name);
+    parentNode.push([child.id]);
+  });
+
+  return parentNode;
 }
 
 /**
@@ -39,10 +73,11 @@ function createCatagoryNode(categoryNode, sections) {
   var articlesNodes = [];
 
   sections.forEach(function(section) {
+    section.articles = section.articles || [];
     var choiceNode = {
       choices: [],
       id: (1 + Math.random() * 4294967295).toString(16),
-      //outputs: 3,
+      outputs: section.articles.length,
       name: section.name,
       type: "view-choice",
       wires: [],
@@ -53,8 +88,8 @@ function createCatagoryNode(categoryNode, sections) {
     var sectionNode = createSectionNode(choiceNode, section.articles);
     var sectionChoiceNode = sectionNode.sectionNode;
 
-    categoryNode.choices.push(sectionChoiceNode.name)
-    categoryNode.wires.push(sectionChoiceNode.id);
+    categoryNode.choices.push(sectionChoiceNode.name);
+    categoryNode.wires.push([sectionChoiceNode.id]);
 
     sectionsNodes.push(sectionChoiceNode);
     plistUtils.concat(articlesNodes, sectionNode.articlesNodes);
@@ -78,7 +113,7 @@ function createSectionNode(sectionNode, articles) {
   articles.forEach(function(article) {
     var articleInfoNode = createArticleNode(article);
     sectionNode.choices.push(articleInfoNode.name)
-    sectionNode.wires.push(articleInfoNode.id);
+    sectionNode.wires.push([articleInfoNode.id]);
     articlesNodes.push(articleInfoNode);
   });
   // should return sectionNode + articlesNodes

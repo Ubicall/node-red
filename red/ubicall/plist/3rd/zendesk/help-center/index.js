@@ -10,7 +10,9 @@ function fetchKnowledgebase(zd_cred, nodes) {
       return reject("You add zendesk components but you not configure your zendesk account yet!!");
     } else if (plistUtils.hasZendeskKBNodes(nodes)) {
       build.kb(zd_cred).then(hcNodes.createKbNodes).then(function(kbNodes) {
-        plistUtils.concat(nodes, kbNodes);
+        // make bridge between input of zendesk knowledge base component and kb start screen
+        nodes = plistUtils.bridgeNodesWithKbStart(nodes, kbNodes.start);
+        return resolve(plistUtils.concat(nodes, kbNodes.kbScreens));
       }).otherwise(function(err) {
         return reject(err);
       });

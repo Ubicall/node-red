@@ -87,7 +87,6 @@ function createViewCall(node) {
     _call.__next.id = nextWires[0][0];
   }
   
-  log.info("call action " + JSON.stringify(_call ));
   return _call;
 }
 

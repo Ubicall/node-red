@@ -71,7 +71,6 @@ function createInfo(node) {
     _info.__next.id = nextWires[0][0];
   }
   
-  log.info("info " + JSON.stringify(_info) );
   return _info;
 }
 

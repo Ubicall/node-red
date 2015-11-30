@@ -3,7 +3,6 @@ var sinon = require("sinon");
 var when = require("when");
 
 var utils = require("../../../../../red/ubicall/plist/nodes/utils.js");
-console.log(utils);
 
 describe('Node', function() {
 describe('isZendeskFormNode',function(){
