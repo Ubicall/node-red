@@ -22,6 +22,7 @@ var log = require("../log");
 var redNodes = require("../nodes");
 var settings = require("../settings");
 var when = require('when');
+var cache = require('memory-cache');
 var nodeModel = require('../ubicall/mongos').nodeModel;
 
 module.exports = {
@@ -49,6 +50,8 @@ module.exports = {
         if (deploy) {
           redNodes.deployFlows(req.user.authz, flows);
         }
+        cache.del(req.user.licence_key);
+        cache.del(req.user.licence_key + ".deploy");
         return when.resolve(flows);
       }).then(function(flow) {
         res.send(204);

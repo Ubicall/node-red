@@ -1,5 +1,6 @@
 var express = require('express');
 var plist = require('plist');
+var cache = require('memory-cache');
 var log = require('../log');
 var plistStorage = require('./plist/storage.js');
 var plistUtil = require('./plist/utils');
