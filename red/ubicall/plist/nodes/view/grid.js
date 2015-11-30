@@ -99,7 +99,6 @@ function createGrid(node) {
 
   _grid[PlistMapper.choices] = createChoiceItems(node.choices, node.wires);
 
-  log.info("grid " + JSON.stringify(_grid));
   return _grid;
 }
 
@@ -125,13 +124,17 @@ function createChoiceItems(choices, wires) {
   var _items = [];
 
   // skip choices if missed wired found
-  if (wires.length !== choices.length) return [];
+  if (wires.length !== choices.length) {
+    return [];
+  }
 
   for (var i = 0; i < choices.length; i++) {
     //skip choice has no wire
     var nextId = wires[i][0];
-    if(!nextId) continue;
-    
+    if (!nextId) {
+      continue;
+    }
+
     var item = {
       __next: {
         id: nextId

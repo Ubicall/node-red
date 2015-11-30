@@ -1,7 +1,7 @@
 var mongoose = require('mongoose'), Schema = mongoose.Schema;
 
-var log = require("./log");
-var red_util = require("./util");
+var log = require("../log");
+var red_util = require("../util");
 var bcrypt;
 try {
     bcrypt = require('bcrypt');

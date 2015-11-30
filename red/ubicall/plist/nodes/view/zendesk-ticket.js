@@ -187,7 +187,6 @@ function createZendeskForm(node) {
     _form.__next.id = nextWires[0][0];
   }
 
-  log.info("form " + JSON.stringify(_form));
   return _form;
 }
 
@@ -217,7 +216,9 @@ function createFormFields(fields) {
   for (var i = 0; i < fields.length; i++) {
     var field = fields[i];
     // https://developer.zendesk.com/rest_api/docs/core/ticket_fields#list-ticket-fields
-    if (!field["visible_in_portal"] || !field["active"] ) continue; //Whether this field is available to end users or active
+    if (!field["visible_in_portal"] || !field["active"] ){
+      continue; //Whether this field is available to end users or active
+    }
     var item = {};
     for (var key in FieldPlistMapper) {
       if (FieldPlistMapper.hasOwnProperty(key) && (field[key] !== null && field[key] !== undefined)) {

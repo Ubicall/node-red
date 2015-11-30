@@ -30,7 +30,7 @@ var auth = require('./auth');
 var needsPermission = auth.needsPermission;
 
 var settings = require("../settings");
-var common = require('../upload/common')
+var common = require('../ubicall/upload/common')
 
 var errorHandler = function (err, req, res, next) {
     console.log(err.stack);
@@ -111,8 +111,6 @@ function init(adminApp, storage) {
     if (settings.plist) {
         plist.init(settings);
         adminApp.get("/plist/:version", needsPermission("plist.read"), plist.get);
-        // till absolute php code
-        adminApp.get("/plist/:licence/:version", plist._get);
     }
 
     //upload images

@@ -86,11 +86,13 @@ function createStart(flow) {
     // create __home node if nextWires is not empty
     // note only first next wire is used
     _start.__home = {};
-    var initView = plistUtils.getNodeWithId(flow, nextWires[0]);
+    var initView = plistUtils.getNodeWithId(flow, nextWires[0][0]);
+    if(!initView){
+      throw new Error("unable to get init view");
+    }
     _start.__home.id = initView.id;
   }
 
-  log.info("start " + JSON.stringify(_start));
   return _start;
 }
 
@@ -117,9 +119,9 @@ function getNodesLookups(flow) {
 
   flow.Nodes.forEach(function(node) {
     // utils.NodePlistMapper:  map every ivr node with type as key to plist element type as value
-    _lookups[node.id] = plistUtils.NodePlistMapper[node.type] || node.type ;
+    _lookups[node.id] = plistUtils.NodePlistMapper[node.type] || node.type;
   });
-  
+
   return _lookups;
 }
 

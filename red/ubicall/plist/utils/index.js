@@ -69,7 +69,6 @@ function extractFlow(flow) {
           }
       }
     }
-    log.info("flow " + JSON.stringify(__flow));
     return resolve(__flow);
   });
 }
@@ -88,7 +87,7 @@ function deployFlowOnline(authorization_header, version) {
     request(options, function(err, response, body) {
       if (err || response.statusCode !== 200) {
         log.error(err || response.statusCode);
-        return resolve(null);
+        return reject(err || response.statusCode);
       } else {
         return resolve(body);
       }
