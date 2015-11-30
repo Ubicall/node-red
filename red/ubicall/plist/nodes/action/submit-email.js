@@ -42,14 +42,14 @@ var ACTION_NODE__TYPE = "Action";
       <key>HTTPMethod</key>
       <key>POST</key>
       <key>endPoint</key>
-      <string>https://api.ubicall.com/v1/sip/call/701/help-center</string>
+      <string>https://api-dev.ubicall.com/v1/sip/call/701/help-center</string>
     </dict>
     <key>web</key>
     <dict>
       <key>HTTPMethod</key>
       <key>POST</key>
       <key>endPoint</key>
-      <string>https://api.ubicall.com/v1/web/call/701/help-center</string>
+      <string>https://api-dev.ubicall.com/v1/web/call/701/help-center</string>
     </dict>
   </dict>
   <key>__next</key>
@@ -101,14 +101,14 @@ function createActionEmail(node) {
     <key>HTTPMethod</key>
     <key>POST</key>
     <key>endPoint</key>
-    <string>https://api.ubicall.com/v1/email/701/help-center</string>
+    <string>https://api-dev.ubicall.com/v1/email/701/help-center</string>
   </dict>
   <key>web</key>
   <dict>
     <key>HTTPMethod</key>
     <key>POST</key>
     <key>endPoint</key>
-    <string>https://api.ubicall.com/v1/email/701/help-center</string>
+    <string>https://api-dev.ubicall.com/v1/email/701/help-center</string>
   </dict>
 </dict>
 **/
@@ -116,11 +116,11 @@ function createDestination(destination) {
   return {
     mobile: {
       HTTPMethod: "POST",
-      endPoint: "https://api.ubicall.com/v1/email/" + destination.id + "/" + slugify(destination.name)
+      endPoint: "https://api-dev.ubicall.com/v1/email/" + destination.id + "/" + slugify(destination.name)
     },
     web: {
       HTTPMethod: "POST",
-      endPoint: "https://api.ubicall.com/v1/email/" + destination.id + "/" + slugify(destination.name)
+      endPoint: "https://api-dev.ubicall.com/v1/email/" + destination.id + "/" + slugify(destination.name)
     }
   };
 }

@@ -41,14 +41,14 @@ var ACTION_NODE__TYPE = "Action";
       <key>HTTPMethod</key>
       <key>POST</key>
       <key>endPoint</key>
-      <string>https://api.ubicall.com/v1/3rd/zendesk/ticket</string>
+      <string>https://api-dev.ubicall.com/v1/3rd/zendesk/ticket</string>
     </dict>
     <key>web</key>
     <dict>
       <key>HTTPMethod</key>
       <key>POST</key>
       <key>endPoint</key>
-      <string>https://api.ubicall.com/v1/3rd/zendesk/ticket</string>
+      <string>https://api-dev.ubicall.com/v1/3rd/zendesk/ticket</string>
     </dict>
   </dict>
   <key>__next</key>
@@ -99,14 +99,14 @@ function createActionZendeskTicket(node) {
     <key>HTTPMethod</key>
     <key>POST</key>
     <key>endPoint</key>
-    <string>https://api.ubicall.com/v1/3rd/zendesk/ticket</string>
+    <string>https://api-dev.ubicall.com/v1/3rd/zendesk/ticket</string>
   </dict>
   <key>web</key>
   <dict>
     <key>HTTPMethod</key>
     <key>POST</key>
     <key>endPoint</key>
-    <string>https://api.ubicall.com/v1/3rd/zendesk/ticket</string>
+    <string>https://api-dev.ubicall.com/v1/3rd/zendesk/ticket</string>
   </dict>
 </dict>
 **/
@@ -114,11 +114,11 @@ function createDestination(destination) {
   return {
     mobile: {
       HTTPMethod: "POST",
-      endPoint: "https://api.ubicall.com/v1/3rd/zendesk/ticket"
+      endPoint: "https://api-dev.ubicall.com/v1/3rd/zendesk/ticket"
     },
     web: {
       HTTPMethod: "POST",
-      endPoint: "https://api.ubicall.com/v1/3rd/zendesk/ticket"
+      endPoint: "https://api-dev.ubicall.com/v1/3rd/zendesk/ticket"
     }
   };
 }

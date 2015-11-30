@@ -18,7 +18,7 @@ describe("ubicall/plist/3rd/zendesk/help-center", function() {
   before(function() {
     zd_cred = {
       username: 'founders@ubicall.com/token',
-      token: 'xxxxx-xxxxxxxxx-xxxxx',
+      token: 'ZeFnzD7Dhu9hYt5TlUya8WCnaozbQF6MJLozokGj',
       subdomain: 'ubicall',
       main: 'https://ubicall.zendesk.com/api/v2',
       voice: "https://ubicall.zendesk.com/api/v2/channels/voice",
