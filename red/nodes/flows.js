@@ -89,15 +89,9 @@ var flowNodes = module.exports = {
      */
     deployFlows: function (authorization_header , flow) {
         return plistUtil.deployFlowOnline(authorization_header , flow.version).then(function (result) {
-            if(result){
-                return when.promise(function(resolve){
-                    resolve(flow);
-                });
-            }else{
-                return when.promise(function(resolve,reject){
-                   reject(new Error("Unabl to deploy flow"));
-                });
-            }
+          return when.resolve(flow);
+        }).otherwise(function(error){
+          return when.reject(error);
         });
     },
     /**

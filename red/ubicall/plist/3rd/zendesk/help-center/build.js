@@ -5,56 +5,60 @@ var hcNodes = require('./nodes');
 var hc = require('./hc');
 
 
-function buildSectionTree(zd_cred, section) {
-
+/**
+ * fill every section with it's articles
+ * @param {Array} sections - zendesk sections
+ * @param {Array} sections - zendesk category article
+ * @return sections
+ */
+function _fillSectionWithArticles(sections, articles) {
+  sections.forEach(function(section) {
+    section.articles = articles.filter(function(article) {
+      return article.section_id === section.id
+    });
+  });
+  return sections;
 }
 
 function buildCategoryTree(zd_cred, category) {
-  var deferred = [];
-  hc.getCategorySections(zd_cred, category).then(function(sections) {
-    deferred.push(buildSectionTree(zd_cred, section));
+  var deferred = when.defer();
+  category.sections = [];
+  when.all([
+    hc.getCategorySections(zd_cred, category),
+    hc.getCategoryArticles(zd_cred, category),
+  ]).then(function(sectionsAndArticles) {
+    var sections = sectionsAndArticles[0];
+    var articles = sectionsAndArticles[1];
+    category.sections = _fillSectionWithArticles(sections, articles);
+    deferred.resolve(category);
+  }).otherwise(function(error) {
+    log.error(error);
+    deferred.reject(error);
   });
-  return deferred;
+  return deferred.promise;
 }
 
-function buildPromise() {
+function promiseCategories(zd_cred, categories) {
   var deferred = [];
-
   categories.forEach(function(category) {
     deferred.push(buildCategoryTree(zd_cred, category));
   });
-
   return deferred;
 }
 
 function buildKB(zd_cred) {
   return when.promise(function(resolve, reject) {
-    var kb = [];
     hc.getCategories(zd_cred).then(function(categories) {
-      log.info("categories " + JSON.stringify(categories));
-      categories.forEach(function(category) {
-        kb.push(category);
-        hc.getCategorySections(zd_cred, category).then(function(sections) {
-          log.info("  sections " + JSON.stringify(sections));
-          category.sections = sections;
-          sections.forEach(function(section) {
-            hc.getSectionArticles(zd_cred, section).then(function(articles) {
-              log.info("    articles " + JSON.stringify(sections));
-              section.articles = articles;
-            }).otherwise(function(error) {
-              log.error(error);
-              section.articles = [];
-            });
-          });
-        }).otherwise(function(error) {
-          log.error(error);
-          category.sections = [];
-        });
+      var categoriesPromises = promiseCategories(zd_cred, categories);
+      when.all(categoriesPromises).then(function(categoriesWithSectionsWithArticles) {
+        return resolve(categoriesWithSectionsWithArticles);
+      }).otherwise(function(error) {
+        log.error(error);
+        return reject(error);
       });
-      return resolve(kb);
     }).otherwise(function(error) {
       log.error(error);
-      return resolve(kb);
+      return reject(error);
     });
   });
 }

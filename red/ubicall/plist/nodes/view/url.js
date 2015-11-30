@@ -67,7 +67,6 @@ function createURL(node) {
     _url.__next.id = nextWires[0][0];
   }
   
-  log.info("url " + JSON.stringify(_url) );
   return _url;
 }
 

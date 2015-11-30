@@ -187,7 +187,6 @@ function createZendeskForm(node) {
     _form.__next.id = nextWires[0][0];
   }
 
-  log.info("form " + JSON.stringify(_form));
   return _form;
 }
 
