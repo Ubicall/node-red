@@ -176,6 +176,22 @@ function getInfoNode(next){
     };
 }
 
+function getCallNode(next){
+  var _wires=[];
+  if(next){
+    _wires.push([next]);
+  }
+  return  {
+    id: faker.random.number(),
+    type: "view-submit-call",
+    name : faker.name.title,
+    destination: {id : faker.random.number() , name: faker.name.prefix()},
+    wires: [[faker.random.number()]],
+    x: faker.random.number(),
+    y:faker.random.number(),
+    z: faker.random.number()
+  };
+}
 function getNodes() {
 var nodes=getAllNodes();
 var design=createDesign(nodes);
@@ -190,5 +206,6 @@ module.exports = {
   getZendeskTicketActionNode: getZendeskTicketActionNode,
   getDesign: getNodes,
   getUrlNode:getUrlNode,
-  getInfoNode:getInfoNode
+  getInfoNode:getInfoNode,
+  getCallNode:getCallNode
 }
