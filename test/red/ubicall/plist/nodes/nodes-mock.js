@@ -5,8 +5,8 @@ var faker = require('faker');
  **/
 
 function getChoiceScreen(choices, wires) {
-  var _choices=[];
-  var _wires=[];
+  var _choices = [];
+  var _wires = [];
   if (choices && choices instanceof Array) {
     choices = choices.map(function(choice) {
       return {
@@ -14,8 +14,10 @@ function getChoiceScreen(choices, wires) {
       };
     });
   } else {
-    _choices.push({text : faker.name.prefix() });
-      choices = _choices;
+    _choices.push({
+      text: faker.name.prefix()
+    });
+    choices = _choices;
   }
 
   if (wires && wire instanceof Array) {
@@ -26,48 +28,104 @@ function getChoiceScreen(choices, wires) {
     _wires.push([faker.random.number()]);
     wires = _wires;
   }
-    return {
-      id: faker.random.number(),
-      name: faker.name.prefix(),
-      choices: choices,
-      outputs:choices.length,
-      type: "view-choice",
-      x: faker.random.number(),
-      y: faker.random.number(),
-      z: faker.random.number(),
-      wires: wires
-    };
+  return {
+    id: faker.random.number(),
+    name: faker.name.prefix(),
+    choices: choices,
+    outputs: choices.length,
+    type: "view-choice",
+    x: faker.random.number(),
+    y: faker.random.number(),
+    z: faker.random.number(),
+    wires: wires
+  };
 }
 
-function connectNodes(node1,node2){
-  node1.wires.push([node2.id]);
-  node1.choices.push({"text":node2.name});
+function connectNodes(node1, node2) {
+  var i;
+  if(node1.length >0){
+    for(i=0;i<node1.wires.length;i++){
+      if(node2.id != node1.wires[i][0]){
+          node1.wires.push([node2.id]);
+          node1.choices.push({
+            "text": node2.name
+          });
+      }
+    }
+  }
+  else{
+    node1.wires.push([node2.id]);
+    node1.choices.push({
+      "text": node2.name
+    });
+  }
+  }
+
+
+/**
+ * @return {Array} Nodes 
+ */
+function getAllNodes() {
+  var result = [];
+  result.push(getZendeskTicketViewNode());
+  result.push(getZendeskKBNode());
+  result.push(getZendeskTicketActionNode());
+  return result;
+}
+
+/**
+* @param -{Array} Shuffles the array
+*/
+function shuffle(o) {
+  for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+  return o;
+}
+
+/**
+* @param {Array}-Nodes Design
+*/
+function createDesign(nodes) {
+  var design = [];
+  var i;
+  for (i = 0; i < nodes.length; i++) {
+    var node1 = nodes[Math.floor(Math.random() * nodes.length)];
+    var node2 = nodes[Math.floor(Math.random() * nodes.length)];
+    if (node1 != node2) {
+      connectNodes(node1, node2);
+      design.push(node1, node2);
+    }
+  }
+var design = design.filter(function(elem, index, self) {
+    return index == self.indexOf(elem);
+});
+//console.log(JSON.stringify(design));
+return design;
 }
 
 function getZendeskTicketViewNode() {
-    return {
-      id: faker.random.number(),
-      name: faker.name.prefix(),
-      type: "view-zendesk-ticket-form",
-      choices:[],
-      x: faker.random.number(),
-      y: faker.random.number(),
-      z: faker.random.number(),
-      wires:[]
-    };    
+  return {
+    id: faker.random.number(),
+    name: faker.name.firstName(),
+    type: "view-zendesk-ticket-form",
+    choices: [],
+    x: faker.random.number(),
+    y: faker.random.number(),
+    z: faker.random.number(),
+    wires: []
+  };
 }
 
 function getZendeskKBNode() {
-    return {
-      id: faker.random.number(),
-      name: faker.name.prefix(),
-      type: "view-zendesk-knowledge-base",
-      choices:[],
-      x: faker.random.number(),
-      y: faker.random.number(),
-      z: faker.random.number(),
-      wires:[]
-    };
+  return {
+    id: faker.random.number(),
+    name: faker.name.lastName(),
+    type: "view-zendesk-knowledge-base",
+    choices: [],
+    x: faker.random.number(),
+    y: faker.random.number(),
+    z: faker.random.number(),
+    wires: []
+  };
 }
 
 function getZendeskTicketActionNode() {
@@ -75,33 +133,62 @@ function getZendeskTicketActionNode() {
     id: faker.random.number(),
     name: faker.name.prefix(),
     type: "action-submit-zendesk-ticket",
-    choices:[],
+    choices: [],
     x: faker.random.number(),
     y: faker.random.number(),
     z: faker.random.number(),
-    wires:[]
+    wires: []
   };
 }
 
-function getNodes() {
-  var nodes=[];
-  var zendesk_view_ticket=getZendeskTicketViewNode();
-  var zendesk_kb=getZendeskKBNode();
-  var zendesk_action_ticket=getZendeskTicketActionNode(); 
-  connectNodes(zendesk_view_ticket,zendesk_kb);
-  connectNodes(zendesk_kb,zendesk_action_ticket);
-  nodes.push(zendesk_view_ticket);
-  nodes.push(zendesk_kb);
-  nodes.push(zendesk_action_ticket);
-  //console.log(JSON.stringify(nodes));
-  return nodes;
+function getUrlNode(next){
+  var _wires=[];
+  if(next){
+    _wires.push([next]);
+  }
+  return   {
+      id: faker.random.number(),
+      type: "url",
+      url: faker.internet.url(),
+      name: faker.internet.domainName(),
+      wires:_wires,
+      x: 591,
+      y: 298,
+      z: "d8dr6dc3.802p",
+    };
 }
-getNodes();
+
+
+function getInfoNode(next){
+  var _wires=[];
+  if(next){
+    _wires.push([next]);
+  }
+  return   {
+      id: faker.random.number(),
+      type: "view-info",
+      name: faker.name.title(),
+      help:faker.lorem.paragraph(),
+      wires:_wires,
+      x: 591,
+      y: 298,
+      z: "d8dr6dc3.802p",
+    };
+}
+
+function getNodes() {
+var nodes=getAllNodes();
+var design=createDesign(nodes);
+  return design;
+}
+//getNodes();
 
 module.exports = {
   getChoiceScreen: getChoiceScreen,
   getZendeskKBNode: getZendeskKBNode,
   getZendeskTicketViewNode: getZendeskTicketViewNode,
   getZendeskTicketActionNode: getZendeskTicketActionNode,
-  getAllNodes: getNodes
+  getDesign: getNodes,
+  getUrlNode:getUrlNode,
+  getInfoNode:getInfoNode
 }
