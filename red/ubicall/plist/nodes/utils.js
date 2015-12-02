@@ -11,7 +11,10 @@ function isZendeskNode(node) {
 function isZendeskKBNode(node) {
   return ((node.hasOwnProperty('type') && node.type == 'view-zendesk-knowledge-base'))
 }
-
+/**
+filter() takes a function as an input
+@return Array
+*/
 function getZendeskTicketFormNodes(nodes) {
   return nodes.filter(isZendeskFormNode);
 }
