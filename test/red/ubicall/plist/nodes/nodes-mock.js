@@ -174,20 +174,32 @@ function urlNodeWithoutWire(){
     };
 }
 
-function getInfoNode(next){
+function getInfoNodeWithWire(){
   var _wires=[];
-  if(next){
-    _wires.push([next]);
-  }
+  var next=faker.random.number();
+  _wires.push([next]);
   return   {
       id: faker.random.number(),
       type: "view-info",
       name: faker.name.title(),
       help:faker.lorem.paragraph(),
       wires:_wires,
-      x: 591,
-      y: 298,
-      z: "d8dr6dc3.802p",
+      x: faker.random.number(),
+      y: faker.random.number(),
+      z: faker.random.number()
+    };
+}
+
+function getInfoNodeWithoutWire(){
+  return   {
+      id: faker.random.number(),
+      type: "view-info",
+      name: faker.name.title(),
+      help:faker.lorem.paragraph(),
+      wires:[],
+      x: faker.random.number(),
+      y: faker.random.number(),
+      z: faker.random.number()
     };
 }
 
@@ -222,6 +234,7 @@ module.exports = {
   getDesign: getNodes,
   urlNodeWithWire:urlNodeWithWire,
   urlNodeWithoutWire:urlNodeWithoutWire,
-  getInfoNode:getInfoNode,
+  getInfoNodeWithWire:getInfoNodeWithWire,
+  getInfoNodeWithoutWire:getInfoNodeWithoutWire,
   getCallNode:getCallNode
 }

@@ -1,33 +1,39 @@
 var should = require("should");
-var sinon = require("sinon");
-var when = require("when");
- var faker = require('faker');
 var utils = require("../../../../../../red/ubicall/plist/nodes/utils.js");
 var nodes_mock=require('../nodes-mock');
 var info = require("../../../../../../red/ubicall/plist/nodes/view/info.js");
 
 describe("#createInfo(node)",function(){
-  var next,node;
-  var _info;
+  var node_with_wire,node_without_wire;
+  var _info_with_wire,_info_without_wire;
+  
   before(function(){
-   next=faker.random.number();
-   node= nodes_mock.getInfoNode(next);
-      _info = info.createInfo(node);
+   node_with_wire= nodes_mock.getInfoNodeWithWire();
+   node_without_wire=nodes_mock.getInfoNodeWithoutWire();
+    _info_with_wire = info.createInfo(node_with_wire);
+    _info_without_wire = info.createInfo(node_without_wire);
 });
-  it("Return type should be an instance of Object",function(done){
-    _info.should.be.an.instanceOf(Object);
-    done();
-  });  
-  it("ScreenTitle should be the same as input node",function(done){
-    _info.ScreenTitle.should.be.equal(node.name);
-    done();
+
+  it("Return type should be an instance of Object",function(){
+    _info_with_wire.should.be.an.instanceOf(Object);
+    _info_without_wire.should.be.an.instanceOf(Object);
+  }); 
+   
+  it("ScreenTitle should be the same as input node",function(){
+    _info_with_wire.ScreenTitle.should.be.equal(node_with_wire.name);
+    _info_without_wire.ScreenTitle.should.be.equal(node_without_wire.name);
   });
-  it("ContentText should be the same as help in input node",function(done){
-    _info.ContentText.should.be.equal(node.help);
-    done();
+  
+  it("ContentText should be the same as help in input node",function(){
+    _info_with_wire.ContentText.should.be.equal(node_with_wire.help);
+      _info_without_wire.ContentText.should.be.equal(node_without_wire.help);
   });
-  it("Next ID should be the same as wires id in input node",function(done){
-    _info.__next.id.should.be.equal(node.wires[0][0]);
-    done();
+  
+  it("Next ID should be the same as Wires id in input node",function(){
+    _info_with_wire.__next.id.should.be.equal(node_with_wire.wires[0][0]);
   });
+  
+  it("Info node without Wire should have property next",function(){
+    _info_without_wire.should.not.have.property("__next");
+  })
 });
