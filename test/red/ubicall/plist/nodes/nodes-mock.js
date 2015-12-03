@@ -141,23 +141,38 @@ function getZendeskTicketActionNode() {
   };
 }
 
-function getUrlNode(next){
+function generateWire(){
+  return faker.random.number();
+}
+
+function urlNodeWithWire(){
   var _wires=[];
-  if(next){
-    _wires.push([next]);
-  }
+  var id=generateWire();
+    _wires.push([id]);
   return   {
       id: faker.random.number(),
       type: "url",
       url: faker.internet.url(),
       name: faker.internet.domainName(),
       wires:_wires,
-      x: 591,
-      y: 298,
-      z: "d8dr6dc3.802p",
+      x: faker.random.number(),
+      y: faker.random.number(),
+      z: faker.random.number()
     };
 }
 
+function urlNodeWithoutWire(){
+  return   {
+      id: faker.random.number(),
+      type: "url",
+      url: faker.internet.url(),
+      wires:[],
+      name: faker.internet.domainName(),
+      x: faker.random.number(),
+      y: faker.random.number(),
+      z: faker.random.number()
+    };
+}
 
 function getInfoNode(next){
   var _wires=[];
@@ -205,7 +220,8 @@ module.exports = {
   getZendeskTicketViewNode: getZendeskTicketViewNode,
   getZendeskTicketActionNode: getZendeskTicketActionNode,
   getDesign: getNodes,
-  getUrlNode:getUrlNode,
+  urlNodeWithWire:urlNodeWithWire,
+  urlNodeWithoutWire:urlNodeWithoutWire,
   getInfoNode:getInfoNode,
   getCallNode:getCallNode
 }

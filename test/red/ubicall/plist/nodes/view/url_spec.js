@@ -1,37 +1,37 @@
 var should = require("should");
-var sinon = require("sinon");
-var when = require("when");
- var faker = require('faker');
-var utils = require("../../../../../../red/ubicall/plist/nodes/utils.js");
-var nodes_mock=require('../nodes-mock');
+var nodes_mock = require('../nodes-mock');
 var url = require("../../../../../../red/ubicall/plist/nodes/view/url.js");
 
-describe("#createURL(node)",function(){
-  var next,node,_url;
-  before(function(){
-   next=faker.random.number();
-   node= nodes_mock.getUrlNode();
-    _url = url.createURL(node);
-});
-  it("Return type should be an instance of Object",function(done){
-    _url.should.be.an.instanceOf(Object);
-    done();
-  });
-  
-  it("Return node should have url equal to url in input node",function(done){
-    _url.url.should.be.equal(node.url);
-    done();
+describe("#createURL(node)", function() {
+  var nodeWithWire,nodeWithoutWire;
+  var _url_node_with_wire,_url_node_without_wire;
+  before(function() {
+    nodeWithWire = nodes_mock.urlNodeWithWire();
+    nodeWithoutWire=nodes_mock.urlNodeWithoutWire();
+    _url_node_with_wire = url.createURL(nodeWithWire);
+   _url_node_without_wire = url.createURL(nodeWithoutWire);
   });
 
-  it("Return node should have ScreenTitle equal to name in input node",function(done){
-    _url.ScreenTitle.should.be.equal(node.name);
-    done();
+  it("Return type should be an instance of Object", function() {
+      _url_node_with_wire.should.be.an.instanceOf(Object);
+      _url_node_without_wire.should.be.an.instanceOf(Object);
+  });
+
+  it("Return node should have url equal to url in input node", function() {
+      _url_node_with_wire .url.should.be.equal(nodeWithWire.url);
+      _url_node_without_wire.url.should.be.equal(nodeWithoutWire.url);
+  });
+
+  it("Return node should have ScreenTitle equal to name in input node", function() {
+      _url_node_with_wire .ScreenTitle.should.be.equal(nodeWithWire.name);
+      _url_node_without_wire .ScreenTitle.should.be.equal(nodeWithoutWire.name);
+  });
+
+  it("Return node should have next consistent with input node wires", function() {
+      _url_node_with_wire.__next.id.should.be.equal(nodeWithWire.wires[0][0]);
   });
   
-  it("Return node should have next consistent with input node wires",function(done){
-    if(_url.__next){
-      _url.__next.id.should.be.equal(node.wires[0][0]);
-    }
-      done();
+  it("urlNodeWithoutWire should not have property __next",function(){
+    _url_node_without_wire.should.not.have.property("__next");
   });
 });
