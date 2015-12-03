@@ -147,9 +147,9 @@ function createArticleNode(article) {
   var _id = getID();
   return {
     id: _id,
-    type: "view-info",
+    type: "view-url",
     name: article.title || _id,
-    help: article.body,
+    url: article.html_url,
     x: 0,
     y: 0,
     z: 0,

@@ -9,7 +9,7 @@ function isZendeskNode(node) {
 }
 
 function isZendeskKBNode(node) {
-  return ((node.hasOwnProperty('type') && node.type == 'view-zendesk-knowledge-base'))
+  return ((node.hasOwnProperty('type') && node.type == 'view-zendesk-help-center'))
 }
 
 function getZendeskTicketFormNodes(nodes) {

@@ -23,7 +23,7 @@ describe("ubicall/plist/3rd/zendesk/help-center", function() {
     };
     nodesWithZendeskKB = [{
       id: "d3f0fae1.2c0f08",
-      type: "view-zendesk-knowledge-base",
+      type: "view-zendesk-help-center",
       wires: [],
       x: 0,
       y: 0,

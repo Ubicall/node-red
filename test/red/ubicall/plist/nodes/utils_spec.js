@@ -65,10 +65,10 @@ describe('Node',function(){
       
       after(function() {});
       
-    it("should be a node of type view-zendesk-knowledge-base", function() {
+    it("should be a node of type view-zendesk-help-center", function() {
           should.equal(true,utils.isZendeskKBNode(node));
     });
-    it("shouldn't be a node of type view-zendesk-knowledge-base", function() {
+    it("shouldn't be a node of type view-zendesk-help-center", function() {
           should.equal(false,utils.isZendeskKBNode(node));
     });
     
