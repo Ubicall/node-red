@@ -203,22 +203,42 @@ function getInfoNodeWithoutWire(){
     };
 }
 
-function getCallNode(next){
+function getCallNodeWithWire(){
   var _wires=[];
-  if(next){
-    _wires.push([next]);
-  }
+  var next=faker.random.number();
+  _wires.push([next]);
   return  {
     id: faker.random.number(),
     type: "view-submit-call",
     name : faker.name.title,
     destination: {id : faker.random.number() , name: faker.name.prefix()},
-    wires: [[faker.random.number()]],
+    wires: [ _wires],
     x: faker.random.number(),
     y:faker.random.number(),
     z: faker.random.number()
   };
 }
+
+function getCallNodeWithoutWire(){
+  return  {
+    id: faker.random.number(),
+    type: "view-submit-call",
+    name : faker.name.title,
+    destination: {id : faker.random.number() , name: faker.name.prefix()},
+    wires: [],
+    x: faker.random.number(),
+    y:faker.random.number(),
+    z: faker.random.number()
+  };
+}
+
+function getDestination(){
+  return { 
+      id : faker.random.number(), 
+      name: faker.name.prefix()
+    };
+}
+
 function getNodes() {
 var nodes=getAllNodes();
 var design=createDesign(nodes);
@@ -232,9 +252,12 @@ module.exports = {
   getZendeskTicketViewNode: getZendeskTicketViewNode,
   getZendeskTicketActionNode: getZendeskTicketActionNode,
   getDesign: getNodes,
+  getAllNodes: getAllNodes,
   urlNodeWithWire:urlNodeWithWire,
   urlNodeWithoutWire:urlNodeWithoutWire,
   getInfoNodeWithWire:getInfoNodeWithWire,
   getInfoNodeWithoutWire:getInfoNodeWithoutWire,
-  getCallNode:getCallNode
+  getCallNodeWithWire:getCallNodeWithWire,
+  getCallNodeWithoutWire:getCallNodeWithoutWire,
+  getDestination:getDestination
 }
