@@ -28,11 +28,6 @@ var createDestfunc;
     expected_web_endPoint_wired_node="https://api-dev.ubicall.com/v1/web/call/";
     expected_mobile_endPoint_not_wired_node="https://api-dev.ubicall.com/v1/sip/call/";
     expected_web_endPoint_not_wired_node="https://api-dev.ubicall.com/v1/web/call/";
-    var createDestfunc= sinon.spy();
-});
-
-it("Calling CreateDestination()",function(){  
-  should(createDestfunc).to.have.been.called;
 });
 
 it("should return an Object",function(){

@@ -104,15 +104,16 @@ return design;
 
 function getZendeskTicketViewNode() {
   return {
+    name : faker.name.title(),
+    help : faker.name.jobDescriptor(),
     id: faker.random.number(),
-    name: faker.name.firstName(),
     type: "view-zendesk-ticket-form",
-    choices: [],
+    wires: [[faker.random.number()]],
     x: faker.random.number(),
     y: faker.random.number(),
     z: faker.random.number(),
-    wires: []
   };
+
 }
 
 function getZendeskKBNode() {
@@ -232,6 +233,101 @@ function getCallNodeWithoutWire(){
   };
 }
 
+function getChoiceScreen(){
+  return {
+    choices: [
+      {text : faker.name.prefix()},
+      {text : faker.name.prefix()},
+      {text : faker.name.prefix()}
+    ],
+    id: faker.random.number(),
+    outputs: 3,
+    name: faker.name.title(),
+    type: "view-choice",
+    wires: [[faker.random.number()], [faker.random.number()] , [faker.random.number()]],
+    x: faker.random.number(),
+    y:faker.random.number(),
+    z: faker.random.number
+    
+  }
+};
+
+function getFormScreen(){
+  return {
+    name : faker.name.title(),
+    help : faker.name.prefix(),
+    id: faker.random.number(),
+    type: "view-form",
+    wires: [[faker.random.number()]],
+    x: faker.random.number(),
+    y: faker.random.number(),
+    z: faker.random.number(),
+    fields:[
+        {
+          label: "Name",
+          value: "Name",
+          type: "Text",
+          required: true,
+          description: faker.name.firstName()
+        },
+        {
+          label: "Email",
+          value: "Email",
+          type: "Text",
+          required: true,
+          description:faker.internet.email()
+        },
+        {
+          label: "Birth Date",
+          value: "Birth Date",
+          type: "Date",
+          required: true,
+          description: faker.date.recent()
+        },
+        {
+          label: "Max Price",
+          value: "Max Price",
+          type: "Decimal",
+          required: true,
+          description: faker.finance.amount()
+        }
+      ]
+  };
+}
+
+function getGridScreen(){
+  return {
+    choices: [
+      {text : faker.name.prefix() , icon: "https://designer-dev.ubicall.com/uploads/b32ed83fef8be9a9a3d735e752610413.png"},
+      {text : faker.name.prefix(), icon: "https://designer-dev.ubicall.com/uploads/b32ed83fef8be9a9a3d735e752610413.png"},
+      {text : faker.name.prefix(), icon: "https://designer-dev.ubicall.com/uploads/b32ed83fef8be9a9a3d735e752610413.png"}
+    ],
+    id: faker.random.number(),
+    outputs: 3,
+    name: faker.name.title(),
+    type: "view-grid",
+    wires: [[faker.random.number()], [faker.random.number()] , [faker.random.number()]],
+    x: faker.random.number(),
+    y: faker.random.number(),
+    z: faker.random.number()
+  };
+}
+
+function getStartNode(){
+  return {
+    id: faker.random.number(),
+    meta: [
+      {type: "file", value: "Default", key: "Font"},
+      {type: "text", value: "Orange", key: "Theme"}
+    ],
+    type: "start",
+    wires: [[faker.random.number()]],
+    x: faker.random.number(),
+    y: faker.random.number(),
+    z: faker.random.number(),
+  };
+}
+
 function getDestination(){
   return { 
       id : faker.random.number(), 
@@ -259,5 +355,8 @@ module.exports = {
   getInfoNodeWithoutWire:getInfoNodeWithoutWire,
   getCallNodeWithWire:getCallNodeWithWire,
   getCallNodeWithoutWire:getCallNodeWithoutWire,
-  getDestination:getDestination
+  getDestination:getDestination,
+  getFormScreen:getFormScreen,
+  getStartNode:getStartNode,
+  getGridScreen:getGridScreen
 }
