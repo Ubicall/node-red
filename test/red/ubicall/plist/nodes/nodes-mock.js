@@ -4,6 +4,47 @@ var faker = require('faker');
  * @param {Array} wires - next connections i.e. ["xxxx.xxx", "yyyy.yyyyy"]
  **/
 
+
+function getFlow(){
+  return   {
+    _id:faker.random.number(),
+    key:"e6053eb8d35e02ae40beeeacef203c1a",
+    version:faker.random.number(),
+    __v:0,
+    Nodes:[{label:"Sheet 1",id:faker.random.number(),type:"tab"},
+    {id:faker.random.number(),type:"view-choice",name:"see",choices:[{text:"what"},{text:faker.name.prefix()},
+    {"text":"sign up"}],
+    outputs:3,
+    x:faker.random.number(),
+    y:faker.random.number(),
+    z:faker.random.number(),wires:[[faker.random.number()],[],[faker.random.number()]]},
+    {id:faker.random.number(),type:"start",meta:[{"key":"Font","value":"https://designer-dev.ubicall.com/uploads/meta/9c4026d559afaa0df2085a9f8674b056.ttf","type":"file"},
+    {"key":"Theme","value":"Blue","type":"text"}],
+    x:faker.random.number(),
+    y:faker.random.number(),
+    z:faker.random.number(),
+    wires:[[faker.random.number()]]},{id:faker.random.number(),type:"view-url",name:"ubicall",url:"http://ubicall.com",
+    x:faker.random.number(),
+    y:faker.random.number(),
+    z:faker.random.number(),wires:[[]]},
+    {id:faker.random.number(),
+    type:"view-form",
+    name:"sign up",
+    help:"sign up",
+    fields:[{"description":"i.e. John Smith","editable":true,"required":false,"type":"Text Field","value":"Name","label":"Name"}],
+    x:faker.random.number(),
+    y:faker.random.number(),
+    z:faker.random.number(),
+    wires:[[faker.random.number()]]},
+    {id:faker.random.number(),type:"action-submit-email",name:"add user",destination:{name:faker.name.prefix(),id:faker.random.number()},
+    x:faker.random.number(),
+    y:faker.random.number(),
+    z:faker.random.number(),wires:[[]]}],
+    created:"2015-12-07T11:13:54.459Z",
+    deploy:1449486834459
+  };
+}
+
 function getChoiceScreen(choices, wires) {
   var _choices = [];
   var _wires = [];
@@ -358,5 +399,6 @@ module.exports = {
   getDestination:getDestination,
   getFormScreen:getFormScreen,
   getStartNode:getStartNode,
-  getGridScreen:getGridScreen
+  getGridScreen:getGridScreen,
+  getFlow:getFlow
 }
