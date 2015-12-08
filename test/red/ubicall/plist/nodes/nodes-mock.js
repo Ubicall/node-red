@@ -108,9 +108,17 @@ function connectNodes(node1, node2) {
  */
 function getAllNodes() {
   var result = [];
+  result.push(getStartNode());
   result.push(getZendeskTicketViewNode());
   result.push(getZendeskKBNode());
-  result.push(getZendeskTicketActionNode());
+  result.push(getZendeskTicketActionNodeWithoutWires());
+  result.push(getZendeskTicketActionNodeWithoutWires());
+  result.push(urlNodeWithWire());
+  result.push(urlNodeWithoutWire());
+  result.push(getEmailWithWire());
+  result.push(getEmailWithoutWire());
+  result.push(getFormScreen());
+  result.push(getGridScreen());
   return result;
 }
 
@@ -436,8 +444,8 @@ var nodes=getAllNodes();
 var design=createDesign(nodes);
   return design;
 }
-//getNodes();
-
+//var x =getAllNodes();
+//console.log(x);
 module.exports = {
   getChoiceScreen: getChoiceScreen,
   getZendeskKBNode: getZendeskKBNode,
