@@ -290,6 +290,45 @@ function getCallNodeWithoutWire(){
   };
 }
 
+function getEmailWithWire(){
+  var _wires=[];
+  var next=faker.random.number();
+  _wires.push([next]);
+  return {
+      id: faker.random.number(),
+      name: faker.lorem.words(),
+      destination: {id : faker.random.number() , name: faker.name.prefix()},
+      wires: [[_wires]],
+      x: faker.random.number(),
+      y: faker.random.number(),
+      z: faker.random.number()
+  };
+  /*var _wires=[];
+  var next=faker.random.number();
+  _wires.push([next]);
+  return
+  {id: "548uuttr.jkou8975",
+    name : "Send an Email To Help Center",
+    destination: {id : 701 , name: "Help Center"}
+    wires: [["5487kgd.laax98"]],
+    x: 591,
+    y: 298,
+    z: "d8dr6dc3.802p"
+  };*/
+}
+
+function getEmailWithoutWire(){
+  return {
+      id: faker.random.number(),
+      name: faker.lorem.words(),
+      destination: {id : faker.random.number() , name: faker.name.prefix()},
+      wires: [[]],
+      x: faker.random.number(),
+      y: faker.random.number(),
+      z: faker.random.number()
+  };
+}
+
 function getChoiceScreen(){
   return {
     choices: [
@@ -417,5 +456,7 @@ module.exports = {
   getGridScreen:getGridScreen,
   getFlow:getFlow,
   getZendeskTicketActionNodeWithWires:getZendeskTicketActionNodeWithWires,
-  getZendeskTicketActionNodeWithoutWires:getZendeskTicketActionNodeWithoutWires
+  getZendeskTicketActionNodeWithoutWires:getZendeskTicketActionNodeWithoutWires,
+  getEmailWithWire:getEmailWithWire,
+  getEmailWithoutWire:getEmailWithoutWire
 }

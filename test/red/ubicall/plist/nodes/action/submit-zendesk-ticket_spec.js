@@ -4,7 +4,7 @@ var nodes_mock=require('../nodes-mock');
 var SubmitZendeskTicket = require("../../../../../../red/ubicall/plist/nodes/action/submit-zendesk-ticket.js");
 var sinon = require('sinon');
 
-describe("",function(){
+describe("#createActionZendeskTicket(node)",function(){
   var node_with_wire,node_without_wire;
   var zendesk_wired,zendesk_not_wired;
   
