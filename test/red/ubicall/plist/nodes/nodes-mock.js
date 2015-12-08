@@ -170,7 +170,7 @@ function getZendeskKBNode() {
   };
 }
 
-function getZendeskTicketActionNode() {
+function getZendeskTicketActionNodeWithoutWires() {
   return {
     id: faker.random.number(),
     name: faker.name.prefix(),
@@ -180,6 +180,22 @@ function getZendeskTicketActionNode() {
     y: faker.random.number(),
     z: faker.random.number(),
     wires: []
+  };
+}
+
+function getZendeskTicketActionNodeWithWires() {
+  var _wires=[];
+  var next=faker.random.number();
+  _wires.push([next]);
+  return {
+    id: faker.random.number(),
+    name: faker.name.prefix(),
+    type: "action-submit-zendesk-ticket",
+    choices: [],
+    x: faker.random.number(),
+    y: faker.random.number(),
+    z: faker.random.number(),
+    wires: [[_wires]]
   };
 }
 
@@ -387,7 +403,6 @@ module.exports = {
   getChoiceScreen: getChoiceScreen,
   getZendeskKBNode: getZendeskKBNode,
   getZendeskTicketViewNode: getZendeskTicketViewNode,
-  getZendeskTicketActionNode: getZendeskTicketActionNode,
   getDesign: getNodes,
   getAllNodes: getAllNodes,
   urlNodeWithWire:urlNodeWithWire,
@@ -400,5 +415,7 @@ module.exports = {
   getFormScreen:getFormScreen,
   getStartNode:getStartNode,
   getGridScreen:getGridScreen,
-  getFlow:getFlow
+  getFlow:getFlow,
+  getZendeskTicketActionNodeWithWires:getZendeskTicketActionNodeWithWires,
+  getZendeskTicketActionNodeWithoutWires:getZendeskTicketActionNodeWithoutWires
 }
