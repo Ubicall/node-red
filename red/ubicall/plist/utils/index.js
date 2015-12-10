@@ -11,6 +11,7 @@ var view_info = require('../nodes/view/info');
 var view_url = require('../nodes/view/url');
 var view_zendesk_ticket = require('../nodes/view/zendesk-ticket');
 var submit_call = require('../nodes/view/call');
+var zopim_chat = require('../nodes/view/zopim_chat');
 // action components
 var action_submit_email = require('../nodes/action/submit-email');
 var action_submit_zendesk_ticket = require('../nodes/action/submit-zendesk-ticket');
@@ -55,7 +56,10 @@ function extractFlow(flow) {
         case "view-submit-call":
           __flow[node.id] = submit_call.createViewCall(node);
           break;
-          
+        case "view-zopim-chat":
+          __flow[node.id] = zopim_chat.createZopimChat(node);
+          break;
+
           // action components
         case "action-submit-email":
           __flow[node.id] = action_submit_email.createActionEmail(node);

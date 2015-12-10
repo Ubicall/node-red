@@ -12,6 +12,10 @@ function isZendeskKBNode(node) {
   return ((node.hasOwnProperty('type') && node.type == 'view-zendesk-help-center'))
 }
 
+function isZopimNode(node) {
+  return ((node.hasOwnProperty('type') && node.type == 'view-zopim-chat'))
+}
+
 function getZendeskTicketFormNodes(nodes) {
   return nodes.filter(isZendeskFormNode);
 }
@@ -32,6 +36,15 @@ function hasZendeskNodes(nodes) {
 function hasZendeskKBNodes(nodes) {
   for (var i = 0; i < nodes.length; i++) {
     if (isZendeskKBNode(nodes[i])) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function hasZopimNodes(nodes) {
+  for (var i = 0; i < nodes.length; i++) {
+    if (isZopimNode(nodes[i])) {
       return true;
     }
   }
@@ -154,9 +167,11 @@ module.exports = {
   },
   isZendeskFormNode: isZendeskFormNode,
   isZendeskNode: isZendeskNode,
+  isZopimNode: isZopimNode,
   getZendeskTicketFormNodes: getZendeskTicketFormNodes,
   hasZendeskNodes: hasZendeskNodes,
   hasZendeskKBNodes: hasZendeskKBNodes,
+  hasZopimNodes: hasZopimNodes,
   isZendeskKBNode: isZendeskKBNode,
   bridgeNodesWithKbStart: bridgeNodesWithKbStart,
   replaceWireWithAnother: replaceWireWithAnother,
