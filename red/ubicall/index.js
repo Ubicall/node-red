@@ -4,7 +4,7 @@ var log = require('../log');
 var plistStorage = require('./plist/storage.js');
 var plistCache = require('./plist/cache');
 var plistUtil = require('./plist/utils');
-var zendesk = require('./plist/3rd/zendesk');
+var thirdParty = require('./plist/3rd');
 
 module.exports = {
   init: function(_settings) {
@@ -33,7 +33,7 @@ module.exports = {
     var __flow;
     plistStorage.getFlow(req.user.licence_key, req.params.version, req.query.deployed).then(function(flow) {
       __flow = flow;
-      return zendesk.integrate(req.user.zendesk, flow.Nodes);
+      return thirdParty.integrate(req.user, flow.Nodes);
     }).then(function(nodes) {
       __flow.Nodes = nodes
       return plistUtil.extractFlow(__flow);
