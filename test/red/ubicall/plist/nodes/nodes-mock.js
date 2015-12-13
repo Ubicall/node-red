@@ -444,8 +444,6 @@ var nodes=getAllNodes();
 var design=createDesign(nodes);
   return design;
 }
-//var x =getAllNodes();
-//console.log(x);
 module.exports = {
   getChoiceScreen: getChoiceScreen,
   getZendeskKBNode: getZendeskKBNode,
