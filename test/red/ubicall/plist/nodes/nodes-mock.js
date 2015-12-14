@@ -4,7 +4,9 @@ var faker = require('faker');
  * @param {Array} wires - next connections i.e. ["xxxx.xxx", "yyyy.yyyyy"]
  **/
 
-
+/**
+* @return {Object} flow -flow of nodes 
+*/
 function getFlow(){
   return   {
     _id:faker.random.number(),
@@ -44,7 +46,11 @@ function getFlow(){
     deploy:1449486834459
   };
 }
-
+/**
+* @param {Array} choices -choice text i.e. ["sales","CEO"]
+* @param {Array} wires -next connections i.e. ["xxxx.xxx","yyyy.yyyy"]
+* @return {Object} flow -flow of nodes 
+*/
 function getChoiceScreen(choices, wires) {
   var _choices = [];
   var _wires = [];
@@ -82,6 +88,10 @@ function getChoiceScreen(choices, wires) {
   };
 }
 
+/** 
+* @param {Object} node1
+* @param {Object} node2
+*/
 function connectNodes(node1, node2) {
   var i;
   if(node1.length >0){
@@ -151,6 +161,9 @@ var design = design.filter(function(elem, index, self) {
 return design;
 }
 
+/**
+*@return {Object} node of type view-zendesk-ticket-form
+*/
 function getZendeskTicketViewNode() {
   return {
     name : faker.name.title(),
@@ -165,6 +178,9 @@ function getZendeskTicketViewNode() {
 
 }
 
+/**
+*@return {Object} node of type view-zendesk-knowledge-base
+*/
 function getZendeskKBNode() {
   return {
     id: faker.random.number(),
@@ -178,6 +194,9 @@ function getZendeskKBNode() {
   };
 }
 
+/**
+*@return {Object} node of type action-submit-zendesk-ticket
+*/
 function getZendeskTicketActionNodeWithoutWires() {
   return {
     id: faker.random.number(),
@@ -191,6 +210,9 @@ function getZendeskTicketActionNodeWithoutWires() {
   };
 }
 
+/**
+*@return {Object} node of type action-submit-zendesk-ticket
+*/
 function getZendeskTicketActionNodeWithWires() {
   var _wires=[];
   var next=faker.random.number();
@@ -210,7 +232,9 @@ function getZendeskTicketActionNodeWithWires() {
 function generateWire(){
   return faker.random.number();
 }
-
+/**
+*@return {Object} node of type url 
+*/
 function urlNodeWithWire(){
   var _wires=[];
   var id=generateWire();
@@ -227,6 +251,9 @@ function urlNodeWithWire(){
     };
 }
 
+/**
+*@return {Object} node of type url 
+*/
 function urlNodeWithoutWire(){
   return   {
       id: faker.random.number(),
@@ -240,6 +267,9 @@ function urlNodeWithoutWire(){
     };
 }
 
+/**
+*@return {Object} node of type view-info 
+*/
 function getInfoNodeWithWire(){
   var _wires=[];
   var next=faker.random.number();
@@ -256,6 +286,9 @@ function getInfoNodeWithWire(){
     };
 }
 
+/**
+*@return {Object} node of type view-info 
+*/
 function getInfoNodeWithoutWire(){
   return   {
       id: faker.random.number(),
@@ -269,6 +302,9 @@ function getInfoNodeWithoutWire(){
     };
 }
 
+/**
+*@return {Object} node of type view-submit-call 
+*/
 function getCallNodeWithWire(){
   var _wires=[];
   var next=faker.random.number();
@@ -285,6 +321,10 @@ function getCallNodeWithWire(){
   };
 }
 
+/**
+*@return {Object} node of type view-submit-call 
+*/
+
 function getCallNodeWithoutWire(){
   return  {
     id: faker.random.number(),
@@ -298,6 +338,9 @@ function getCallNodeWithoutWire(){
   };
 }
 
+/**
+*@return {Object} node 
+*/
 function getEmailWithWire(){
   var _wires=[];
   var next=faker.random.number();
@@ -311,18 +354,6 @@ function getEmailWithWire(){
       y: faker.random.number(),
       z: faker.random.number()
   };
-  /*var _wires=[];
-  var next=faker.random.number();
-  _wires.push([next]);
-  return
-  {id: "548uuttr.jkou8975",
-    name : "Send an Email To Help Center",
-    destination: {id : 701 , name: "Help Center"}
-    wires: [["5487kgd.laax98"]],
-    x: 591,
-    y: 298,
-    z: "d8dr6dc3.802p"
-  };*/
 }
 
 function getEmailWithoutWire(){
@@ -337,6 +368,9 @@ function getEmailWithoutWire(){
   };
 }
 
+/**
+*@return {Object} node of type view-choice
+*/
 function getChoiceScreen(){
   return {
     choices: [
@@ -356,6 +390,9 @@ function getChoiceScreen(){
   }
 };
 
+/**
+*@return {Object} node of type view-form
+*/
 function getFormScreen(){
   return {
     name : faker.name.title(),
@@ -399,6 +436,9 @@ function getFormScreen(){
   };
 }
 
+/**
+*@return {Object} node of type view-grid
+*/
 function getGridScreen(){
   return {
     choices: [
@@ -417,6 +457,9 @@ function getGridScreen(){
   };
 }
 
+/**
+*@return {Object} node of type start
+*/
 function getStartNode(){
   return {
     id: faker.random.number(),
@@ -432,12 +475,16 @@ function getStartNode(){
   };
 }
 
+/**
+*@return {Object} destination 
+*/
 function getDestination(){
   return { 
       id : faker.random.number(), 
       name: faker.name.prefix()
     };
 }
+
 
 function getNodes() {
 var nodes=getAllNodes();

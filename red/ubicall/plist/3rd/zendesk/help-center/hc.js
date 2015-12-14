@@ -78,7 +78,6 @@ function getCategories(zd_cred) {
         return reject(error || response.statusCode);
       } else {
         var result = JSON.parse(body);
-        console.log(result.categories);
         return resolve(result.categories);
       }
     });

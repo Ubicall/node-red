@@ -1,23 +1,28 @@
-var faker=require("faker");
+var faker = require("faker");
 
-
-function getZendeskCredentials(){
+/**
+@return {Object} zendesk credentials
+*/
+function getZendeskCredentials() {
   return {
-   username:  faker.internet.email(),
-   token: faker.random.number(),
-   subdomain: faker.internet.domainName(),
-   main: 'https://ubicall.zendesk.com/api/v2',
-   voice: "https://ubicall.zendesk.com/api/v2/channels/voice",
-   helpcenter: "https://ubicall.zendesk.com/api/v2/help_center"
- };
-   
+    username: faker.internet.email(),
+    token: faker.random.number(),
+    subdomain: faker.internet.domainName(),
+    main: 'https://ubicall.zendesk.com/api/v2',
+    voice: "https://ubicall.zendesk.com/api/v2/channels/voice",
+    helpcenter: "https://ubicall.zendesk.com/api/v2/help_center"
+  };
+
 }
 
-function getCategories(){
-  return [
-    { id: faker.random.number(),
-    url: 'https://ubicall.zendesk.com/api/v2/help_center/en-us/categories/'+ faker.random.number()+'.json',
-    html_url: 'https://ubicall.zendesk.com/hc/en-us/categories/'+ faker.random.number(),
+/**
+@return {Array} zendesk helpcenter categories
+*/
+function getCategories() {
+  return [{
+    id: faker.random.number(),
+    url: 'https://ubicall.zendesk.com/api/v2/help_center/en-us/categories/' + faker.random.number() + '.json',
+    html_url: 'https://ubicall.zendesk.com/hc/en-us/categories/' + faker.random.number(),
     position: 0,
     created_at: '2015-10-25T11:31:39Z',
     updated_at: '2015-11-18T23:57:05Z',
@@ -25,10 +30,11 @@ function getCategories(){
     description: faker.lorem.words(),
     locale: 'en-us',
     source_locale: 'en-us',
-    outdated: false },
-  { id:  faker.random.number(),
-    url: 'https://ubicall.zendesk.com/api/v2/help_center/en-us/categories/'+ faker.random.number()+'.json',
-    html_url: 'https://ubicall.zendesk.com/hc/en-us/categories/'+ faker.random.number(),
+    outdated: false
+  }, {
+    id: faker.random.number(),
+    url: 'https://ubicall.zendesk.com/api/v2/help_center/en-us/categories/' + faker.random.number() + '.json',
+    html_url: 'https://ubicall.zendesk.com/hc/en-us/categories/' + faker.random.number(),
     position: 1,
     created_at: '2015-11-11T14:21:18Z',
     updated_at: '2015-11-18T23:59:02Z',
@@ -36,10 +42,11 @@ function getCategories(){
     description: faker.lorem.words(),
     locale: 'en-us',
     source_locale: 'en-us',
-    outdated: false },
-  { id:  faker.random.number(),
-    url: 'https://ubicall.zendesk.com/api/v2/help_center/en-us/categories/'+faker.random.number()+'.json',
-    html_url: 'https://ubicall.zendesk.com/hc/en-us/categories/'+faker.random.number(),
+    outdated: false
+  }, {
+    id: faker.random.number(),
+    url: 'https://ubicall.zendesk.com/api/v2/help_center/en-us/categories/' + faker.random.number() + '.json',
+    html_url: 'https://ubicall.zendesk.com/hc/en-us/categories/' + faker.random.number(),
     position: 2,
     created_at: '2015-11-11T14:28:48Z',
     updated_at: '2015-11-18T23:57:20Z',
@@ -47,10 +54,11 @@ function getCategories(){
     description: faker.lorem.words(),
     locale: 'en-us',
     source_locale: 'en-us',
-    outdated: false },
-  { id:  faker.random.number(),
-    url: 'https://ubicall.zendesk.com/api/v2/help_center/en-us/categories/'+faker.random.number()+'.json',
-    html_url: 'https://ubicall.zendesk.com/hc/en-us/categories/'+faker.random.number(),
+    outdated: false
+  }, {
+    id: faker.random.number(),
+    url: 'https://ubicall.zendesk.com/api/v2/help_center/en-us/categories/' + faker.random.number() + '.json',
+    html_url: 'https://ubicall.zendesk.com/hc/en-us/categories/' + faker.random.number(),
     position: 3,
     created_at: '2015-10-25T11:26:31Z',
     updated_at: '2015-11-19T18:32:52Z',
@@ -58,12 +66,12 @@ function getCategories(){
     description: faker.lorem.words(),
     locale: 'en-us',
     source_locale: 'en-us',
-    outdated: false }
-  ];
+    outdated: false
+  }];
 }
 
 
-module.exports={
-  getZendeskCredentials:getZendeskCredentials,
-  getCategories:getCategories
+module.exports = {
+  getZendeskCredentials: getZendeskCredentials,
+  getCategories: getCategories
 }
