@@ -29,7 +29,8 @@ module.exports = function(grunt) {
                 },
                 all: { src: ['test/**/*_spec.js'] },
                 core: { src: ["test/_spec.js","test/red/**/*_spec.js"]},
-                nodes: { src: ["test/nodes/**/*_spec.js"]}
+                nodes: { src: ["test/nodes/**/*_spec.js"]},
+                ubicall: { src: ["test/red/ubicall/**/*_spec.js"]},
             },
             jshint: {
                 options: {
@@ -110,6 +111,7 @@ module.exports = function(grunt) {
     grunt.registerTask('test-core', ['jshint:core','simplemocha:core']);
     grunt.registerTask('test-editor', ['jshint:editor']);
     grunt.registerTask('test-nodes', ['simplemocha:nodes']);
+    grunt.registerTask('test-ubicall', ['simplemocha:ubicall']);
     
     grunt.registerTask("preserve", "Clean then build to dist as a development", [
         "replace:development"
