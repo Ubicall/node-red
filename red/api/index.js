@@ -110,7 +110,7 @@ function init(adminApp, storage) {
     // Plist
     if (settings.plist) {
         plist.init(settings);
-        adminApp.get("/plist/:version", needsPermission("plist.read"), plist.get);
+        adminApp.get("/plist/:version", needsPermission("plist.read"), plist.extractParams, plist.cache, plist.get);
     }
 
     //upload images

@@ -1,142 +1,220 @@
 var should = require("should");
 var sinon = require("sinon");
 var when = require("when");
-var faker = require('faker');
+
 var utils = require("../../../../../red/ubicall/plist/nodes/utils.js");
-var nodes_mock = require('./nodes-mock');
 
-describe('Node should be of type view-zendesk-ticket-form', function() {
-  describe('#isZendeskFormNode()', function() {
-    it("Node with view-zendesk-ticket-form type should return true", function(done) {
-      var node = nodes_mock.getZendeskTicketViewNode();
-      utils.isZendeskFormNode(node).should.be.equal(true);
-      done();
+describe('Node', function() {
+describe('isZendeskFormNode',function(){
+    var node;
+    before(function(){      
+      node={
+      id: "a87a0834.5785f8",
+      name: "aassss",
+      type: "view-choice"
+      };
     });
-    it("Node with action-zendesk-ticket-form type should return false", function(done) {
-      var node = nodes_mock.getZendeskTicketActionNode();
-      utils.isZendeskFormNode(node).should.be.equal(false);
-      done();
+    
+    after(function() {});
+  it("isZendeskNode should return true",function(){
+    should.equal(true,utils.isZendeskNode(node));
+  });
+  it("isZendeskNode should return false",function(){
+    should.equal(false,utils.isZendeskNode(node));
+  });
+});
+});
+
+describe('Node ', function() {
+describe('isZendeskFormNode',function(){
+    var node;
+    beforeEach(function() {
     });
+    before(function(){
+      
+      node={
+      id: "a87a0834.5785f8",
+      name: "aassss",
+      type: "view-choice"
+      };
+    });
+    
+    after(function() {});
+    
+  it("should be a node of type view/action zendesk ticket", function() {
+        should.equal(true,utils.isZendeskFormNode(node));
+  });
+  it("shouldn't be a node of type view/action zendesk ticket", function() {
+        should.equal(false,utils.isZendeskFormNode(node));
+  });
+  
+});
+});
+
+
+describe('Node',function(){
+  describe('isZendeskKBNode',function(){
+      var node;
+      before(function(){
+        node={
+        id: "a87a0834.5785f8",
+        name: "aassss",
+        type: "view-zendesk"
+        };
+      });
+      
+      after(function() {});
+      
+    it("should be a node of type view-zendesk-help-center", function() {
+          should.equal(true,utils.isZendeskKBNode(node));
+    });
+    it("shouldn't be a node of type view-zendesk-help-center", function() {
+          should.equal(false,utils.isZendeskKBNode(node));
+    });
+    
   });
 });
 
-describe('Node should be of type zendesk ', function() {
-  describe('#isZendeskNode()', function() {
-    it("Node should be a node of type view/action zendesk ticket", function(done) {
-      var node = nodes_mock.getZendeskTicketViewNode();
-      utils.isZendeskNode(node).should.be.equal(true);
-      done();
-    });
-  });
-});
 
-describe('Node should be of type view-zendesk-knowledge-base', function() {
-  describe('#isZendeskKBNode()', function() {
-    it("Node should be a node of type view-zendesk-knowledge-base", function() {
-      var node = nodes_mock.getZendeskKBNode();
-      utils.isZendeskKBNode(node).should.be.equal(true);
-    });
-    it("Node shouldn't be a node of type view-zendesk-knowledge-base", function() {
-      var node = nodes_mock.getZendeskTicketViewNode();
-      utils.isZendeskKBNode(node).should.be.equal(false);
-    });
-
-  });
-});
-
-describe('Array of nodes Zendesk Ticket type', function() {
-  describe('#getZendeskTicketFormNodes()', function() {
-    it("Nodes should be an array", function(done) {
-      var nodes = nodes_mock.getAllNodes();
-      nodes.should.be.an.instanceOf(Array);
-      utils.getZendeskTicketFormNodes(nodes).should.be.instanceOf(Array);
-      done();
-    });
-  });
-});
-
-describe('check on zendesk Nodes', function() {
+describe('Nodes',function(){
   var nodes;
-  beforeEach(function() {
-    nodes = nodes_mock.getAllNodes();
+  describe('#Array',function(){
+    beforeEach(function () {
+       nodes=[
+            {
+              id: "3ead6122.c1529e",
+              name: "submit issuedd",
+              type: "view-zendesk-ticket-form",
+              wires: [["5409b2ac.abf64c"]],
+              x:"1111",
+              y:"1111",
+              z:"111",
+        },
+        {
+          id: "b5d7b189.4a285",
+          name: "",
+          type: "view-zendesk-ticket-form",
+          wires: [[]],
+          x: 371,
+          y: 76,
+          z: "8e492b56.71b6d8"  
+        }
+      ];
+       });
+       it("Nodes should be an array", function () {
+        should(nodes).be.an.instanceOf(Array);
+       });
   });
-  it("input should be an array", function(done) {
-    nodes.should.be.an.instanceOf(Array);
-    done();
+  describe('#getZendeskTicketFormNodes',function(){
+  //should.equal(true,utils.getZendeskTicketFormNodes(nodes));
   });
-  describe('#hasZendeskNodes()', function() {
-    it("Array should have zendesk nodes ", function(done) {
-      var x = utils.hasZendeskNodes(nodes).should.be.equal(true);
-      done();
+});
+
+describe('Nodes',function(){
+      var nodes;
+  beforeEach(function () {
+     nodes=[
+          {
+            id: "3ead6122.c1529e",
+            name: "submit issuedd",
+            type: "view-choice",
+            wires: [["5409b2ac.abf64c"]],
+            x:"1111",
+            y:"1111",
+            z:"111",
+      },
+      {
+        id: "b5d7b189.4a285",
+        name: "",
+        type: "view-choice",
+        wires: [[]],
+        x: 371,
+        y: 76,
+        z: "8e492b56.71b6d8"  
+      }
+    ];
+     });
+  describe('#Array',function(){  
+       it("Nodes should be an array", function () {
+        should(nodes).be.an.instanceOf(Array);
+       });
+  });
+  describe('#hasZendeskNodes',function(){
+    var node;
+    it("should return true", function() {
+          should(utils.hasZendeskNodes(nodes)).equal(true);
+    });
+    it("should return false", function() {
+          should(utils.hasZendeskNodes(nodes)).equal(false);
     });
   });
-  describe('#hasZendeskKBNodes()', function() {
-    it("Array should have zendesk nodes ", function(done) {
-      var x = utils.hasZendeskKBNodes(nodes).should.be.equal(true);
-      done();
+  describe('#hasZendeskKBNodes',function(){
+    var node;
+    it("should return true", function() {
+          should(utils.hasZendeskNodes(nodes)).equal(true);
+    });
+    it("should return false", function() {
+          should(utils.hasZendeskNodes(nodes)).equal(false);
     });
   });
 });
 
-describe('Bribridge Nodes Array With Knowledgebase StartNode ', function() {
-  describe('#bridgeNodesWithKbStart()', function() {
-    var nodes =
-      before(function() {
-        nodes = nodes_mock.getAllNodes();
+
+describe('Node',function(){
+  describe('#getNodeWithId()',function(){
+    var flow;
+    var   nodes=[{id: "3ead6122.c1529e",name: "submit issuedd",type: "view-zendesk-ticket-form",wires: [["5409b2ac.abf64c"]],
+          x:"1111",
+          y:"1111",
+          z:"111"},{id: "b5d7b189.4a285",name: "",type: "view-form",wires: [[]],x: 371,y: 76,z: "8e492b56.71b6d8"  }];
+    before(function() {
+      flow:{
+        Nodes:nodes
+      }
+    });
+    it('flow should be an Object',function(){
+    //  should.equal(1,flow.instanceOf(Object));
+    });
+    it('should return Node ID',function() {
+      //utils.getNodeWithId(flow,"3ead6122.c1529e").should.be.an.instanceOf(Object);
+    });
+  });
+});
+
+describe('Node',function(){
+  describe('#getStartNode',function(){
+      this.timeout(50000);
+      var flow;
+      before(function(){
+      flow={
+        nodes:[{
+          id: "d5c313ef.2a3cf",
+        meta: [{type: "file"}, {type: "text", value: "Red", key: "Theme"}],
+        type: "start"
+        }]
+      };
+      });
+      it('should have flow of type object',function(){
+      //  flow.should.be.an.instanceOf(Object);
+      });
+      it('should return node of type start',function(){
+      //  var node_type=utils.getStartNode(flow).type;
+    //    should.equal("type",node_type);
       });
   });
 });
 
 
-describe('Get Node by Its ID', function() {
-  describe('#getNodeWithId()', function() {
-    var flow;
-    var nodes = nodes_mock.getAllNodes();
-    flow: {
-      Nodes: nodes
-    }
-  });
-  it('flow should be an Object', function() {
-    //  should.equal(1,flow.instanceOf(Object));
-  });
-  it('should return Node ID', function() {
-    //utils.getNodeWithId(flow,"3ead6122.c1529e").should.be.an.instanceOf(Object);
-  });
-});
 
-describe('Return Node of type Start', function() {
-  describe('#getStartNode()', function() {
-    this.timeout(50000);
-    var flow, nodes;
-    nodes = nodes_mock.getAllNodes();
-    flow = {
-      nodes: nodes
-    };
-    it('should have flow of type object', function(done) {
-
-      flow.should.be.an.instanceOf(Object);
-      done();
-    });
-    it('should return node of type start', function(done) {
-      //utils.getStartNode(flow.nodes);
-      //    should.equal("type",node_type);
-      done();
-    });
-  });
-});
-
-
-
-describe('Concatinating 2 different Arrays', function(done) {
-  describe('#concat()', function() {
-    var Array1, Array2;
+describe('Array',function(done){
+  describe('#concat()',function(){
+    var Array1,Array2;
     before(function() {
-      Array1 = ['1', '2', '3'];
-      Array2 = ['{3}', '{6}'];
-    });
-    it('should return an array of Array1+Array2 elements', function(done) {
-      utils.concat(Array1, Array2).should.be.an.instanceOf(Array);
-      done();
-    });
+    Array1=['1','2','3'];
+  Array2=['{3}','{6}'];
   });
+  it('should return an array of Array1+Array2 elements',function(){
+    utils.concat(Array1,Array2).should.be.an.instanceOf(Array);
+  });
+});
 });

@@ -71,7 +71,18 @@ RED.settings = (function () {
         var accessTokenMatch = /[?&]access_token=(.*?)(?:$|&)/.exec(window.location.search);
         if (accessTokenMatch) {
             var accessToken = accessTokenMatch[1];
-            RED.settings.set("auth-tokens",{access_token: accessToken});
+            var scope = [];
+            var jwtToken = accessToken.split(".");
+            if(jwtToken.length === 3){// valid jwt token
+              try{
+                scope = JSON.parse(window.atob(jwtToken[1])).scope || [];
+              }catch(e){}
+            }
+            RED.settings.set("auth-tokens",{
+              access_token: accessToken,
+              scope: scope,
+              token_type: "Bearer"
+            });
             window.location.search = "";
         }
         

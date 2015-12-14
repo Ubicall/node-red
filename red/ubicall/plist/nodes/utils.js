@@ -9,12 +9,13 @@ function isZendeskNode(node) {
 }
 
 function isZendeskKBNode(node) {
-  return ((node.hasOwnProperty('type') && node.type == 'view-zendesk-knowledge-base'))
+  return ((node.hasOwnProperty('type') && node.type == 'view-zendesk-help-center'))
 }
-/**
-filter() takes a function as an input
-@return Array
-*/
+
+function isZopimNode(node) {
+  return ((node.hasOwnProperty('type') && node.type == 'view-zopim-chat'))
+}
+
 function getZendeskTicketFormNodes(nodes) {
   return nodes.filter(isZendeskFormNode);
 }
@@ -35,6 +36,15 @@ function hasZendeskNodes(nodes) {
 function hasZendeskKBNodes(nodes) {
   for (var i = 0; i < nodes.length; i++) {
     if (isZendeskKBNode(nodes[i])) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function hasZopimNodes(nodes) {
+  for (var i = 0; i < nodes.length; i++) {
+    if (isZopimNode(nodes[i])) {
       return true;
     }
   }
@@ -153,13 +163,17 @@ module.exports = {
     "view-zendesk-ticket-form": "ZendeskForm",
     "view-submit-call": "SubmitCall",
     "action-submit-email": "SendEmail",
-    "action-submit-zendesk-ticket": "SubmitZendeskTicket"
+    "action-submit-zendesk-ticket": "SubmitZendeskTicket",
+    "view-zendesk-help-center": "ZendeskHC",
+    "view-zopim-chat": "ZopimChat"
   },
   isZendeskFormNode: isZendeskFormNode,
   isZendeskNode: isZendeskNode,
+  isZopimNode: isZopimNode,
   getZendeskTicketFormNodes: getZendeskTicketFormNodes,
   hasZendeskNodes: hasZendeskNodes,
   hasZendeskKBNodes: hasZendeskKBNodes,
+  hasZopimNodes: hasZopimNodes,
   isZendeskKBNode: isZendeskKBNode,
   bridgeNodesWithKbStart: bridgeNodesWithKbStart,
   replaceWireWithAnother: replaceWireWithAnother,

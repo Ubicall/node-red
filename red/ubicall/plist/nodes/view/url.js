@@ -15,7 +15,7 @@ var TYPE = "URL";
 ```javascript
   {
     id: "66a152ec.995eac",
-    type: "url",
+    type: "view-url",
     url: "https://www.ubicall.com",
     name: "our website",
     wires: [["d8d0fdc3.272f"]],
