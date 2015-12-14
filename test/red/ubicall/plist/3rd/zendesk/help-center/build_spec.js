@@ -27,7 +27,6 @@ describe('ubicall/plist/3rd/zendesk/help-center/build', function() {
 
   it("should build kb josn file of zendesk KB data", function(done) {
     build.kb(zd_cred).then(function(data) {
-      console.log(JSON.stringify(data));
       data.should.be.an.instanceOf(Array);
       done();
     }).otherwise(function(error) {

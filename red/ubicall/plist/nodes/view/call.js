@@ -41,14 +41,14 @@ var TYPE = "SubmitCall";
       <key>HTTPMethod</key>
       <key>POST</key>
       <key>endPoint</key>
-      <string>https://api-dev.ubicall.com/v1/sip/call/201/customer-support</string>
+      <string>https://api.ubicall.com/v1/sip/call/201/customer-support</string>
     </dict>
     <key>web</key>
     <dict>
       <key>HTTPMethod</key>
       <key>POST</key>
       <key>endPoint</key>
-      <string>https://api-dev.ubicall.com/v1/web/call/201/customer-support</string>
+      <string>https://api.ubicall.com/v1/web/call/201/customer-support</string>
     </dict>
   </dict>
   <key>__next</key>
@@ -97,14 +97,14 @@ function createViewCall(node) {
     <key>HTTPMethod</key>
     <key>POST</key>
     <key>endPoint</key>
-    <string>https://api-dev.ubicall.com/v1/sip/call/201/customer-support</string>
+    <string>https://api.ubicall.com/v1/sip/call/201/customer-support</string>
   </dict>
   <key>web</key>
   <dict>
     <key>HTTPMethod</key>
     <key>POST</key>
     <key>endPoint</key>
-    <string>https://api-dev.ubicall.com/v1/web/call/201/customer-support</string>
+    <string>https://api.ubicall.com/v1/web/call/201/customer-support</string>
   </dict>
 </dict>
 **/
@@ -112,11 +112,11 @@ function createDestination(destination) {
   return {
     mobile: {
       HTTPMethod: "POST",
-      endPoint: "https://api-dev.ubicall.com/v1/sip/call/" + destination.id + "/" + slugify(destination.name)
+      endPoint: "https://api.ubicall.com/v1/sip/call/" + destination.id + "/" + slugify(destination.name)
     },
     web: {
       HTTPMethod: "POST",
-      endPoint: "https://api-dev.ubicall.com/v1/web/call/" + destination.id + "/" + slugify(destination.name)
+      endPoint: "https://api.ubicall.com/v1/web/call/" + destination.id + "/" + slugify(destination.name)
     }
   };
 }
