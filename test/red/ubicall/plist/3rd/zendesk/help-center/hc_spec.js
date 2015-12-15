@@ -2,42 +2,27 @@ var should = require("should");
 var sinon = require("sinon");
 var when = require("when");
 
-var hc = require("../../../../../../../red/ubicall/plist/3rd/zendesk/help-center");
+var hc = require("../../../../../../../red/ubicall/plist/3rd/zendesk/help-center/hc");
+var zendesk_mock = require("../zendesk_mock.js");
 
+describe("ubicall/plist/3rd/zendesk/help-center/hc", function() {
 
-describe("ubicall/plist/3rd/zendesk/help-center", function() {
-  
   this.timeout(50000);
-  
   var zd_cred;
-  var nodesWithZendeskKB;
+  var category;
 
   before(function() {
-    zd_cred = {
-      username: 'founders@ubicall.com/token',
-      token: 'ZeFnzD7Dhu9hYt5TlUya8WCnaozbQF6MJLozokGj',
-      subdomain: 'ubicall',
-      main: 'https://ubicall.zendesk.com/api/v2',
-      voice: "https://ubicall.zendesk.com/api/v2/channels/voice",
-      helpcenter: "https://ubicall.zendesk.com/api/v2/help_center"
-    };
-    nodesWithZendeskKB = [{
-      id: "d3f0fae1.2c0f08",
-      type: "view-zendesk-help-center",
-      wires: [],
-      x: 0,
-      y: 0,
-      z: 0,
-    }];
+    zd_cred = zendesk_mock.getZendeskCredentials();
+    category = zendesk_mock.getCategory();
   });
-
-
-  it("should generate kb screens of ubicall", function(done) {
-    hc.fetchKnowledgebase(zd_cred, nodesWithZendeskKB).then(function(nodes) {
-      nodes.should.be.an.instanceOf(Object);
-      done()
-    }).otherwise(function(error) {
-      done(error);
+  it("zd_cred & category should be Objects", function() {
+    zd_cred.should.be.an.instanceOf(Object);
+    category.should.be.an.instanceOf(Object);
+  });
+  describe("#getCategories()", function() {
+    it("return type should be an array", function() {
+      zendesk_mock.getCategories().should.be.an.instanceOf(Array);
     });
   });
+
 });

@@ -3,34 +3,28 @@ var sinon = require("sinon");
 var when = require("when");
 
 var build = require("../../../../../../../red/ubicall/plist/3rd/zendesk/help-center/build.js");
+var zendesk_mock = require("../zendesk_mock.js");
 
 describe('ubicall/plist/3rd/zendesk/help-center/build', function() {
-  this.timeout(50000);
+  describe("#buildKB()", function() {
+    this.timeout(50000);
 
-  var zd_cred;
-  beforeEach(function() {
-
-  });
-
-  before(function() {
-    zd_cred = {
-      username: 'founders@ubicall.com/token',
-      token: 'ZeFnzD7Dhu9hYt5TlUya8WCnaozbQF6MJLozokGj',
-      subdomain: 'ubicall',
-      main: 'https://ubicall.zendesk.com/api/v2',
-      voice: "https://ubicall.zendesk.com/api/v2/channels/voice",
-      helpcenter: "https://ubicall.zendesk.com/api/v2/help_center"
-    };
-  });
-
-  after(function() {});
-
-  it("should build kb josn file of zendesk KB data", function(done) {
-    build.kb(zd_cred).then(function(data) {
-      data.should.be.an.instanceOf(Array);
-      done();
-    }).otherwise(function(error) {
-      done(error);
+    var zd_cred, kb;
+    before(function() {
+      zd_cred = zendesk_mock.getZendeskCredentials();
+      kb = zendesk_mock.kb();
     });
+    it("zd_cred should be an instance Of an Object ", function() {
+      zd_cred.should.be.an.instanceOf(Object);
+    });
+    it("should build kb josn file of zendesk KB data", function() {
+      kb.should.be.an.instanceOf(Array);
+    });
+    it("getCategories should return an array of categories", function() {
+      zendesk_mock.getCategories().should.be.an.instanceOf(Array);
+    })
   });
+
+
+
 });

@@ -8,7 +8,7 @@ describe("ubicall/plist/3rd/zopim", function() {
   var nodes;
   before(function() {
     zopim_cred = {
-      token: '3Vjf7qbi2aavXoWkDwhOOnmJUXwbL2Dl'
+      token: 'XXXXXXXXXXXXXXXXXXXX'
     };
     nodes = nodes_mock.getAllNodes();
   });

@@ -27,6 +27,17 @@ describe("ubicall/plist/3rd/nodes/utils", function() {
     });
 
   });
+  describe('#isZopimNode()', function() {
+    var node;
+    before(function() {
+      node = nodes_mock.getZopimNode();
+    });
+
+    it("should be a node of type view-zopim-chat", function() {
+      utils.isZopimNode(node).should.equal(true);
+    });
+
+  });
 
   describe('#hasZendeskNodes()', function() {
     var nodes;
@@ -47,10 +58,16 @@ describe("ubicall/plist/3rd/nodes/utils", function() {
       utils.hasZendeskNodes(nodes).should.be.equal(true);
     });
   });
-});
+  describe('#hasZopimNodes()', function() {
+    var nodes;
+    before(function() {
+      nodes = nodes_mock.getAllNodes();
+    });
+    it("should return true", function() {
+      utils.hasZendeskNodes(nodes).should.be.equal(true);
+    });
+  });
 
-
-describe('Node', function() {
   describe('#getNodeWithId()', function() {
     var flow;
     var nodes = [{
@@ -86,9 +103,7 @@ describe('Node', function() {
       //utils.getNodeWithId(flow,"3ead6122.c1529e").should.be.an.instanceOf(Object);
     });
   });
-});
 
-describe('Node', function() {
   describe('#getStartNode', function() {
     this.timeout(50000);
     var flow;
@@ -115,11 +130,7 @@ describe('Node', function() {
       //    should.equal("type",node_type);
     });
   });
-});
 
-
-
-describe('Array', function(done) {
   describe('#concat()', function() {
     var Array1, Array2;
     before(function() {
