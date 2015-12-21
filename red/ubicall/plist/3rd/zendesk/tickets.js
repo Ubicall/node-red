@@ -3,6 +3,32 @@ var request = require("request");
 var log = require("../../../../log");
 var plistUtils = require('../../nodes/utils.js')
 
+
+/**
+ * curl https://{subdomain}.zendesk.com/api/v2/ticket_forms/{id}.json   -v -u {email_address}/token:{token}
+ **/
+function getTicketForm(zd_cred, frm_id) {
+  return when.promise(function(resolve, reject) {
+    var options = {
+      url: zd_cred.main + "/ticket_forms/" + frm_id + ".json",
+      method: "GET",
+      auth: {
+        username: zd_cred.username,
+        password: zd_cred.token
+      }
+    };
+    request(options, function(error, response, body) {
+      if (error || response.statusCode !== 200) {
+        return reject(error || response.statusCode);
+      } else {
+        var zdfrm = JSON.parse(body);
+        return resolve(zdfrm.ticket_form.ticket_field_ids);
+      }
+    });
+  });
+}
+
+
 /**
  * curl https://{subdomain}.zendesk.com/api/v2/ticket_fields.json -v -u {email_address}/token:{token}
  **/
@@ -51,5 +77,5 @@ function fetchTicketsFields(zd_cred, nodes) {
 }
 
 module.exports = {
-  fetchTicketsFields : fetchTicketsFields
+  fetchTicketsFields: fetchTicketsFields
 }
