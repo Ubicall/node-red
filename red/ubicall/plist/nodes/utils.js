@@ -117,6 +117,21 @@ function bridgeNodesWithKbStart(nodes, start) {
   return nodes;
 }
 
+/**
+ * get fields which already existed in @param zdfrmflds
+ * @param Array frmFlds - fields of a zendesk form
+ * @param Array tktFlds - actual zendesk form fields with full details
+ **/
+function getFieldsOfZendeskForm(frmFlds, tktFlds) {
+  var _flds = [];
+  for (var i = 0; i < tktFlds.length; i++) {
+    if (frmFlds.indexOf(tktFlds[i].id) > -1) {
+      _flds.push(tktFlds[i]);
+    }
+  }
+  return _flds;
+}
+
 function getNodeWithId(flow, id) {
   //get first one , id attribute doesn't duplicate
   return flow.Nodes.filter(function(node) {
@@ -176,6 +191,7 @@ module.exports = {
   hasZopimNodes: hasZopimNodes,
   isZendeskKBNode: isZendeskKBNode,
   bridgeNodesWithKbStart: bridgeNodesWithKbStart,
+  getFieldsOfZendeskForm: getFieldsOfZendeskForm,
   replaceWireWithAnother: replaceWireWithAnother,
   getNodeWithId: getNodeWithId,
   getStartNode: getStartNode,
