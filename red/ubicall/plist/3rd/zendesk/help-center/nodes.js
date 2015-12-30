@@ -11,17 +11,10 @@ function createKbNodes(categories) {
   categories.forEach(function(category) {
     category.sections = category.sections || [];
     var _id = getID();
-    var choiceNode = {
-      choices: [],
-      id: _id,
-      outputs: category.sections.length,
-      name: category.name || category.description || _id,
-      type: "view-choice",
-      wires: [],
-      x: 0,
-      y: 0,
-      z: 0
-    }
+    var choiceNode = _getChoiceNode(
+      category.name || category.description,
+      section.sections.length
+    );
     var categoryChoiceNode = createCatagoryNode(choiceNode, category.sections);
     plistUtils.concat(kbScreens, categoryChoiceNode.categoryNode);
     plistUtils.concat(kbScreens, categoryChoiceNode.sectionsNodes);
@@ -45,18 +38,7 @@ function createKbNodes(categories) {
  **/
 function createParentChoice(name, childs) {
 
-  var parentNode = {
-    choices: [],
-    id: getID(),
-    outputs: childs.length,
-    name: name || "Help Center",
-    type: "view-choice",
-    wires: [],
-    x: 0,
-    y: 0,
-    z: 0
-  }
-
+  var parentNode = _getChoiceNode(name || "Help Center", childs.length);
   childs.forEach(function(child) {
     parentNode.choices.push({
       text: child.name || child.id
@@ -71,6 +53,34 @@ function getID() {
   return (1 + Math.random() * 4294967295).toString(16);
 }
 
+function _getChoiceNode(name, outputs) {
+  var _id = getID();
+  return {
+    choices: [],
+    id: _id,
+    outputs: outputs,
+    name: name || _id,
+    type: "view-choice",
+    wires: [],
+    x: 0,
+    y: 0,
+    z: 0
+  };
+}
+
+function _getURLNode(name, url) {
+  var _id = getID();
+  return {
+    id: _id,
+    type: "view-url",
+    name: name || _id,
+    url: url,
+    x: 0,
+    y: 0,
+    z: 0,
+    wires: []
+  };
+}
 /**
  * @param {Object } categoryNode - view-choice object
  * @param {Array} sections - Array of zendesk section object under category @param categoryNode
@@ -84,18 +94,10 @@ function createCatagoryNode(categoryNode, sections) {
 
   sections.forEach(function(section) {
     section.articles = section.articles || [];
-    var _id = getID();
-    var choiceNode = {
-      choices: [],
-      id: _id,
-      outputs: section.articles.length,
-      name: section.name || section.description || _id,
-      type: "view-choice",
-      wires: [],
-      x: 0,
-      y: 0,
-      z: 0
-    };
+    var choiceNode = _getChoiceNode(
+      section.name || section.description,
+      section.articles.length
+    );
     var sectionNode = createSectionNode(choiceNode, section.articles);
     var sectionChoiceNode = sectionNode.sectionNode;
 
@@ -144,19 +146,21 @@ function createSectionNode(sectionNode, articles) {
  * @param {Object } article - zendesk article object
  **/
 function createArticleNode(article) {
-  var _id = getID();
-  return {
-    id: _id,
-    type: "view-url",
-    name: article.title || _id,
-    url: article.html_url,
-    x: 0,
-    y: 0,
-    z: 0,
-    wires: []
-  };
+  return _getURLNode(article.title, article.html_url);
 }
 
 module.exports = {
-  createKbNodes: createKbNodes
+  createKbNodes: createKbNodes,
+  createKBNodesFromCategory: function(category) {
+    return createCatagoryNode(_getChoiceNode(
+      category.name,
+      category.sections.length
+    ), category.sections);
+  },
+  createKBNodesFromSection: function(section) {
+    return createSectionNode(_getChoiceNode(
+      section.name,
+      section.articles.length
+    ), section.articles);
+  }
 }
