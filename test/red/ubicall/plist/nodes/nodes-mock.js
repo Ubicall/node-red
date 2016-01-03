@@ -186,7 +186,25 @@ function getAllNodes() {
   result.push(getEmailWithoutWire());
   result.push(getFormScreen());
   result.push(getGridScreen());
+  result.push(getZopimNode());
   return result;
+}
+
+
+/**
+@return {Object} zopim 
+*/
+function getZopimNode() {
+  return {
+    id: faker.random.number(),
+    name: "",
+    settings: {},
+    type: "view-zopim-chat",
+    wires: [],
+    x: faker.random.number(),
+    y: faker.random.number(),
+    z: faker.random.number()
+  };
 }
 
 /**
@@ -607,5 +625,6 @@ module.exports = {
   getZendeskTicketActionNodeWithWires: getZendeskTicketActionNodeWithWires,
   getZendeskTicketActionNodeWithoutWires: getZendeskTicketActionNodeWithoutWires,
   getEmailWithWire: getEmailWithWire,
-  getEmailWithoutWire: getEmailWithoutWire
+  getEmailWithoutWire: getEmailWithoutWire,
+  getZopimNode:getZopimNode,
 }
