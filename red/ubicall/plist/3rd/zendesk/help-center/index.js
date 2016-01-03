@@ -9,38 +9,34 @@ function fetchKnowledgebase(zd_cred, nodes) {
     if (plistUtils.hasZendeskKBNodes(nodes) && !zd_cred) {
       return reject("You add zendesk components but you not configure your zendesk account yet!!");
     } else if (plistUtils.hasZendeskKBNodes(nodes)) {
-
-      // if node is zendeskKBNode
-      //  check it type
-      //    case all
-      //      build all
-      //      bridge with KB Node
-      //      concat all
-      //    case category
-      //      build kb from this category
-      //      bridge with KB Node
-      //      concat all
-      //    case section
-      //      build kb from this section
-      //      bridge with KB Node
-      //      concat all
-
       var allPromises = [];
-      nodes.forEach(function(node) {
-        if (isZendeskKBNode(node)) {
-          switch (node.fetch) {
-            case "all":
-              allPromises.push(build.kb(zd_cred).then(hcNodes.createKbNodes));
-              break;
-            case "category":
-              allPromises.push(build.kbCategory(zd_cred, node.category).then(hcNodes.createKBNodesFromCategory));
-              break;
-            case "section":
-              allPromises.push(build.kbSection(zd_cred, node.section).then(hcNodes.createKBNodesFromSection));
-              break;
-            default:
-              allPromises.push(build.kb(zd_cred).then(hcNodes.createKbNodes));
-          }
+      plistUtils.getZendeskKBNodes(nodes).forEach(function(node) {
+        // if node is zendeskKBNode
+        //  check it type
+        //    case all
+        //      build all
+        //      bridge with KB Node
+        //      concat all
+        //    case category
+        //      build kb from this category
+        //      bridge with KB Node
+        //      concat all
+        //    case section
+        //      build kb from this section
+        //      bridge with KB Node
+        //      concat all
+        switch (node.fetch) {
+          case "all":
+            allPromises.push(build.kb(zd_cred).then(hcNodes.createKbNodes));
+            break;
+          case "category":
+            allPromises.push(build.kbCategory(zd_cred, node.category).then(hcNodes.createKBNodesFromCategory));
+            break;
+          case "section":
+            allPromises.push(build.kbSection(zd_cred, node.section).then(hcNodes.createKBNodesFromSection));
+            break;
+          default:
+            allPromises.push(build.kb(zd_cred).then(hcNodes.createKbNodes));
         }
       });
 

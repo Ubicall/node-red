@@ -3,26 +3,23 @@ var sinon = require("sinon");
 var when = require("when");
 
 var hc = require("../../../../../../../red/ubicall/plist/3rd/zendesk/help-center/hc");
-var zendesk_mock = require("../zendesk_mock.js");
 
 describe("ubicall/plist/3rd/zendesk/help-center/hc", function() {
-
-  this.timeout(50000);
-  var zd_cred;
-  var category;
-
-  before(function() {
-    zd_cred = zendesk_mock.getZendeskCredentials();
-    category = zendesk_mock.getCategory();
-  });
-  it("zd_cred & category should be Objects", function() {
-    zd_cred.should.be.an.instanceOf(Object);
-    category.should.be.an.instanceOf(Object);
-  });
+  
   describe("#getCategories()", function() {
-    it("return type should be an array", function() {
-      zendesk_mock.getCategories().should.be.an.instanceOf(Array);
-    });
+    it("should validate category object against predefined sample");
+  });
+  
+  describe("#getCategorySections()", function() {
+    it("should validate section object against predefined sample");
+  });
+  
+  describe("#getCategoryArticles()", function() {
+    it("should validate article object against predefined sample");
+  });
+  
+  describe("#getSectionArticles()", function() {
+    it("should validate article object against predefined sample");
   });
 
 });

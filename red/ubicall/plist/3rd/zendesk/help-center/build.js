@@ -48,7 +48,7 @@ function buildCategoryTree(zd_cred, category) {
  **/
 function buildSectionTree(zd_cred, section) {
   var deferred = when.defer();
-  hc.getSectionArticles(zd_cred, category).then(function(articles) {
+  hc.getSectionArticles(zd_cred, section).then(function(articles) {
     section.articles = articles;
     deferred.resolve(section);
   }).otherwise(function(error) {

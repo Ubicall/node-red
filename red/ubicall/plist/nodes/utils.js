@@ -190,6 +190,7 @@ module.exports = {
   hasZendeskKBNodes: hasZendeskKBNodes,
   hasZopimNodes: hasZopimNodes,
   isZendeskKBNode: isZendeskKBNode,
+  getZendeskKBNodes: getZendeskKBNodes,
   bridgeNodesWithKbStart: bridgeNodesWithKbStart,
   getFieldsOfZendeskForm: getFieldsOfZendeskForm,
   replaceWireWithAnother: replaceWireWithAnother,

@@ -31,8 +31,7 @@ describe("ubicall/plist/3rd/zendesk/help-center", function() {
     });
 
     it("nodes should have a node of type view-zendesk-help-center", function() {
-      var flag = plistUtils.hasZendeskKBNodes(nodesWithZendeskKB);
-      flag.should.be.equal(true);
+      plistUtils.hasZendeskKBNodes(nodesWithZendeskKB).should.be.equal(true);
     });
 
   });
