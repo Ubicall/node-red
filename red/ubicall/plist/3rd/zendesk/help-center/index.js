@@ -13,40 +13,47 @@ function fetchKnowledgebase(zd_cred, nodes) {
       plistUtils.getZendeskKBNodes(nodes).forEach(function(node) {
         // if node is zendeskKBNode
         //  check it type
-        //    case all
-        //      build all
-        //      bridge with KB Node
-        //      concat all
-        //    case category
-        //      build kb from this category
-        //      bridge with KB Node
-        //      concat all
-        //    case section
-        //      build kb from this section
-        //      bridge with KB Node
-        //      concat all
+        //    build all
+        //    bridge with KB Node
+        //    concat all
         switch (node.fetch) {
-          case "all":
-            allPromises.push(build.kb(zd_cred).then(hcNodes.createKbNodes));
-            break;
           case "category":
-            allPromises.push(build.kbCategory(zd_cred, node.category).then(hcNodes.createKBNodesFromCategory));
+            allPromises.push(build.kbCategory(zd_cred, {
+              id: node.category
+            }).then(function(bld) {
+              return when.resolve(hcNodes.createKBNodesFromCategory(bld));
+            }).then(function(kbNodesFromCategory) {
+              // plistUtils.bridgeNodesWithKbStart(nodes, kbNodesFromCategory.categoryNode);
+              plistUtils.concat(nodes, kbNodesFromCategory.sectionsNodes);
+              plistUtils.concat(nodes, kbNodesFromCategory.articlesNodes);
+            }));
             break;
           case "section":
-            allPromises.push(build.kbSection(zd_cred, node.section).then(hcNodes.createKBNodesFromSection));
+            allPromises.push(build.kbSection(zd_cred, {
+              id: node.section
+            }).then(function(bld) {
+              return when.resolve(hcNodes.createKBNodesFromSection(bld));
+            }).then(function(kbNodesFromSection) {
+              // plistUtils.bridgeNodesWithKbStart(nodes, kbNodesFromSection.sectionNode);
+              plistUtils.concat(nodes, kbNodesFromSection.articlesNodes);
+            }));
             break;
           default:
-            allPromises.push(build.kb(zd_cred).then(hcNodes.createKbNodes));
+            allPromises.push(build.kb(zd_cred).then(function(bld) {
+              return when.resolve(hcNodes.createKbNodes(bld));
+            }).then(function(kbNodes) {
+              // plistUtils.bridgeNodesWithKbStart(nodes, kbNodes.start);
+              plistUtils.concat(nodes, kbNodes.kbScreens);
+            }));
         }
       });
 
-      build.kb(zd_cred).then(hcNodes.createKbNodes).then(function(kbNodes) {
-        // make bridge between input of zendesk knowledge base component and kb start screen
-        nodes = plistUtils.bridgeNodesWithKbStart(nodes, kbNodes.start);
-        return resolve(plistUtils.concat(nodes, kbNodes.kbScreens));
+      when.all(allPromises).then(function() {
+        return resolve(nodes);
       }).otherwise(function(err) {
         return reject(err);
       });
+
     } else {
       // has no zendesk credintials or zendesk knowledge base components, well done
       return resolve(nodes);
