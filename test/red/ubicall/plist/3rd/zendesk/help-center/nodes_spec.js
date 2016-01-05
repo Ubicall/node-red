@@ -32,9 +32,11 @@ describe('ubicall/plist/3rd/zendesk/help-center/build', function() {
       kb.should.be.instanceof(Array);
     });
 
-    it("result should have startNode and KBScreens", function() {
+    it("result should have start Node and KBScreens", function() {
       var result = nodes.createKbNodes(kb);
       result.should.have.property("start");
+      result.should.have.property("kbScreens");
+      result.kbScreens.should.be.an.instanceOf(Array);
     });
   });
 
@@ -53,7 +55,7 @@ describe('ubicall/plist/3rd/zendesk/help-center/build', function() {
       category.should.have.property("sections");
       category.sections.should.be.instanceof(Array);
     });
-    it("result should have same name", function() {
+    it("result should have categoryNode,sectionsNodes & articlesNodes ", function() {
       var result = nodes.createKBNodesFromCategory(category);
       result.should.have.property("categoryNode");
       result.should.have.property("sectionsNodes");
@@ -72,11 +74,11 @@ describe('ubicall/plist/3rd/zendesk/help-center/build', function() {
       });
     });
 
-    it("Input section Object should have articles Array and property name", function() {
+    it("Input section Object should have articles Array ", function() {
       section.should.have.property("articles");
       section.articles.should.be.instanceof(Array);
     });
-    it("result should have categoryNode,sectionsNodes & articlesNodes", function() {
+    it("result should have sectionNode & articlesNodes", function() {
       var result = nodes.createKBNodesFromSection(section);
       result.should.have.property("sectionNode");
       result.should.have.property("articlesNodes");
