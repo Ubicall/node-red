@@ -13,7 +13,7 @@ function createKbNodes(categories) {
     var _id = getID();
     var choiceNode = _getChoiceNode(
       category.name || category.description,
-      section.sections.length
+      category.sections.length
     );
     var categoryChoiceNode = createCatagoryNode(choiceNode, category.sections);
     plistUtils.concat(kbScreens, categoryChoiceNode.categoryNode);
