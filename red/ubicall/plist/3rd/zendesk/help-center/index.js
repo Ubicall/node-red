@@ -18,23 +18,21 @@ function fetchKnowledgebase(zd_cred, nodes) {
         //    concat all
         switch (node.fetch) {
           case "category":
-            allPromises.push(build.kbCategory(zd_cred, {
-              id: node.category
-            }).then(function(bld) {
+            allPromises.push(build.kbCategory(zd_cred, node.category).then(function(bld) {
               return when.resolve(hcNodes.createKBNodesFromCategory(bld));
             }).then(function(kbNodesFromCategory) {
-              // plistUtils.bridgeNodesWithKbStart(nodes, kbNodesFromCategory.categoryNode);
+              plistUtils.replaceNode(nodes, node, kbNodesFromCategory.categoryNode);
+              plistUtils.concat(nodes, [kbNodesFromCategory.categoryNode]);
               plistUtils.concat(nodes, kbNodesFromCategory.sectionsNodes);
               plistUtils.concat(nodes, kbNodesFromCategory.articlesNodes);
             }));
             break;
           case "section":
-            allPromises.push(build.kbSection(zd_cred, {
-              id: node.section
-            }).then(function(bld) {
+            allPromises.push(build.kbSection(zd_cred, node.section).then(function(bld) {
               return when.resolve(hcNodes.createKBNodesFromSection(bld));
             }).then(function(kbNodesFromSection) {
-              // plistUtils.bridgeNodesWithKbStart(nodes, kbNodesFromSection.sectionNode);
+              plistUtils.replaceNode(nodes, node, kbNodesFromSection.sectionNode);
+              plistUtils.concat(nodes, [kbNodesFromSection.sectionNode]);
               plistUtils.concat(nodes, kbNodesFromSection.articlesNodes);
             }));
             break;
@@ -42,7 +40,7 @@ function fetchKnowledgebase(zd_cred, nodes) {
             allPromises.push(build.kb(zd_cred).then(function(bld) {
               return when.resolve(hcNodes.createKbNodes(bld));
             }).then(function(kbNodes) {
-              // plistUtils.bridgeNodesWithKbStart(nodes, kbNodes.start);
+              plistUtils.replaceNode(nodes, node, kbNodes.start);
               plistUtils.concat(nodes, kbNodes.kbScreens);
             }));
         }

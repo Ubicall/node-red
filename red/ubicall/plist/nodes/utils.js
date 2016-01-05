@@ -1,3 +1,12 @@
+// http://stackoverflow.com/a/17037371/5318264
+Array.prototype.flatten = function() {
+  return this.reduce(function(prev, cur) {
+    var more = [].concat(cur).some(Array.isArray);
+    return prev.concat(more ? cur.flatten() : cur);
+  }, []);
+};
+
+
 function isZendeskFormNode(node) {
   return (node.hasOwnProperty('type') && node.type == 'view-zendesk-ticket-form');
 }
@@ -118,6 +127,25 @@ function bridgeNodesWithKbStart(nodes, start) {
 }
 
 /**
+ * replace @param inode with @param rnode in @param nodes
+ * @param Array nodes - all nodes
+ * @param Object inode - replace this node
+ * @param Object rnode - replace with this node
+ **/
+function replaceNode(nodes, inode, rnode) {
+  var shouldReplaced = nodes.filter(function(node) {
+    node.wires = node.wires || []; // some nodes has no wires
+    return node.wires.flatten().indexOf(inode.id) > -1;
+  });
+
+  shouldReplaced.forEach(function(node) {
+    node.wires.forEach(function(wire) {
+      wire[0] = (wire[0] === inode.id) ? rnode.id : wire[0];
+    });
+  });
+}
+
+/**
  * get fields which already existed in @param zdfrmflds
  * @param Array frmFlds - fields of a zendesk form
  * @param Array tktFlds - actual zendesk form fields with full details
@@ -192,6 +220,7 @@ module.exports = {
   isZendeskKBNode: isZendeskKBNode,
   getZendeskKBNodes: getZendeskKBNodes,
   bridgeNodesWithKbStart: bridgeNodesWithKbStart,
+  replaceNode: replaceNode,
   getFieldsOfZendeskForm: getFieldsOfZendeskForm,
   replaceWireWithAnother: replaceWireWithAnother,
   getNodeWithId: getNodeWithId,

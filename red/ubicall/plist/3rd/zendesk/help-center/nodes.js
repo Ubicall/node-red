@@ -16,6 +16,7 @@ function createKbNodes(categories) {
       category.sections.length
     );
     var categoryChoiceNode = createCatagoryNode(choiceNode, category.sections);
+    // TODO should be moved to ./index.js
     plistUtils.concat(kbScreens, categoryChoiceNode.categoryNode);
     plistUtils.concat(kbScreens, categoryChoiceNode.sectionsNodes);
     plistUtils.concat(kbScreens, categoryChoiceNode.articlesNodes);
