@@ -67,6 +67,13 @@ function extractFlow(flow) {
         case "action-submit-zendesk-ticket":
           __flow[node.id] = action_submit_zendesk_ticket.createActionZendeskTicket(node);
           break;
+
+          // do nothing nodes
+        case "view-zendesk-help-center":
+          break;
+        case "tab":
+          break;
+
         default:
           if (node.type !== "start") { // it aleardy handle outside switch statment
             log.info("unknown node " + JSON.stringify(node));
@@ -87,7 +94,11 @@ function deployFlowOnline(authorization_header, version) {
       options.headers = options.headers || {};
       options.headers['Authorization'] = authorization_header;
     }
-    log.info("Deploy to : " + JSON.stringify(options));
+    if (process.env.node_env !== "production") {
+      log.warn("This info appear because you are not start with production flag");
+      log.warn(JSON.stringify(options, null, 4));
+    }
+
     request(options, function(err, response, body) {
       if (err || response.statusCode !== 200) {
         log.error(err || response.statusCode);

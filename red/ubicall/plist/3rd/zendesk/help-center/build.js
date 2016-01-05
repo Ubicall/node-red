@@ -20,6 +20,10 @@ function _fillSectionWithArticles(sections, articles) {
   return sections;
 }
 
+/**
+ * @param Object zd_cred - your zendesk credintials
+ * @param Object category - zendesk category object but no need to more than an id inside it
+ **/
 function buildCategoryTree(zd_cred, category) {
   var deferred = when.defer();
   category.sections = [];
@@ -31,6 +35,22 @@ function buildCategoryTree(zd_cred, category) {
     var articles = sectionsAndArticles[1];
     category.sections = _fillSectionWithArticles(sections, articles);
     deferred.resolve(category);
+  }).otherwise(function(error) {
+    log.error(error);
+    deferred.reject(error);
+  });
+  return deferred.promise;
+}
+
+/**
+ * @param Object zd_cred - your zendesk credintials
+ * @param Object section - zendesk section object but no need to more than an id inside it
+ **/
+function buildSectionTree(zd_cred, section) {
+  var deferred = when.defer();
+  hc.getSectionArticles(zd_cred, section).then(function(articles) {
+    section.articles = articles;
+    deferred.resolve(section);
   }).otherwise(function(error) {
     log.error(error);
     deferred.reject(error);
@@ -65,5 +85,7 @@ function buildKB(zd_cred) {
 
 
 module.exports = {
-  kb: buildKB
+  kb: buildKB,
+  kbCategory: buildCategoryTree,
+  kbSection: buildSectionTree
 }
