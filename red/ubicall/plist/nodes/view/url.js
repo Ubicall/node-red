@@ -5,7 +5,8 @@ var log = require("../../../../log");
 var PlistMapper = {
   type: "ScreenType",
   name: "ScreenTitle",
-  url: "url"
+  url: "url",
+  sameorigin: "sameOrigin"
 };
 
 var TYPE = "URL";

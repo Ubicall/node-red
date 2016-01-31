@@ -76,6 +76,7 @@ function _getURLNode(name, url) {
     type: "view-url",
     name: name || _id,
     url: url,
+    sameorigin: false,
     x: 0,
     y: 0,
     z: 0,
