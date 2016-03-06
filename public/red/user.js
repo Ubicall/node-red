@@ -70,7 +70,7 @@ RED.user = (function() {
                             body[field.id] = $("#node-dialog-login-"+field.id).val();
                         }
                         $.ajax({
-                            url:"https://api.ubicall.com/auth/token",
+                            url:"https://api-dev.ubicall.com/auth/token",
                             type: "POST",
                             data: body
                         }).done(function(data,textStatus,xhr) {
@@ -102,7 +102,7 @@ RED.user = (function() {
         var at = ats ? ats.access_token : undefined;
         if(at){
           $.ajax({
-              url: "https://api.ubicall.com/auth/revoke",
+              url: "https://api-dev.ubicall.com/auth/revoke",
               type: "POST",
               data: {token:at},
               success: function() {

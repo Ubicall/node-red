@@ -28,6 +28,7 @@ var library = require("./library");
 var info = require("./info");
 var auth = require('./auth');
 var needsPermission = auth.needsPermission;
+var ejs = require('ejs');
 
 var settings = require("../settings");
 var common = require('../ubicall/upload/common')
@@ -106,6 +107,21 @@ function init(adminApp, storage) {
 
     // Settings
     adminApp.get("/settings", needsPermission("settings.read"), info.settings);
+
+//demo
+
+adminApp.set('view engine', 'html');
+adminApp.engine('html', ejs.renderFile)
+
+    adminApp.get("/demo",needsPermission("settings.read"),function(req, res) {
+    // res.send('api response #ahmed');
+        res.render("demo/index.html", {
+        licence_key: req.user.licence_key,
+       // platformScript: platformScript,
+    });
+
+
+});
 
     // Plist
     if (settings.plist) {

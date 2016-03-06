@@ -19,10 +19,13 @@ var util = require('util');
 
 module.exports = {
     settings: function(req,res) {
+
+        
         var safeSettings = {
             httpNodeRoot: settings.httpNodeRoot,
             version: settings.version,
             user: req.user
+
         };
         
         if (util.isArray(settings.paletteCategories)) {

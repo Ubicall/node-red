@@ -33,17 +33,25 @@ RED.deploy = (function() {
 
     function init() {
 
+     var auth_token = RED.settings.get("auth-tokens").access_token;
+
         var saveButton = $('<li><span class="deploy-button-group button-group">'+
         '<a id="btn-save" class="action-deploy disabled" href="#"><img id="btn-icn-save" ' +
         'src="images/deploy-full-o.png"> <span>Save</span></a></span></li>').prependTo(".header-toolbar");
 
-        var deployButton = $('<li><span class="deploy-button-group button-group">'+
-          '<a id="btn-deploy" class="action-deploy disabled" href="#"><img id="btn-icn-deploy" src="images/deploy-full-o.png"> <span>Deploy</span></a>'+
-          '<a id="btn-deploy-options"  data-toggle="dropdown"  class="" href="#"><i class="fa fa-caret-down"></i></a>'+
-          '</span></li>').prependTo(".header-toolbar");
+            var deployButton = $('<li><span class="deploy-button-group button-group">'+
+              '<a id="btn-deploy" class="action-deploy disabled" href="#"><img id="btn-icn-deploy" src="images/deploy-full-o.png"> <span>Deploy</span></a>'+
+              '<a id="btn-deploy-options"  data-toggle="dropdown"  class="" href="#"><i class="fa fa-caret-down"></i></a>'+
+              '</span></li>').prependTo(".header-toolbar");
+
+         var demoButton = $('<li><span class="deploy-button-group button-group">'+
+        '<a id="btn-demo" class="action-deploy disabled" href="#"><img id="btn-icn-save" '+
+        'src="images/deploy-full-o.png"> <span>demo</span></a></span></li>').prependTo(".header-toolbar");
 
         $('#btn-deploy').click(function() { deploy = true ;save(undefined,true); });
         $('#btn-save').click(function() {  deploy = false ;save(true,false); });
+
+          $('#btn-demo').click(function() { window.open("demo?access_token="+auth_token);});
 
         $( "#node-dialog-confirm-deploy" ).dialog({
                 title: "Confirm save",
