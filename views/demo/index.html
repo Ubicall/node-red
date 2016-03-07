@@ -53,18 +53,34 @@ body {
 }
     
 
-#contener {
+#pages {
     width: 100%;
     padding-top: 180px;
     padding-bottom: 120px;
     text-align: center;
 }
 
-#contener img {
+#pages img {
     width: auto;
     height: 100%;
     margin: 0;
     padding: 0;
+    display: inline-block;
+}
+
+#pages a {
+    width: 100%;
+    margin: 40px 0 0 0;
+    padding: 0;
+    display: inline-block;
+    font-size: 16px;
+    color: #333;
+    text-transform: uppercase;
+    text-decoration: underline;
+}
+
+#pages a:hover {
+    color: #e15206;
 }
 
 #footer {
@@ -96,7 +112,7 @@ body {
     font-size: 30px;
 }
 
-#contener img {
+#pages   img {
     width: 90%;
     height: auto;
     margin: 0 5%;
@@ -132,7 +148,15 @@ body {
 
 <!-- Contener -->
 
-    <div id="contener" >
+    <div id="pages" >
+
+
+    <img src="https://cdn-dev.ubicall.com/static/ubicall/images/logo.png" alt="" />
+
+    <div id="dialog">
+    
+    </div>
+
 
     </div>
 
@@ -146,7 +170,7 @@ body {
     <script src="https://platform-dev.ubicall.com/widget/widget.min.js"></script>
     <script>
         ubiWidget.init({
-            containerId: "contener",
+            containerId: "dialog",
             licence_key: "<%= licence_key %>"
         });
     </script>
