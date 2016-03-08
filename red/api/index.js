@@ -114,11 +114,16 @@ adminApp.set('view engine', 'html');
 adminApp.engine('html', ejs.renderFile)
 
     adminApp.get("/demo",needsPermission("settings.read"),function(req, res) {
-    // res.send('api response #ahmed');
+        res.redirect('https://platform-dev.ubicall.com/widget/li/'+req.user.licence_key+'.html');
+
+     //window.open("https://platform-dev.ubicall.com/widget/li/"+req.user.licence_key+".html");
+    /*
         res.render("demo/index.html", {
         licence_key: req.user.licence_key,
-       // platformScript: platformScript,
+ 
     });
+*/
+
 
 
 });

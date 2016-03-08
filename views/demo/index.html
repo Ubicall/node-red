@@ -153,27 +153,10 @@ body {
 
     <img src="https://cdn-dev.ubicall.com/static/ubicall/images/logo.png" alt="" />
 
-    <div id="dialog">
-    
-    </div>
-
+   
 
     </div>
 
-    <!-- PopUp End -->
-
-
-
-    <!-- js -->
-
- <script src="https://cdn-dev.ubicall.com/static/jquery/dist/jquery.min.js"></script>
-    <script src="https://platform-dev.ubicall.com/widget/widget.min.js"></script>
-    <script>
-        ubiWidget.init({
-            containerId: "dialog",
-            licence_key: "<%= licence_key %>"
-        });
-    </script>
 
 <!-- Contener End -->
 
@@ -190,8 +173,18 @@ body {
 <!-- Footer End -->
 
 
-
 </div>
+
+
+<script src="https://cdn-dev.ubicall.com/static/jquery/dist/jquery.min.js"></script>
+    <script src="https://platform-dev.ubicall.com/widget/widget.min.js"></script>
+    <script>
+        ubiWidget.init({
+            containerId: "dialog",
+            licence_key: "<%= licence_key %>"
+        });
+    </script>
+ <div id="dialog"></div>  
 
 </body>
 </html>
