@@ -45,8 +45,7 @@ RED.deploy = (function() {
               '</span></li>').prependTo(".header-toolbar");
 
          var demoButton = $('<li><span class="deploy-button-group button-group">'+
-        '<a id="btn-demo" class="action-deploy disabled" href="#"><img id="btn-icn-save" '+
-        'src="images/deploy-full-o.png"> <span>demo</span></a></span></li>').prependTo(".header-toolbar");
+        '<a id="btn-demo"  href="#" style="background:#FFFFFF; color:black;  "> <span> Preview </span></a></span></li>').prependTo(".header-toolbar");
   
 
         $('#btn-deploy').click(function() { deploy = true ;save(undefined,true); });

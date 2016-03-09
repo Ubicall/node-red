@@ -114,7 +114,10 @@ adminApp.set('view engine', 'html');
 adminApp.engine('html', ejs.renderFile)
 
     adminApp.get("/demo",needsPermission("settings.read"),function(req, res) {
-        res.redirect('https://platform-dev.ubicall.com/widget/li/'+req.user.licence_key+'.html');
+
+    var url_demo = process.env.node_env === "production" ? "https://platform.ubicall.com/widget/li/demo-" : "https://platform-dev.ubicall.com/widget/li/demo-";
+
+        res.redirect(url_demo+req.user.licence_key+'.html');
 
     /*
         res.render("demo/index.html", {
