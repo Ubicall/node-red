@@ -28,7 +28,7 @@ var library = require("./library");
 var info = require("./info");
 var auth = require('./auth');
 var needsPermission = auth.needsPermission;
-var ejs = require('ejs');
+//var ejs = require('ejs');
 
 var settings = require("../settings");
 var common = require('../ubicall/upload/common')
@@ -110,8 +110,8 @@ function init(adminApp, storage) {
 
 //demo
 
-adminApp.set('view engine', 'html');
-adminApp.engine('html', ejs.renderFile)
+//adminApp.set('view engine', 'html');
+//adminApp.engine('html', ejs.renderFile)
 
     adminApp.get("/demo",needsPermission("settings.read"),function(req, res) {
 
